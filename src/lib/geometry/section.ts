@@ -1,6 +1,6 @@
 import { Vec2 } from "$lib/geometry/vec2";
 
-export type Section = {
+export type SectionGeometry = {
     type: "rectangle";
     height: number;
     width: number;
@@ -8,9 +8,9 @@ export type Section = {
     type: "polygon";
     points: Vec2[];
 }
-export type SectionType = Section["type"];
+export type SectionType = SectionGeometry["type"];
 
-export function getSectionPoints(section: Section) {
+export function getSectionPoints(section: SectionGeometry) {
     switch (section.type) {
         case "polygon":
             return section.points;
