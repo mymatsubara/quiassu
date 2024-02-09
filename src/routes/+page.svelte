@@ -31,6 +31,7 @@
 
 	let tipoSecao: SectionType = 'rectangle';
 	$: resultados = dimensionaSecao(secao);
+	$: console.log({ resultados, secao });
 
 	function changeHeight(e: Event) {
 		const value = (e.target as HTMLInputElement).value;
@@ -71,7 +72,9 @@
 							</div>
 						</div>
 					</Tabs.Content>
-					<Tabs.Content value="polygon">Adicione os pontos da seção</Tabs.Content>
+					<Tabs.Content value="polygon"
+						><span class="text-red-600">Não implementado ainda</span></Tabs.Content
+					>
 				</Tabs.Root>
 				<div class="grid grid-cols-2 items-center gap-4">
 					<Label for="dLinha">d' (cm)</Label>
@@ -146,11 +149,27 @@
 			<h4 class="mb-2 text-lg font-medium leading-none">Resultados</h4>
 
 			{#if resultados}
-				<div class="font-medium">Domínio {resultados.dominio}</div>
-				<div class="grid grid-cols-2 items-center gap-4">
-					<div class="font-medium">A<sub>s</sub></div>
-					<div>{isNaN(resultados.as) ? '0.0' : resultados.as.toFixed(2)} cm/2</div>
-				</div>
+				{#if isNaN(resultados.x)}
+					<span class="text-red-600"
+						>Aumente as dimensões da seção ou a resistência do concreto</span
+					>
+				{:else}
+					<div class="font-medium">Domínio {resultados.dominio}</div>
+
+					<Separator />
+					<div class="font-medium">ELU</div>
+					<div class="grid grid-cols-2 items-center gap-4">
+						<div class="font-medium">A<sub>s</sub></div>
+						<div>{isNaN(resultados.as) ? '0.0' : resultados.as.toFixed(2)} cm/2</div>
+					</div>
+
+					{#if resultados.asLinha}
+						<div class="grid grid-cols-2 items-center gap-4">
+							<div class="font-medium">A'<sub>s</sub></div>
+							<div>{isNaN(resultados.asLinha) ? '0.0' : resultados.asLinha.toFixed(2)} cm/2</div>
+						</div>
+					{/if}
+				{/if}
 			{/if}
 		</div>
 	</div>

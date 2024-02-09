@@ -62,15 +62,14 @@ export function dimensionaSecao(secao: Secao) {
 				lambda,
 				alfac
 			});
-			const dominio = calculaDominio({ x, d, ecu, es, fyd });
 
 			const precisaArmaduraDupla = x > xLim;
 			if (precisaArmaduraDupla) {
-				const xLinha = xLim;
+				x = xLim;
 
-				const msdLinha = ArmaduraDupla.msdLinha({ fcd, b, d, alfac, lambda, x, xLinha });
+				const msdLinha = ArmaduraDupla.msdLinha({ fcd, b, d, alfac, lambda, x });
 				const deltaMsd = ArmaduraDupla.deltaMsd(msdx, msdLinha);
-				const sigmaSdLinha = ArmaduraDupla.sigmaSd({ fyd, x: xLinha, dLinha, ecu, es });
+				const sigmaSdLinha = ArmaduraDupla.sigmaSd({ fyd, x, dLinha, ecu, es });
 				const asLinha = ArmaduraDupla.areaAcoSecundaria({
 					deltaMsd,
 					sigmasd: sigmaSdLinha,
@@ -78,6 +77,7 @@ export function dimensionaSecao(secao: Secao) {
 					dLinha
 				});
 				const as = ArmaduraDupla.areaAco({ d, deltaMsd, dLinha, fyd, lambda, msdLinha, x });
+				const dominio = calculaDominio({ x, d, ecu, es, fyd });
 
 				return {
 					x,
@@ -87,6 +87,7 @@ export function dimensionaSecao(secao: Secao) {
 				};
 			} else {
 				const as = ArmaduraSimple.areaAco({ msd: msdx, d, sigmasd: fyd, x, lambda });
+				const dominio = calculaDominio({ x, d, ecu, es, fyd });
 
 				return {
 					x,
@@ -177,7 +178,6 @@ module ArmaduraDupla {
 		b: number;
 		lambda: number;
 		x: number;
-		xLinha: number;
 		d: number;
 	}
 
@@ -212,8 +212,8 @@ module ArmaduraDupla {
 		fyd: number;
 	}
 
-	export function msdLinha({ fcd, b, x, d, alfac, lambda, xLinha }: MsdLinhaInput) {
-		return alfac * fcd * b * lambda * xLinha * (d - 0.5 * lambda * x);
+	export function msdLinha({ fcd, b, x, d, alfac, lambda }: MsdLinhaInput) {
+		return alfac * fcd * b * lambda * x * (d - 0.5 * lambda * x);
 	}
 
 	export function deltaMsd(msd: number, msdLinha: number) {

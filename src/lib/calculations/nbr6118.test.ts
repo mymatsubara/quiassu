@@ -24,7 +24,55 @@ describe('NBR6118', () => {
 		expect(parametros.lambda.toFixed(1)).toBe('0.7');
 	});
 
-	it('calcula FNS (Flexão Normal Simple) com armadura simples e concreto de alta resistência', () => {
+	it('calcula FNS (Flexão Normal Simples) com armadura simples', () => {
+		const result = dimensionaSecao({
+			geometria: {
+				type: 'rectangle',
+				width: 14,
+				height: 40
+			},
+			fck: 25,
+			dLinha: 4,
+			fy: 500,
+			es: 210,
+			mskx: 28.57,
+			msky: 0,
+			nsd: 0,
+			gamac: 1.4,
+			gamas: 1.15,
+			gamaf: 1.4
+		});
+
+		expect(result?.x?.toFixed(2)).toBe('7.09');
+		expect(result?.as?.toFixed(2)).toBe('2.77');
+		expect(result?.asLinha).toBe(undefined);
+	});
+
+	it('calcula FNS (Flexão Normal Simples) com armadura dupla', () => {
+		const result = dimensionaSecao({
+			geometria: {
+				type: 'rectangle',
+				width: 14,
+				height: 40
+			},
+			fck: 25,
+			dLinha: 4,
+			fy: 500,
+			es: 210,
+			mskx: 83.57,
+			msky: 0,
+			nsd: 0,
+			gamac: 1.4,
+			gamas: 1.15,
+			gamaf: 1.4
+		});
+
+		expect(result?.x?.toFixed(2)).toBe('16.20');
+		expect(result?.as?.toFixed(2)).toBe('8.90');
+		expect(result?.asLinha?.toFixed(2)).toBe('2.57');
+	});
+
+	it('calcula FNS (Flexão Normal Simples) com armadura simples e concreto de alta resistência', () => {
 		const result = dimensionaSecao({
 			geometria: {
 				type: 'rectangle',
@@ -48,7 +96,7 @@ describe('NBR6118', () => {
 		expect(result?.asLinha).toBe(undefined);
 	});
 
-	it('calcula FNS (Flexão Normal Simple) com armadura dupla e concreto de alta resistência', () => {
+	it('calcula FNS (Flexão Normal Simples) com armadura dupla e concreto de alta resistência', () => {
 		const result = dimensionaSecao({
 			geometria: {
 				type: 'rectangle',
@@ -67,8 +115,8 @@ describe('NBR6118', () => {
 			gamaf: 1.4
 		});
 
-		expect(result?.x?.toFixed(2)).toBe('19.41');
-		expect(result?.as?.toFixed(2)).toBe('25.33');
-		expect(result?.asLinha?.toFixed(2)).toBe('5.20');
+		expect(result?.x?.toFixed(2)).toBe('15.75');
+		expect(result?.as?.toFixed(2)).toBe('24.62');
+		expect(result?.asLinha?.toFixed(2)).toBe('4.38');
 	});
 });
