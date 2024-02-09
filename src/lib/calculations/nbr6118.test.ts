@@ -1,8 +1,30 @@
-import { dimensionaSecao } from '$lib/calculations/nbr6118';
+import { dimensionaSecao, parametrosDimensionamento } from '$lib/calculations/nbr6118';
 import { describe, expect, it } from 'vitest';
 
 describe('NBR6118', () => {
-	it('should calculate FNS (Flexão Normal Simple) with simple reinforcement and high resistance concrete', () => {
+	it('calcula parâmetros de dimensionamento para fck 60MPa', () => {
+		const fck = 60;
+		const parametros = parametrosDimensionamento(fck);
+
+		expect(parametros.ec2.toFixed(5)).toBe('0.00229');
+		expect(parametros.ecu.toFixed(7)).toBe('0.0028835');
+		expect(parametros.n.toFixed(2)).toBe('1.59');
+		expect(parametros.alfac.toFixed(4)).toBe('0.8075');
+		expect(parametros.lambda.toFixed(3)).toBe('0.775');
+	});
+
+	it('calcula parâmetros de dimensionamento para fck 90MPa', () => {
+		const fck = 90;
+		const parametros = parametrosDimensionamento(fck);
+
+		expect(parametros.ec2.toFixed(4)).toBe('0.0026');
+		expect(parametros.ecu.toFixed(4)).toBe('0.0026');
+		expect(parametros.n.toFixed(1)).toBe('1.4');
+		expect(parametros.alfac.toFixed(2)).toBe('0.68');
+		expect(parametros.lambda.toFixed(1)).toBe('0.7');
+	});
+
+	it('calcula FNS (Flexão Normal Simple) com armadura simples e concreto de alta resistência', () => {
 		const result = dimensionaSecao({
 			geometria: {
 				type: 'rectangle',
@@ -26,7 +48,7 @@ describe('NBR6118', () => {
 		expect(result?.asLinha).toBe(undefined);
 	});
 
-	it('should calculate FNS (Flexão Normal Simple) with double reinforcement and high resistance concrete', () => {
+	it('calcula FNS (Flexão Normal Simple) com armadura dupla e concreto de alta resistência', () => {
 		const result = dimensionaSecao({
 			geometria: {
 				type: 'rectangle',

@@ -32,6 +32,14 @@ interface LinhaNeutralRecInput {
 	lambda: number;
 }
 
+interface DominioInput {
+	x: number;
+	d: number;
+	ecu: number;
+	es: number;
+	fyd: number;
+}
+
 export function dimensionaSecao(secao: Secao) {
 	const fcd = convertStress(secao.fck, 'MPa', 'KN/cm2') / secao.gamac;
 	const fyd = convertStress(secao.fy, 'MPa', 'KN/cm2') / secao.gamas;
@@ -54,6 +62,7 @@ export function dimensionaSecao(secao: Secao) {
 				lambda,
 				alfac
 			});
+			const dominio = calculaDominio({ x, d, ecu, es, fyd });
 
 			const precisaArmaduraDupla = x > xLim;
 			if (precisaArmaduraDupla) {
@@ -72,7 +81,7 @@ export function dimensionaSecao(secao: Secao) {
 
 				return {
 					x,
-					dominio: dominio(x, d),
+					dominio,
 					as,
 					asLinha
 				};
@@ -81,7 +90,7 @@ export function dimensionaSecao(secao: Secao) {
 
 				return {
 					x,
-					dominio: dominio(x, d),
+					dominio,
 					as
 				};
 			}
@@ -96,23 +105,26 @@ function linhaNeutraRec({ b, d, fcd, msd, alfac, lambda }: LinhaNeutralRecInput)
 	return (d / lambda) * (1 - Math.sqrt(1 - (2 * msd) / (alfac * b * d ** 2 * fcd)));
 }
 
-export function dominio(x: number, d: number) {
+export function calculaDominio({ x, d, ecu, es, fyd }: DominioInput) {
+	const eyd = es / fyd;
+	const lim2 = ecu / (0.01 + eyd);
+	const lim3 = ecu / (ecu + eyd);
+
 	const xd = x / d;
 	if (xd <= 0) {
 		return '1';
-	}
-	if (xd <= 0.259) {
+	} else if (xd <= lim2) {
 		return '2';
 	} else if (xd <= 0.45) {
 		return '3a';
-	} else if (xd <= 0.628) {
+	} else if (xd <= lim3) {
 		return '3b';
 	} else {
 		return '4/5';
 	}
 }
 
-function parametrosDimensionamento(fck: number) {
+export function parametrosDimensionamento(fck: number) {
 	if (fck <= 50) {
 		return {
 			ec2: 0.002,
@@ -120,109 +132,27 @@ function parametrosDimensionamento(fck: number) {
 			n: 2,
 			alfac: 0.85,
 			lambda: 0.8,
-			limDominio2: 0.259,
-			limDominio3: 0.628,
 			xLimRel: 0.45
 		};
-	} else if (fck <= 55) {
-		return {
-			ec2: 0.0022,
-			ecu: 0.003125,
-			n: 1.751,
-			alfac: 0.829,
-			lambda: 0.788,
-			limDominio2: 0.238,
-			limDominio3: 0.602,
-			xLimRel: 0.35
-		};
-	} else if (fck <= 60) {
-		return {
-			ec2: 0.00229,
-			ecu: 0.002884,
-			n: 1.59,
-			alfac: 0.808,
-			lambda: 0.775,
-			limDominio2: 0.224,
-			limDominio3: 0.582,
-			xLimRel: 0.35
-		};
-	} else if (fck <= 65) {
-		return {
-			ec2: 0.00236,
-			ecu: 0.002737,
-			n: 1.491,
-			alfac: 0.786,
-			lambda: 0.763,
-			limDominio2: 0.215,
-			limDominio3: 0.569,
-			xLimRel: 0.35
-		};
-	} else if (fck <= 70) {
-		return {
-			ec2: 0.00242,
-			ecu: 0.002656,
-			n: 1.437,
-			alfac: 0.765,
-			lambda: 0.75,
-			limDominio2: 0.21,
-			limDominio3: 0.562,
-			xLimRel: 0.35
-		};
-	} else if (fck <= 75) {
-		return {
-			ec2: 0.00247,
-			ecu: 0.002618,
-			n: 1.412,
-			alfac: 0.744,
-			lambda: 0.738,
-			limDominio2: 0.207,
-			limDominio3: 0.558,
-			xLimRel: 0.35
-		};
-	} else if (fck <= 80) {
-		return {
-			ec2: 0.00252,
-			ecu: 0.002604,
-			n: 1.402,
-			alfac: 0.723,
-			lambda: 0.725,
-			limDominio2: 0.207,
-			limDominio3: 0.557,
-			xLimRel: 0.35
-		};
-	} else if (fck <= 85) {
-		return {
-			ec2: 0.00256,
-			ecu: 0.0026,
-			n: 1.4,
-			alfac: 0.701,
-			lambda: 0.713,
-			limDominio2: 0.206,
-			limDominio3: 0.557,
-			xLimRel: 0.35
-		};
 	} else if (fck <= 90) {
+		const ec2 = 0.002 + 0.000085 * (fck - 50) ** 0.53;
+		const ecu = 0.0026 + 0.035 * ((90 - fck) / 100) ** 4;
+		const n = 1.4 + 23.4 * ((90 - fck) / 100) ** 4;
+		const alfac = 0.85 * (1 - (fck - 50) / 200);
+		const lambda = 0.8 - (fck - 50) / 400;
+
 		return {
-			ec2: 0.0026,
-			ecu: 0.0026,
-			n: 1.4,
-			alfac: 0.68,
-			lambda: 0.7,
-			limDominio2: 0.206,
-			limDominio3: 0.557,
+			ec2,
+			ecu,
+			n,
+			alfac,
+			lambda,
 			xLimRel: 0.35
 		};
 	} else {
-		return {
-			ec2: 0.0026,
-			ecu: 0.0026,
-			n: 1.4,
-			alfac: 0.68,
-			lambda: 0.7,
-			limDominio2: 0.206,
-			limDominio3: 0.557,
-			xLimRel: 0.35
-		};
+		throw new Error(
+			'A norma NBR6118 não define parâmetros para concreto com resistência maior do que 90 MPa'
+		);
 	}
 }
 
