@@ -6,7 +6,7 @@
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { getSectionPoints, type SectionType } from '$lib/geometry/section';
-	import { Pencil, Square } from 'lucide-svelte';
+	import { PenTool, Square } from 'lucide-svelte';
 
 	let secao: Secao = {
 		// Secao
@@ -31,7 +31,6 @@
 
 	let tipoSecao: SectionType = 'rectangle';
 	$: resultados = dimensionaSecao(secao);
-	$: console.log({ resultados, secao });
 
 	function changeHeight(e: Event) {
 		const value = (e.target as HTMLInputElement).value;
@@ -57,7 +56,7 @@
 				<Tabs.Root bind:value={tipoSecao}>
 					<Tabs.List class="grid grid-cols-2">
 						<Tabs.Trigger value="rectangle"><Square class="h-5 w-5" /></Tabs.Trigger>
-						<Tabs.Trigger value="polygon"><Pencil class="h-5 w-5" /></Tabs.Trigger>
+						<Tabs.Trigger value="polygon"><PenTool class="h-5 w-5" /></Tabs.Trigger>
 					</Tabs.List>
 
 					<Tabs.Content value="rectangle">
