@@ -91,14 +91,14 @@
 					<Label for="mskx">M<sub>sk,x</sub> (KNm)</Label>
 					<Input bind:value={secao.mskx} type="number" id="mskx" class="h-8" />
 				</div>
-				<div class="grid grid-cols-2 items-center gap-4">
+				<!-- <div class="grid grid-cols-2 items-center gap-4">
 					<Label for="msky">M<sub>sk,y</sub> (KNm)</Label>
 					<Input bind:value={secao.msky} type="number" id="msky" class="h-8" />
 				</div>
 				<div class="grid grid-cols-2 items-center gap-4">
 					<Label for="nsd">N<sub>sd</sub> (KN)</Label>
 					<Input bind:value={secao.nsd} type="number" id="nsd" class="h-8" />
-				</div>
+				</div> -->
 				<div class="grid grid-cols-2 items-center gap-4">
 					<Label for="gamaf">γ<sub>f</sub></Label>
 					<Input bind:value={secao.gamaf} type="number" id="gamaf" class="h-8" />
