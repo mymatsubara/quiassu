@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { areaAcoSecao, type Secao } from '$lib/calculations/nbr6118';
+	import { dimensionaSecao, type Secao } from '$lib/calculations/nbr6118';
 	import SectionDrawing from '$lib/components/SectionDrawing.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -11,7 +11,7 @@
 	let secao: Secao = {
 		// Secao
 		geometria: { type: 'rectangle', height: 0, width: 0 },
-		dlinha: 5,
+		dLinha: 5,
 
 		// Concreto
 		fck: 20,
@@ -19,6 +19,7 @@
 
 		// Aço
 		fy: 500,
+		es: 210,
 		gamas: 1.15,
 
 		// Esforços
@@ -29,7 +30,7 @@
 	};
 
 	let tipoSecao: SectionType = 'rectangle';
-	$: resultados = areaAcoSecao(secao);
+	$: resultados = dimensionaSecao(secao);
 
 	function changeHeight(e: Event) {
 		const value = (e.target as HTMLInputElement).value;
@@ -73,8 +74,8 @@
 					<Tabs.Content value="polygon">Adicione os pontos da seção</Tabs.Content>
 				</Tabs.Root>
 				<div class="grid grid-cols-3 items-center gap-4">
-					<Label for="dlinha">d' (cm)</Label>
-					<Input bind:value={secao.dlinha} type="number" id="dlinha" class="col-span-2 h-8" />
+					<Label for="dLinha">d' (cm)</Label>
+					<Input bind:value={secao.dLinha} type="number" id="dLinha" class="col-span-2 h-8" />
 				</div>
 			</div>
 
@@ -124,6 +125,10 @@
 				<div class="grid grid-cols-3 items-center gap-4">
 					<Label for="fy">f<sub>y</sub> (MPa)</Label>
 					<Input bind:value={secao.fy} type="number" id="fy" class="col-span-2 h-8" />
+				</div>
+				<div class="grid grid-cols-3 items-center gap-4">
+					<Label for="es">E<sub>s</sub> (GPa)</Label>
+					<Input bind:value={secao.es} type="number" id="es" class="col-span-2 h-8" />
 				</div>
 				<div class="grid grid-cols-3 items-center gap-4">
 					<Label for="gamas">γ<sub>s</sub></Label>
