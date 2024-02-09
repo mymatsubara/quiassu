@@ -48,7 +48,7 @@
 </script>
 
 <div class="flex h-full">
-	<div class="min-w-80 border-r p-4">
+	<div class="min-w-80 overflow-y-scroll border-r p-4">
 		<div class="grid gap-5">
 			<div class="grid gap-2">
 				<h4 class="font-medium leading-none">Seção</h4>
@@ -61,21 +61,21 @@
 
 					<Tabs.Content value="rectangle">
 						<div class="mt-4 grid gap-2">
-							<div class="grid grid-cols-3 items-center gap-4">
+							<div class="grid grid-cols-2 items-center gap-4">
 								<Label for="width">Largura (cm)</Label>
-								<Input type="number" id="width" class="col-span-2 h-8" on:change={changeWidth} />
+								<Input type="number" id="width" class="h-8" on:change={changeWidth} />
 							</div>
-							<div class="grid grid-cols-3 items-center gap-4">
+							<div class="grid grid-cols-2 items-center gap-4">
 								<Label for="height">Altura (cm)</Label>
-								<Input type="number" id="height" class="col-span-2 h-8" on:change={changeHeight} />
+								<Input type="number" id="height" class="h-8" on:change={changeHeight} />
 							</div>
 						</div>
 					</Tabs.Content>
 					<Tabs.Content value="polygon">Adicione os pontos da seção</Tabs.Content>
 				</Tabs.Root>
-				<div class="grid grid-cols-3 items-center gap-4">
+				<div class="grid grid-cols-2 items-center gap-4">
 					<Label for="dLinha">d' (cm)</Label>
-					<Input bind:value={secao.dLinha} type="number" id="dLinha" class="col-span-2 h-8" />
+					<Input bind:value={secao.dLinha} type="number" id="dLinha" class="h-8" />
 				</div>
 			</div>
 
@@ -84,21 +84,21 @@
 			<div class="grid gap-2">
 				<h4 class="font-medium leading-none">Esforços</h4>
 
-				<div class="grid grid-cols-3 items-center gap-4">
+				<div class="grid grid-cols-2 items-center gap-4">
 					<Label for="mskx">M<sub>sk,x</sub> (KNm)</Label>
-					<Input bind:value={secao.mskx} type="number" id="mskx" class="col-span-2 h-8" />
+					<Input bind:value={secao.mskx} type="number" id="mskx" class="h-8" />
 				</div>
-				<div class="grid grid-cols-3 items-center gap-4">
+				<div class="grid grid-cols-2 items-center gap-4">
 					<Label for="msky">M<sub>sk,y</sub> (KNm)</Label>
-					<Input bind:value={secao.msky} type="number" id="msky" class="col-span-2 h-8" />
+					<Input bind:value={secao.msky} type="number" id="msky" class="h-8" />
 				</div>
-				<div class="grid grid-cols-3 items-center gap-4">
+				<div class="grid grid-cols-2 items-center gap-4">
 					<Label for="nsd">N<sub>sd</sub> (KN)</Label>
-					<Input bind:value={secao.nsd} type="number" id="nsd" class="col-span-2 h-8" />
+					<Input bind:value={secao.nsd} type="number" id="nsd" class="h-8" />
 				</div>
-				<div class="grid grid-cols-3 items-center gap-4">
+				<div class="grid grid-cols-2 items-center gap-4">
 					<Label for="gamaf">γ<sub>f</sub></Label>
-					<Input bind:value={secao.gamaf} type="number" id="gamaf" class="col-span-2 h-8" />
+					<Input bind:value={secao.gamaf} type="number" id="gamaf" class="h-8" />
 				</div>
 			</div>
 
@@ -107,13 +107,13 @@
 			<div class="grid gap-2">
 				<h4 class="font-medium leading-none">Concreto</h4>
 
-				<div class="grid grid-cols-3 items-center gap-4">
+				<div class="grid grid-cols-2 items-center gap-4">
 					<Label for="fck">f<sub>ck</sub> (MPa)</Label>
-					<Input bind:value={secao.fck} type="number" id="fck" class="col-span-2 h-8" />
+					<Input bind:value={secao.fck} type="number" id="fck" class="h-8" />
 				</div>
-				<div class="grid grid-cols-3 items-center gap-4">
+				<div class="grid grid-cols-2 items-center gap-4">
 					<Label for="gamac">γ<sub>c</sub></Label>
-					<Input bind:value={secao.gamac} type="number" id="gamac" class="col-span-2 h-8" />
+					<Input bind:value={secao.gamac} type="number" id="gamac" class="h-8" />
 				</div>
 			</div>
 
@@ -122,17 +122,17 @@
 			<div class="grid gap-2">
 				<h4 class="font-medium leading-none">Aço</h4>
 
-				<div class="grid grid-cols-3 items-center gap-4">
+				<div class="grid grid-cols-2 items-center gap-4">
 					<Label for="fy">f<sub>y</sub> (MPa)</Label>
-					<Input bind:value={secao.fy} type="number" id="fy" class="col-span-2 h-8" />
+					<Input bind:value={secao.fy} type="number" id="fy" class="h-8" />
 				</div>
-				<div class="grid grid-cols-3 items-center gap-4">
+				<div class="grid grid-cols-2 items-center gap-4">
 					<Label for="es">E<sub>s</sub> (GPa)</Label>
-					<Input bind:value={secao.es} type="number" id="es" class="col-span-2 h-8" />
+					<Input bind:value={secao.es} type="number" id="es" class="h-8" />
 				</div>
-				<div class="grid grid-cols-3 items-center gap-4">
+				<div class="grid grid-cols-2 items-center gap-4">
 					<Label for="gamas">γ<sub>s</sub></Label>
-					<Input bind:value={secao.gamas} type="number" id="gamas" class="col-span-2 h-8" />
+					<Input bind:value={secao.gamas} type="number" id="gamas" class="h-8" />
 				</div>
 			</div>
 		</div>
