@@ -146,6 +146,24 @@ export function dimensionaSecao(secao: Secao): ResultadoDimensionamentoSecao {
 			});
 			const dominio = calculaDominio({ x, d, ecu, es, fyd, h });
 
+			if (dominio === '1') {
+				const flexotracao = FNC.PequenaExcentricidade.FlexoTracao.areaAco({
+					fyd,
+					msd: msdx,
+					nsd,
+					h,
+					dLinha
+				});
+
+				return {
+					as: flexotracao.as,
+					asLinha: flexotracao.asLinha,
+					x,
+					dominio,
+					valido: true
+				};
+			}
+
 			const precisaArmaduraDupla = x > xLim;
 			if (precisaArmaduraDupla) {
 				x = xLim;
@@ -222,7 +240,7 @@ export function dimensionaSecao(secao: Secao): ResultadoDimensionamentoSecao {
 }
 
 export function calculaDominio({ x, d, ecu, es, fyd, h }: DominioInput) {
-	const eyd = es / fyd;
+	const eyd = fyd / es;
 	const lim2 = ecu / (0.01 + eyd);
 	const lim3 = ecu / (ecu + eyd);
 	const lim3a = ecu > 0.0035 ? 0.35 : 0.45;
@@ -483,6 +501,23 @@ module FNC {
 					(1 +
 						Math.sqrt(1 - (msd - nsd * (h / 2 - dLinha)) / (0.5 * alfac * b * dLinha ** 2 * fcd)))
 				);
+			}
+		}
+
+		export module FlexoTracao {
+			interface AreaAcoInput {
+				fyd: number;
+				msd: number;
+				nsd: number;
+				h: number;
+				dLinha: number;
+			}
+
+			export function areaAco({ fyd, msd, nsd, h, dLinha }: AreaAcoInput) {
+				return {
+					asLinha: (1 / fyd) * (-msd / (h - 2 * dLinha) - nsd / 2),
+					as: (1 / fyd) * (msd / (h - 2 * dLinha) - nsd / 2)
+				};
 			}
 		}
 	}

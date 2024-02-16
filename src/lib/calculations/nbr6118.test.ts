@@ -239,4 +239,28 @@ describe('NBR6118', () => {
 		expect(result?.asLinha?.toFixed(1)).toBe('6.2');
 		expect(result?.as).toBe(undefined);
 	});
+
+	it('calcula FNC (Flexão Normal Composta) com tração, pequena excentricidade e armadura dupla', () => {
+		const result = dimensionaSecao({
+			geometria: {
+				type: 'rectangle',
+				width: 20,
+				height: 100
+			},
+			fck: 25,
+			dLinha: 10,
+			fy: 500,
+			es: 210,
+			mskx: 300,
+			msky: 0,
+			nsd: -1000,
+			gamac: 1.4,
+			gamas: 1.15,
+			gamaf: 1.4
+		});
+
+		expect(result?.x?.toFixed(1)).toBe('-6.2');
+		expect(result?.asLinha?.toFixed(1)).toBe('4.0');
+		expect(result?.as?.toFixed(1)).toBe('28.2');
+	});
 });
