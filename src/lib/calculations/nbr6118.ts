@@ -59,7 +59,7 @@ export function dimensionaSecao(secao: Secao): ResultadoDimensionamentoSecao {
 			const xLim = d * xLimRel;
 			const maxX = h / lambda;
 
-			// Calcular A's and As para FNC com pequena excentricidade
+			// Calcular A's and As em compressão e para FNC com pequena excentricidade
 			const fnc = FNC.PequenaExcentricidade.ArmaduraDupla.areaAco({
 				es,
 				dLinha,
@@ -132,8 +132,7 @@ export function dimensionaSecao(secao: Secao): ResultadoDimensionamentoSecao {
 				};
 			}
 
-			// Caso A's seja negativo, fazer cálculo para FNC com grande excentricidade
-
+			// Fazer cálculo para FNC com grande excentricidade
 			let x = FNC.GrandeExcentricidade.linhaNeutraRec({
 				b,
 				d,

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { dimensionaSecao, type Secao } from '$lib/calculations/nbr6118';
+	import InputArmadura from '$lib/components/InputArmadura.svelte';
 	import SectionDrawing from '$lib/components/SectionDrawing.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
@@ -7,6 +8,16 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { getSectionPoints, type SectionType } from '$lib/geometry/section';
 	import { PenTool, Square } from 'lucide-svelte';
+
+	interface Armaduras {
+		superior: Armadura;
+		inferior: Armadura;
+	}
+
+	interface Armadura {
+		quantidade?: number;
+		bitola?: number;
+	}
 
 	let secao: Secao = {
 		// Secao
@@ -29,6 +40,11 @@
 		gamaf: 1.4
 	};
 
+	let armaduras: Armaduras = {
+		superior: {},
+		inferior: {}
+	};
+
 	let tipoSecao: SectionType = 'rectangle';
 	$: resultados = dimensionaSecao(secao);
 
@@ -48,7 +64,7 @@
 </script>
 
 <div class="flex h-full">
-	<div class="min-w-80 overflow-y-scroll border-r p-4">
+	<div class="min-w-80 overflow-y-auto border-r p-4">
 		<div class="grid gap-5">
 			<div class="grid gap-2">
 				<h4 class="font-medium leading-none">Seção</h4>
@@ -60,16 +76,32 @@
 					</Tabs.List>
 
 					<Tabs.Content value="rectangle">
-						<div class="mt-4 grid gap-2">
-							<div class="grid grid-cols-2 items-center gap-4">
-								<Label for="width">Largura (cm)</Label>
-								<Input type="number" id="width" class="h-8" on:change={changeWidth} />
+						{#if secao.geometria.type === 'rectangle'}
+							{@const width = secao.geometria.width}
+							{@const height = secao.geometria.height}
+							<div class="mt-4 grid gap-2">
+								<div class="grid grid-cols-2 items-center gap-4">
+									<Label for="width">Largura (cm)</Label>
+									<Input
+										value={width}
+										type="number"
+										id="width"
+										class="h-8"
+										on:change={changeWidth}
+									/>
+								</div>
+								<div class="grid grid-cols-2 items-center gap-4">
+									<Label for="height">Altura (cm)</Label>
+									<Input
+										value={height}
+										type="number"
+										id="height"
+										class="h-8"
+										on:change={changeHeight}
+									/>
+								</div>
 							</div>
-							<div class="grid grid-cols-2 items-center gap-4">
-								<Label for="height">Altura (cm)</Label>
-								<Input type="number" id="height" class="h-8" on:change={changeHeight} />
-							</div>
-						</div>
+						{/if}
 					</Tabs.Content>
 					<Tabs.Content value="polygon"
 						><span class="text-red-600">Não implementado ainda</span></Tabs.Content
@@ -143,35 +175,55 @@
 	<SectionDrawing points={getSectionPoints(secao.geometria)}
 		>Desenho da seção transversal</SectionDrawing
 	>
-	<div class="min-w-80 border-l p-4">
-		<div class="grid gap-2">
-			<h4 class="mb-2 text-lg font-medium leading-none">Resultados</h4>
+	<div class="min-w-80 border-l">
+		<div class="flex flex-col gap-4">
+			<div class="flex flex-col gap-5 overflow-y-auto p-4">
+				<div>
+					<h3 class="mb-4 font-medium leading-none">Armadura inferior - A<sub>s</sub></h3>
+					<InputArmadura
+						bind:quantidade={armaduras.inferior.quantidade}
+						bind:bitola={armaduras.inferior.bitola}
+					/>
+				</div>
 
-			{#if resultados}
-				{#if !resultados.valido || isNaN(resultados.x)}
-					<span class="text-red-600"
-						>Aumente as dimensões da seção ou a resistência do concreto</span
-					>
-				{:else}
-					<div class="font-medium">Domínio {resultados.dominio}</div>
+				<Separator />
 
-					<Separator />
-					<div class="font-medium">ELU</div>
-					{#if resultados.as}
-						<div class="grid grid-cols-2 items-center gap-4">
-							<div class="font-medium">A<sub>s</sub></div>
-							<div>{isNaN(resultados.as) ? '0.0' : resultados.as.toFixed(2)} cm/2</div>
-						</div>
-					{/if}
+				<div>
+					<h3 class="mb-4 font-medium leading-none">Armadura superior - A'<sub>s</sub></h3>
+					<InputArmadura
+						bind:quantidade={armaduras.superior.quantidade}
+						bind:bitola={armaduras.superior.bitola}
+					/>
+				</div>
+			</div>
+			<div class="flex flex-col gap-2 border-t p-4">
+				<h3 class="mb-2 text-lg font-medium leading-none">Resultados</h3>
 
-					{#if resultados.asLinha}
-						<div class="grid grid-cols-2 items-center gap-4">
-							<div class="font-medium">A'<sub>s</sub></div>
-							<div>{isNaN(resultados.asLinha) ? '0.0' : resultados.asLinha.toFixed(2)} cm/2</div>
-						</div>
+				{#if resultados}
+					{#if !resultados.valido || isNaN(resultados.x)}
+						<span class="text-red-600"
+							>Aumente as dimensões da seção ou a resistência do concreto</span
+						>
+					{:else}
+						<div class="font-medium">Domínio {resultados.dominio}</div>
+
+						<div class="font-medium">ELU</div>
+						{#if resultados.as}
+							<div class="grid grid-cols-2 items-center gap-4">
+								<div class="font-medium">A<sub>s</sub></div>
+								<div>{isNaN(resultados.as) ? '0.0' : resultados.as.toFixed(2)} cm/2</div>
+							</div>
+						{/if}
+
+						{#if resultados.asLinha}
+							<div class="grid grid-cols-2 items-center gap-4">
+								<div class="font-medium">A'<sub>s</sub></div>
+								<div>{isNaN(resultados.asLinha) ? '0.0' : resultados.asLinha.toFixed(2)} cm/2</div>
+							</div>
+						{/if}
 					{/if}
 				{/if}
-			{/if}
+			</div>
 		</div>
 	</div>
 </div>
