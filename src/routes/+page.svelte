@@ -93,11 +93,11 @@
 				<!-- <div class="grid grid-cols-2 items-center gap-4">
 					<Label for="msky">M<sub>sk,y</sub> (KNm)</Label>
 					<Input bind:value={secao.msky} type="number" id="msky" class="h-8" />
-				</div>
+				</div> -->
 				<div class="grid grid-cols-2 items-center gap-4">
 					<Label for="nsd">N<sub>sd</sub> (KN)</Label>
 					<Input bind:value={secao.nsd} type="number" id="nsd" class="h-8" />
-				</div> -->
+				</div>
 				<div class="grid grid-cols-2 items-center gap-4">
 					<Label for="gamaf">γ<sub>f</sub></Label>
 					<Input bind:value={secao.gamaf} type="number" id="gamaf" class="h-8" />
@@ -148,7 +148,7 @@
 			<h4 class="mb-2 text-lg font-medium leading-none">Resultados</h4>
 
 			{#if resultados}
-				{#if isNaN(resultados.x)}
+				{#if !resultados.valido || isNaN(resultados.x)}
 					<span class="text-red-600"
 						>Aumente as dimensões da seção ou a resistência do concreto</span
 					>
@@ -157,10 +157,12 @@
 
 					<Separator />
 					<div class="font-medium">ELU</div>
-					<div class="grid grid-cols-2 items-center gap-4">
-						<div class="font-medium">A<sub>s</sub></div>
-						<div>{isNaN(resultados.as) ? '0.0' : resultados.as.toFixed(2)} cm/2</div>
-					</div>
+					{#if resultados.as}
+						<div class="grid grid-cols-2 items-center gap-4">
+							<div class="font-medium">A<sub>s</sub></div>
+							<div>{isNaN(resultados.as) ? '0.0' : resultados.as.toFixed(2)} cm/2</div>
+						</div>
+					{/if}
 
 					{#if resultados.asLinha}
 						<div class="grid grid-cols-2 items-center gap-4">
