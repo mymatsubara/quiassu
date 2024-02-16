@@ -43,7 +43,8 @@ interface DominioInput {
 export function dimensionaSecao(secao: Secao) {
 	const fcd = convertStress(secao.fck, 'MPa', 'KN/cm2') / secao.gamac;
 	const fyd = convertStress(secao.fy, 'MPa', 'KN/cm2') / secao.gamas;
-	const msdx = secao.gamaf * convertToque(secao.mskx, 'Nm', 'Ncm');
+	const msdx = secao.gamaf * convertToque(secao.mskx, 'KNm', 'KNcm');
+	const nsd = secao.gamaf * secao.nsd;
 	const { xLimRel, alfac, lambda, ecu } = parametrosDimensionamento(secao.fck);
 	const es = convertStress(secao.es, 'GPa', 'KN/cm2');
 
@@ -52,7 +53,37 @@ export function dimensionaSecao(secao: Secao) {
 			const d = secao.geometria.height - secao.dLinha;
 			const dLinha = secao.dLinha;
 			const b = secao.geometria.width;
+			const h = secao.geometria.height;
 			const xLim = d * xLimRel;
+
+			// Calcular A's and As para FNC com pequena excentricidade
+			const fnc = FNC.areaAcoPequenaExcentricidade({
+				es,
+				dLinha,
+				alfac,
+				b,
+				h,
+				lambda,
+				md: msdx,
+				nd: nsd,
+				fcd
+			});
+
+			if (fnc.as > 0 && fnc.asLinha > 0) {
+				const x = h / lambda;
+				const dominio = calculaDominio({ x, d, ecu, es, fyd });
+
+				return {
+					as: fnc.as,
+					asLinha: fnc.asLinha,
+					x,
+					dominio
+				};
+			}
+
+			// Caso A's seja negativo, fazer cálculo para FNC com grande excentricidade
+			// Caso A's seja positivo e As seja negativo, fazer calculo de FNC com pequena excentricidade e armadura simple
+			// Caso A's e As sejam positivos, o resultado foi encontrado (com x = h/lambda)
 
 			let x = linhaNeutraRec({
 				b,
@@ -86,7 +117,7 @@ export function dimensionaSecao(secao: Secao) {
 					asLinha
 				};
 			} else {
-				const as = ArmaduraSimple.areaAco({ msd: msdx, d, sigmasd: fyd, x, lambda });
+				const as = ArmaduraSimples.areaAco({ msd: msdx, d, sigmasd: fyd, x, lambda });
 				const dominio = calculaDominio({ x, d, ecu, es, fyd });
 
 				return {
@@ -157,7 +188,39 @@ export function parametrosDimensionamento(fck: number) {
 	}
 }
 
-module ArmaduraSimple {
+module FNC {
+	interface AreaAcoPequenaExcentricidade {
+		es: number;
+		md: number;
+		dLinha: number;
+		nd: number;
+		h: number;
+		b: number;
+		fcd: number;
+		alfac: number;
+	}
+
+	export function areaAcoPequenaExcentricidade({
+		es,
+		md,
+		dLinha,
+		nd,
+		h,
+		b,
+		alfac,
+		fcd
+	}: AreaAcoPequenaExcentricidade) {
+		const rcd = alfac * h * b * fcd;
+		const sigmaSd = es * 0.002;
+
+		return {
+			asLinha: (1 / sigmaSd) * (md / (h - 2 * dLinha) + (nd - rcd) / 2),
+			as: (1 / sigmaSd) * (-md / (h - 2 * dLinha) + (nd - rcd) / 2)
+		};
+	}
+}
+
+module ArmaduraSimples {
 	interface AreaAcoInput {
 		msd: number;
 		sigmasd: number;

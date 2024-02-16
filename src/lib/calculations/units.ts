@@ -6,10 +6,12 @@ const toPascal = {
 	'KN/cm2': 10_000_000
 } satisfies Record<StressUnit, number>;
 
-type TorqueUnit = 'Nm' | 'Ncm';
+type TorqueUnit = 'KNcm' | 'KNm' | 'Nm' | 'Ncm';
 const toNewtonMeter = {
 	Nm: 1,
-	Ncm: 0.01
+	Ncm: 0.01,
+	KNm: 1_000,
+	KNcm: 10
 };
 
 export function convertStress(value: number, from: StressUnit, to: StressUnit) {
