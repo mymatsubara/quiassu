@@ -128,6 +128,26 @@
 
 			<Separator />
 
+			<div>
+				<h3 class="mb-4 font-medium leading-none">Armadura inferior - A<sub>s</sub></h3>
+				<InputArmadura
+					bind:quantidade={armaduras.inferior.quantidade}
+					bind:bitola={armaduras.inferior.bitola}
+				/>
+			</div>
+
+			<Separator />
+
+			<div>
+				<h3 class="mb-4 font-medium leading-none">Armadura superior - A'<sub>s</sub></h3>
+				<InputArmadura
+					bind:quantidade={armaduras.superior.quantidade}
+					bind:bitola={armaduras.superior.bitola}
+				/>
+			</div>
+
+			<Separator />
+
 			<div class="grid gap-2">
 				<h4 class="font-medium leading-none">Concreto</h4>
 
@@ -165,55 +185,35 @@
 	<DrawingCanvas drawings={obtemDesenhoDaSecaoComArmaduras(secao, armaduras)}
 		>Desenho da seção transversal</DrawingCanvas
 	>
+
 	<div class="min-w-80 border-l">
-		<div class="flex flex-col gap-4">
-			<div class="flex flex-col gap-5 overflow-y-auto p-4">
-				<div>
-					<h3 class="mb-4 font-medium leading-none">Armadura inferior - A<sub>s</sub></h3>
-					<InputArmadura
-						bind:quantidade={armaduras.inferior.quantidade}
-						bind:bitola={armaduras.inferior.bitola}
-					/>
-				</div>
+		<div class="flex flex-col gap-2 border-t p-4">
+			<h3 class="mb-2 text-lg font-medium leading-none">Resultados</h3>
 
-				<Separator />
+			{#if resultados}
+				{#if !resultados.valido || isNaN(resultados.x)}
+					<span class="text-red-600"
+						>Aumente as dimensões da seção ou a resistência do concreto</span
+					>
+				{:else}
+					<div class="font-medium">Domínio {resultados.dominio}</div>
 
-				<div>
-					<h3 class="mb-4 font-medium leading-none">Armadura superior - A'<sub>s</sub></h3>
-					<InputArmadura
-						bind:quantidade={armaduras.superior.quantidade}
-						bind:bitola={armaduras.superior.bitola}
-					/>
-				</div>
-			</div>
-			<div class="flex flex-col gap-2 border-t p-4">
-				<h3 class="mb-2 text-lg font-medium leading-none">Resultados</h3>
+					<div class="font-medium">ELU</div>
+					{#if resultados.as}
+						<div class="grid grid-cols-2 items-center gap-4">
+							<div class="font-medium">A<sub>s</sub></div>
+							<div>{isNaN(resultados.as) ? '0.0' : resultados.as.toFixed(2)} cm/2</div>
+						</div>
+					{/if}
 
-				{#if resultados}
-					{#if !resultados.valido || isNaN(resultados.x)}
-						<span class="text-red-600"
-							>Aumente as dimensões da seção ou a resistência do concreto</span
-						>
-					{:else}
-						<div class="font-medium">Domínio {resultados.dominio}</div>
-
-						<div class="font-medium">ELU</div>
-						{#if resultados.as}
-							<div class="grid grid-cols-2 items-center gap-4">
-								<div class="font-medium">A<sub>s</sub></div>
-								<div>{isNaN(resultados.as) ? '0.0' : resultados.as.toFixed(2)} cm/2</div>
-							</div>
-						{/if}
-
-						{#if resultados.asLinha}
-							<div class="grid grid-cols-2 items-center gap-4">
-								<div class="font-medium">A'<sub>s</sub></div>
-								<div>{isNaN(resultados.asLinha) ? '0.0' : resultados.asLinha.toFixed(2)} cm/2</div>
-							</div>
-						{/if}
+					{#if resultados.asLinha}
+						<div class="grid grid-cols-2 items-center gap-4">
+							<div class="font-medium">A'<sub>s</sub></div>
+							<div>{isNaN(resultados.asLinha) ? '0.0' : resultados.asLinha.toFixed(2)} cm/2</div>
+						</div>
 					{/if}
 				{/if}
-			</div>
+			{/if}
 		</div>
 	</div>
 </div>
