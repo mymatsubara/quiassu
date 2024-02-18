@@ -27,9 +27,9 @@ describe('NBR6118', () => {
 	it('calcula FNS (Flexão Normal Simples) com armadura simples', () => {
 		const result = dimensionaSecao({
 			geometria: {
-				type: 'rectangle',
-				width: 14,
-				height: 40
+				tipo: 'retangulo',
+				largura: 14,
+				altura: 40
 			},
 			fck: 25,
 			dLinha: 4,
@@ -51,9 +51,9 @@ describe('NBR6118', () => {
 	it('calcula FNS (Flexão Normal Simples) com armadura dupla', () => {
 		const result = dimensionaSecao({
 			geometria: {
-				type: 'rectangle',
-				width: 14,
-				height: 40
+				tipo: 'retangulo',
+				largura: 14,
+				altura: 40
 			},
 			fck: 25,
 			dLinha: 4,
@@ -75,9 +75,9 @@ describe('NBR6118', () => {
 	it('calcula FNS (Flexão Normal Simples) com armadura simples e concreto de alta resistência', () => {
 		const result = dimensionaSecao({
 			geometria: {
-				type: 'rectangle',
-				width: 20,
-				height: 50
+				tipo: 'retangulo',
+				largura: 20,
+				altura: 50
 			},
 			fck: 70,
 			dLinha: 5,
@@ -99,9 +99,9 @@ describe('NBR6118', () => {
 	it('calcula FNS (Flexão Normal Simples) com armadura dupla e concreto de alta resistência', () => {
 		const result = dimensionaSecao({
 			geometria: {
-				type: 'rectangle',
-				width: 20,
-				height: 50
+				tipo: 'retangulo',
+				largura: 20,
+				altura: 50
 			},
 			fck: 70,
 			dLinha: 5,
@@ -123,9 +123,9 @@ describe('NBR6118', () => {
 	it('calcula FNC (Flexão Normal Composta) com pequena excentricidade e armadura dupla', () => {
 		const result = dimensionaSecao({
 			geometria: {
-				type: 'rectangle',
-				width: 25,
-				height: 70
+				tipo: 'retangulo',
+				largura: 25,
+				altura: 70
 			},
 			fck: 25,
 			dLinha: 5,
@@ -147,9 +147,9 @@ describe('NBR6118', () => {
 	it('calcula FNC (Flexão Normal Composta) com grande excentricidade e armadura simples', () => {
 		const result = dimensionaSecao({
 			geometria: {
-				type: 'rectangle',
-				width: 20,
-				height: 50
+				tipo: 'retangulo',
+				largura: 20,
+				altura: 50
 			},
 			fck: 25,
 			dLinha: 5,
@@ -171,9 +171,9 @@ describe('NBR6118', () => {
 	it('calcula FNC (Flexão Normal Composta) com tração, grande excentricidade e armadura simples', () => {
 		const result = dimensionaSecao({
 			geometria: {
-				type: 'rectangle',
-				width: 20,
-				height: 50
+				tipo: 'retangulo',
+				largura: 20,
+				altura: 50
 			},
 			fck: 25,
 			dLinha: 5,
@@ -195,9 +195,9 @@ describe('NBR6118', () => {
 	it('calcula FNC (Flexão Normal Composta) com grande excentricidade e armadura dupla', () => {
 		const result = dimensionaSecao({
 			geometria: {
-				type: 'rectangle',
-				width: 20,
-				height: 40
+				tipo: 'retangulo',
+				largura: 20,
+				altura: 40
 			},
 			fck: 15,
 			dLinha: 4,
@@ -219,9 +219,9 @@ describe('NBR6118', () => {
 	it('calcula FNC (Flexão Normal Composta) com pequena excentricidade e armadura simples', () => {
 		const result = dimensionaSecao({
 			geometria: {
-				type: 'rectangle',
-				width: 25,
-				height: 70
+				tipo: 'retangulo',
+				largura: 25,
+				altura: 70
 			},
 			fck: 25,
 			dLinha: 5,
@@ -243,9 +243,9 @@ describe('NBR6118', () => {
 	it('calcula FNC (Flexão Normal Composta) com tração, pequena excentricidade e armadura dupla', () => {
 		const result = dimensionaSecao({
 			geometria: {
-				type: 'rectangle',
-				width: 20,
-				height: 100
+				tipo: 'retangulo',
+				largura: 20,
+				altura: 100
 			},
 			fck: 25,
 			dLinha: 10,

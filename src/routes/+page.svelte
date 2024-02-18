@@ -1,27 +1,17 @@
 <script lang="ts">
-	import { dimensionaSecao, type Secao } from '$lib/calculations/nbr6118';
+	import { dimensionaSecao, type Armaduras, type Secao } from '$lib/calculations/nbr6118';
+	import DrawingCanvas from '$lib/components/DrawingCanvas.svelte';
 	import InputArmadura from '$lib/components/InputArmadura.svelte';
-	import SectionDrawing from '$lib/components/SectionDrawing.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
-	import { getSectionPoints, type SectionType } from '$lib/geometry/section';
+	import { obtemDesenhoDaSecaoComArmaduras, type TipoSecao } from '$lib/geometry/secao';
 	import { PenTool, Square } from 'lucide-svelte';
-
-	interface Armaduras {
-		superior: Armadura;
-		inferior: Armadura;
-	}
-
-	interface Armadura {
-		quantidade?: number;
-		bitola?: number;
-	}
 
 	let secao: Secao = {
 		// Secao
-		geometria: { type: 'rectangle', height: 0, width: 0 },
+		geometria: { tipo: 'retangulo', altura: 0, largura: 0 },
 		dLinha: 5,
 
 		// Concreto
@@ -45,20 +35,20 @@
 		inferior: {}
 	};
 
-	let tipoSecao: SectionType = 'rectangle';
+	let tipoSecao: TipoSecao = 'retangulo';
 	$: resultados = dimensionaSecao(secao);
 
 	function changeHeight(e: Event) {
 		const value = (e.target as HTMLInputElement).value;
-		if (secao.geometria.type === 'rectangle') {
-			secao.geometria.height = Number(value);
+		if (secao.geometria.tipo === 'retangulo') {
+			secao.geometria.altura = Number(value);
 		}
 	}
 
 	function changeWidth(e: Event) {
 		const value = (e.target as HTMLInputElement).value;
-		if (secao.geometria.type === 'rectangle') {
-			secao.geometria.width = Number(value);
+		if (secao.geometria.tipo === 'retangulo') {
+			secao.geometria.largura = Number(value);
 		}
 	}
 </script>
@@ -71,31 +61,31 @@
 
 				<Tabs.Root bind:value={tipoSecao}>
 					<Tabs.List class="grid grid-cols-2">
-						<Tabs.Trigger value="rectangle"><Square class="h-5 w-5" /></Tabs.Trigger>
-						<Tabs.Trigger value="polygon"><PenTool class="h-5 w-5" /></Tabs.Trigger>
+						<Tabs.Trigger value="retangulo"><Square class="h-5 w-5" /></Tabs.Trigger>
+						<Tabs.Trigger value="poligono"><PenTool class="h-5 w-5" /></Tabs.Trigger>
 					</Tabs.List>
 
-					<Tabs.Content value="rectangle">
-						{#if secao.geometria.type === 'rectangle'}
-							{@const width = secao.geometria.width}
-							{@const height = secao.geometria.height}
+					<Tabs.Content value="retangulo">
+						{#if secao.geometria.tipo === 'retangulo'}
+							{@const largura = secao.geometria.largura}
+							{@const altura = secao.geometria.altura}
 							<div class="mt-4 grid gap-2">
 								<div class="grid grid-cols-2 items-center gap-4">
-									<Label for="width">Largura (cm)</Label>
+									<Label for="largura">Largura (cm)</Label>
 									<Input
-										value={width}
+										value={largura}
 										type="number"
-										id="width"
+										id="largura"
 										class="h-8"
 										on:change={changeWidth}
 									/>
 								</div>
 								<div class="grid grid-cols-2 items-center gap-4">
-									<Label for="height">Altura (cm)</Label>
+									<Label for="altura">Altura (cm)</Label>
 									<Input
-										value={height}
+										value={altura}
 										type="number"
-										id="height"
+										id="altura"
 										class="h-8"
 										on:change={changeHeight}
 									/>
@@ -172,8 +162,8 @@
 		</div>
 	</div>
 
-	<SectionDrawing points={getSectionPoints(secao.geometria)}
-		>Desenho da seção transversal</SectionDrawing
+	<DrawingCanvas drawings={obtemDesenhoDaSecaoComArmaduras(secao, armaduras)}
+		>Desenho da seção transversal</DrawingCanvas
 	>
 	<div class="min-w-80 border-l">
 		<div class="flex flex-col gap-4">

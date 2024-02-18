@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import type { Vec2 } from '$lib/geometry/vec2';
+	import type { Drawing } from '$lib/geometry/drawing';
 	import { onDestroy, onMount } from 'svelte';
 
-	export let points: Vec2[];
+	export let drawings: Drawing[];
 
 	let ctx: CanvasRenderingContext2D;
 	let containerElement: HTMLDivElement;
@@ -15,34 +15,23 @@
 
 			ctx.fillStyle = '#fff';
 			ctx.clearRect(0, 0, width, height);
-			drawSection(ctx, points);
+			draw(ctx, drawings);
 		}
 	}
 
 	$: updateCanvasSize(ctx, containerElement);
 
-	function drawSection(ctx: CanvasRenderingContext2D, points: Vec2[]) {
-		if (points.length === 0) {
-			return;
+	function draw(ctx: CanvasRenderingContext2D, drawings: Drawing[]) {
+		centerPath(ctx, drawings);
+
+		for (let drawing of drawings) {
+			drawing.draw(ctx);
 		}
 
-		centerPath(ctx, points);
-
-		for (let i = 0; i < points.length; i++) {
-			const point = points[i];
-
-			if (i === 0) {
-				ctx.moveTo(point.x, point.y);
-			} else {
-				ctx.lineTo(point.x, point.y);
-			}
-		}
-
-		ctx.closePath();
 		ctx.stroke();
 	}
 
-	function centerPath(ctx: CanvasRenderingContext2D, points: Vec2[]) {
+	function centerPath(ctx: CanvasRenderingContext2D, drawings: Drawing[]) {
 		const width = ctx.canvas.width;
 		const height = ctx.canvas.height;
 
@@ -51,11 +40,12 @@
 		let maxY = 0;
 		let minY = 0;
 
-		for (let point of points) {
-			maxX = Math.max(maxX, point.x);
-			minX = Math.min(minX, point.x);
-			maxY = Math.max(maxY, point.y);
-			minY = Math.min(minY, point.y);
+		for (let drawing of drawings) {
+			const bounding = drawing.getBoundingBox();
+			maxX = Math.max(maxX, bounding.maxX);
+			minX = Math.min(minX, bounding.minX);
+			maxY = Math.max(maxY, bounding.maxY);
+			minY = Math.min(minY, bounding.minY);
 		}
 
 		const sectionWidth = maxX - minX;
@@ -98,7 +88,7 @@
 		if (containerElement && ctx) {
 			ctx.canvas.width = containerElement.clientWidth;
 			ctx.canvas.height = containerElement.clientHeight;
-			drawSection(ctx, points);
+			draw(ctx, drawings);
 		}
 	}
 

@@ -1,8 +1,8 @@
 import { convertStress, convertToque } from '$lib/calculations/units';
-import type { SectionGeometry } from '$lib/geometry/section';
+import type { GeometriaSecao } from '$lib/geometry/secao';
 
 export interface Secao {
-	geometria: SectionGeometry;
+	geometria: GeometriaSecao;
 
 	// Cobrimento
 	dLinha: number;
@@ -21,6 +21,16 @@ export interface Secao {
 	msky: number;
 	nsd: number;
 	gamaf: number;
+}
+
+export interface Armaduras {
+	superior: Armadura;
+	inferior: Armadura;
+}
+
+export interface Armadura {
+	quantidade?: number;
+	bitola?: number;
 }
 
 interface DominioInput {
@@ -50,12 +60,12 @@ export function dimensionaSecao(secao: Secao): ResultadoDimensionamentoSecao {
 	const { xLimRel, alfac, lambda, ecu } = parametrosDimensionamento(secao.fck);
 	const es = convertStress(secao.es, 'GPa', 'KN/cm2');
 
-	switch (secao.geometria.type) {
-		case 'rectangle':
-			const d = secao.geometria.height - secao.dLinha;
+	switch (secao.geometria.tipo) {
+		case 'retangulo':
+			const d = secao.geometria.altura - secao.dLinha;
 			const dLinha = secao.dLinha;
-			const b = secao.geometria.width;
-			const h = secao.geometria.height;
+			const b = secao.geometria.largura;
+			const h = secao.geometria.altura;
 			const xLim = d * xLimRel;
 			const maxX = h / lambda;
 
@@ -229,7 +239,7 @@ export function dimensionaSecao(secao: Secao): ResultadoDimensionamentoSecao {
 			}
 
 		default:
-			alert(`Seção do tipo "${secao.geometria.type}" não implementada`);
+			alert(`Seção do tipo "${secao.geometria.tipo}" não implementada`);
 			return {
 				dominio: '1',
 				x: 0,
