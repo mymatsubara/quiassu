@@ -1,4 +1,5 @@
-import type { Armaduras, Secao } from '$lib/calculations/nbr6118';
+import type { Armaduras } from '$lib/calculations/armadura';
+import type { Secao } from '$lib/calculations/nbr6118';
 import { Circle, Polygon, Rectangle, type Drawing } from '$lib/geometry/drawing';
 import { Vec2 } from '$lib/geometry/vec2';
 
@@ -29,7 +30,7 @@ function obtemDesenhoDasArmaduras(secao: Secao, armaduras: Armaduras): Circle[] 
 	const larguraUtil = secao.geometria.largura - 2 * secao.dLinha;
 
 	if (armaduras.inferior.bitola && armaduras.inferior.quantidade) {
-		const raio = armaduras.inferior.bitola / 10; // Converte raio para cm
+		const raio = armaduras.inferior.bitola / (2 * 10); // Converte raio para cm
 
 		if (armaduras.inferior.quantidade === 1) {
 			const x = secao.geometria.largura / 2;
@@ -45,7 +46,7 @@ function obtemDesenhoDasArmaduras(secao: Secao, armaduras: Armaduras): Circle[] 
 	}
 
 	if (armaduras.superior.bitola && armaduras.superior.quantidade) {
-		const raio = armaduras.superior.bitola / 10; // Converte raio para cm
+		const raio = armaduras.superior.bitola / (2 * 10); // Converte raio para cm
 
 		if (armaduras.superior.quantidade === 1) {
 			const x = secao.geometria.largura / 2;

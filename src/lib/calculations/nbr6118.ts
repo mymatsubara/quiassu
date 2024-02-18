@@ -23,16 +23,6 @@ export interface Secao {
 	gamaf: number;
 }
 
-export interface Armaduras {
-	superior: Armadura;
-	inferior: Armadura;
-}
-
-export interface Armadura {
-	quantidade?: number;
-	bitola?: number;
-}
-
 interface DominioInput {
 	x: number;
 	d: number;

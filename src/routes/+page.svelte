@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { dimensionaSecao, type Armaduras, type Secao } from '$lib/calculations/nbr6118';
+	import { areaAcoArmadura, type Armaduras } from '$lib/calculations/armadura';
+	import { dimensionaSecao, type Secao } from '$lib/calculations/nbr6118';
 	import DrawingCanvas from '$lib/components/DrawingCanvas.svelte';
 	import InputArmadura from '$lib/components/InputArmadura.svelte';
 	import { Input } from '$lib/components/ui/input';
@@ -196,20 +197,47 @@
 						>Aumente as dimensões da seção ou a resistência do concreto</span
 					>
 				{:else}
+					{@const asAdotado = areaAcoArmadura(armaduras.inferior)}
+					{@const asLinhaAdotado = areaAcoArmadura(armaduras.superior)}
+
 					<div class="font-medium">Domínio {resultados.dominio}</div>
 
-					<div class="font-medium">ELU</div>
-					{#if resultados.as}
+					<Separator />
+					<h4 class="font-medium leading-none">Armadura - ELU</h4>
+
+					{#if resultados.as !== undefined}
 						<div class="grid grid-cols-2 items-center gap-4">
-							<div class="font-medium">A<sub>s</sub></div>
+							<div class="font-medium">A<sub>s<sub>min</sub></sub></div>
 							<div>{isNaN(resultados.as) ? '0.0' : resultados.as.toFixed(2)} cm/2</div>
+						</div>
+					{/if}
+
+					{#if asAdotado || resultados.as}
+						<div
+							class="grid grid-cols-2 items-center gap-4 {asAdotado < (resultados.as ?? 0)
+								? 'text-red-500'
+								: 'text-green-700'}"
+						>
+							<div class="font-medium">A<sub>s<sub>adotado</sub></sub></div>
+							<div>{asAdotado.toFixed(2)} cm/2</div>
 						</div>
 					{/if}
 
 					{#if resultados.asLinha}
 						<div class="grid grid-cols-2 items-center gap-4">
-							<div class="font-medium">A'<sub>s</sub></div>
+							<div class="font-medium">A'<sub>s<sub>min</sub></sub></div>
 							<div>{isNaN(resultados.asLinha) ? '0.0' : resultados.asLinha.toFixed(2)} cm/2</div>
+						</div>
+					{/if}
+
+					{#if asLinhaAdotado || resultados.asLinha}
+						<div
+							class="grid grid-cols-2 items-center gap-4 {asLinhaAdotado < (resultados.asLinha ?? 0)
+								? 'text-red-500'
+								: 'text-green-700'}"
+						>
+							<div class="font-medium">A'<sub>s<sub>adotado</sub></sub></div>
+							<div>{asLinhaAdotado.toFixed(2)} cm/2</div>
 						</div>
 					{/if}
 				{/if}

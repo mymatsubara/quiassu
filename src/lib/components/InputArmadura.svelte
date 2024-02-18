@@ -16,7 +16,14 @@
 </script>
 
 <div class="flex items-baseline gap-2">
-	<Input bind:value={quantidade} placeholder="Quantidade" type="number" step="1" class="h-8" />
+	<Input
+		bind:value={quantidade}
+		placeholder="Quantidade"
+		type="number"
+		step="1"
+		min="0"
+		class="h-8"
+	/>
 	<div>x</div>
 	<Select.Root
 		onSelectedChange={(e) => {
