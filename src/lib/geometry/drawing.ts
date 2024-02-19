@@ -40,6 +40,30 @@ export class Rectangle implements Drawing {
 	}
 }
 
+export class RoundedRectangle implements Drawing {
+	constructor(
+		public width: number,
+		public height: number,
+		public x: number = 0,
+		public y: number = 0,
+		public borderRadius: number = 5,
+		public fill = false
+	) {}
+
+	draw(ctx: CanvasRenderingContext2D) {
+		ctx.roundRect(this.x, this.y, this.width, this.height, this.borderRadius);
+	}
+
+	getBoundingBox(): BoundingBox {
+		return {
+			minX: this.x,
+			minY: this.y,
+			maxX: this.x + this.width,
+			maxY: this.y + this.height
+		};
+	}
+}
+
 export class Circle implements Drawing {
 	constructor(
 		public radius: number,

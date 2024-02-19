@@ -1,6 +1,7 @@
 import {
 	areaAcoArmadura,
 	areaBitola,
+	calculaDLinha,
 	type Armadura,
 	type Armaduras
 } from '$lib/calculations/armadura';
@@ -9,16 +10,17 @@ import { convertStress, convertToque } from '$lib/calculations/units';
 
 export function calcularELSW(secao: Secao, armaduras: Armaduras) {
 	const armadura = armaduras.inferior;
-	if (!armadura.bitola || !armadura.quantidade || secao.geometria.tipo !== 'retangulo') {
+	if (!armadura?.bitola || !armadura?.quantidade || secao.geometria.tipo !== 'retangulo') {
 		return;
 	}
 
+	const dLinha = calculaDLinha(secao, armaduras);
 	const alfa = 1.5; // seção retangular
 	const eta1 = 2.25; // constante para barra nervuradas
 	const as = areaAcoArmadura(armadura);
 	const b = secao.geometria.largura;
 	const h = secao.geometria.altura;
-	const d = secao.geometria.altura - secao.dLinha;
+	const d = secao.geometria.altura - dLinha;
 	const Es = convertStress(secao.es, 'GPa', 'KN/cm2');
 	const Ecs = convertStress(0.85 * 5600 * Math.sqrt(secao.fck), 'MPa', 'KN/cm2');
 	const fctm = convertStress(0.3 * secao.fck ** (2 / 3), 'MPa', 'KN/cm2');
@@ -37,7 +39,7 @@ export function calcularELSW(secao: Secao, armaduras: Armaduras) {
 
 	// Para apenas barra da armadura
 	const coef = ((fi1 * sigmas) / (12.5 * eta1 * Es)) * 10; // converte para mm
-	const ro = relacaoAcoConcretoTirante(secao, armadura);
+	const ro = relacaoAcoConcretoTirante(secao, armadura, dLinha);
 
 	const wk1 = coef * ((3 * sigmas) / fctm);
 	const wk2 = coef * (4 / ro + 45);
@@ -71,7 +73,7 @@ interface MomentoFletorFissuracaoInput {
 	yt: number;
 }
 
-function relacaoAcoConcretoTirante(secao: Secao, armadura: Armadura) {
+function relacaoAcoConcretoTirante(secao: Secao, armadura: Armadura, dLinha: number) {
 	if (secao.geometria.tipo !== 'retangulo') {
 		throw new Error('Relação aço concreto não implementada para seção não retangular');
 	}
@@ -80,7 +82,6 @@ function relacaoAcoConcretoTirante(secao: Secao, armadura: Armadura) {
 		return 0;
 	}
 
-	const dLinha = secao.dLinha;
 	const fi = armadura.bitola / 10; // converte para cm
 	const larguraUtil = secao.geometria.largura - 2 * dLinha;
 	const h = secao.geometria.altura;

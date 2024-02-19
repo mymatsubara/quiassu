@@ -11,8 +11,8 @@ describe('NBR6118 - ELS', () => {
 				largura: 20,
 				altura: 50
 			},
+			cobrimento: 4.2,
 			fck: 20,
-			dLinha: 5,
 			fy: 500,
 			es: 210,
 			mskx: 62.5,
@@ -27,14 +27,13 @@ describe('NBR6118 - ELS', () => {
 			inferior: {
 				bitola: 16,
 				quantidade: 5
-			},
-			superior: {}
+			}
 		};
 
 		const elsw = calcularELSW(secao, armaduras);
 
-		expect(elsw.wk1.toFixed(3)).toBe('0.091');
-		expect(elsw.wk2.toFixed(3)).toBe('0.110');
-		expect(elsw.wk.toFixed(3)).toBe('0.091');
+		expect(elsw?.wk1.toFixed(3)).toBe('0.091');
+		expect(elsw?.wk2.toFixed(3)).toBe('0.110');
+		expect(elsw?.wk.toFixed(3)).toBe('0.091');
 	});
 });

@@ -5,7 +5,7 @@ export interface Secao {
 	geometria: GeometriaSecao;
 
 	// Cobrimento
-	dLinha: number;
+	cobrimento: number;
 
 	// Concreto
 	fck: number;
@@ -42,7 +42,7 @@ interface ResultadoDimensionamentoSecao {
 	valido: boolean;
 }
 
-export function dimensionaSecao(secao: Secao): ResultadoDimensionamentoSecao {
+export function dimensionaSecao(secao: Secao, dLinha: number): ResultadoDimensionamentoSecao {
 	const fcd = convertStress(secao.fck, 'MPa', 'KN/cm2') / secao.gamac;
 	const fyd = convertStress(secao.fy, 'MPa', 'KN/cm2') / secao.gamas;
 	const msdx = secao.gamaf * convertToque(secao.mskx, 'KNm', 'KNcm');
@@ -52,8 +52,7 @@ export function dimensionaSecao(secao: Secao): ResultadoDimensionamentoSecao {
 
 	switch (secao.geometria.tipo) {
 		case 'retangulo':
-			const d = secao.geometria.altura - secao.dLinha;
-			const dLinha = secao.dLinha;
+			const d = secao.geometria.altura - dLinha;
 			const b = secao.geometria.largura;
 			const h = secao.geometria.altura;
 			const xLim = d * xLimRel;

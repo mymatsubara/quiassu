@@ -12,7 +12,7 @@
 	let secao: Secao = {
 		// Secao
 		geometria: { tipo: 'retangulo', altura: 0, largura: 0 },
-		dLinha: 5,
+		cobrimento: 4,
 
 		// Concreto
 		fck: 20,
@@ -31,8 +31,17 @@
 	};
 
 	let armaduras: Armaduras = {
-		superior: {},
-		inferior: {}
+		superior: {
+			quantidade: undefined as any,
+			bitola: undefined as any
+		},
+		inferior: {
+			quantidade: undefined as any,
+			bitola: undefined as any
+		},
+		estribo: {
+			bitola: 5
+		}
 	};
 </script>
 

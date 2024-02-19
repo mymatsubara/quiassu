@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { areaAcoArmadura, type Armaduras } from '$lib/calculations/armadura';
+	import { areaAcoArmadura, calculaDLinha, type Armaduras } from '$lib/calculations/armadura';
 	import { calcularELSW } from '$lib/calculations/nbr6118-els';
 	import { calcularAreaAcoMin, dimensionaSecao, type Secao } from '$lib/calculations/nbr6118-elu';
 	import { Separator } from '$lib/components/ui/select';
@@ -7,25 +7,26 @@
 	export let secao: Secao;
 	export let armaduras: Armaduras;
 
-	$: resultados = dimensionaSecao(secao);
+	$: dLinha = Number(calculaDLinha(secao, armaduras));
+	$: resultados = dimensionaSecao(secao, dLinha);
 </script>
 
 {#if resultados}
 	{#if !resultados.valido || isNaN(resultados.x)}
 		<span class="text-red-600">Aumente as dimensões da seção ou a resistência do concreto</span>
-	{:else if secao.geometria.tipo === 'retangulo' && secao.geometria.altura === 2 * secao.dLinha}
-		<span class="text-red-600"
-			>As armaduras inferiores e superiores podem coincidir. Ajuste o valor de d' ou a altura da
-			seção.</span
-		>
+	{:else if secao.geometria.tipo === 'retangulo' && secao.geometria.altura <= 2 * secao.cobrimento}
+		<span class="text-red-600">O cobrimento excede os limites. Tente reduzir ele.</span>
 	{:else}
-		{@const asAdotado = areaAcoArmadura(armaduras.inferior)}
-		{@const asLinhaAdotado = areaAcoArmadura(armaduras.superior)}
+		{@const asAdotado = armaduras.inferior ? areaAcoArmadura(armaduras.inferior) : 0}
+		{@const asLinhaAdotado = armaduras.superior ? areaAcoArmadura(armaduras.superior) : 0}
 		{@const elsw = calcularELSW(secao, armaduras)}
 		{@const asMin = calcularAreaAcoMin(secao)}
 
 		<div class="flex flex-col gap-4">
-			<div class="font-medium">Domínio {resultados.dominio}</div>
+			<div class="font-medium">
+				Domínio {resultados.dominio}
+				<span class="ml-1 text-sm font-normal">(x = {resultados.x.toFixed(2)} cm)</span>
+			</div>
 
 			<Separator />
 
@@ -33,10 +34,14 @@
 				<h4 class="mb-2 font-medium leading-none">Armadura inferior</h4>
 
 				<div class="grid grid-cols-2 items-center gap-4 font-medium">
+					<div class="text-sm">d'</div>
+					<div>{dLinha?.toFixed(2)} cm</div>
+				</div>
+				<div class="grid grid-cols-2 items-center gap-4 font-medium">
 					<div class="text-sm">
 						A<sub>s<sub>mín</sub></sub>
 					</div>
-					<div>{asMin} cm<sup>2</sup></div>
+					<div>{asMin.toFixed(2)} cm<sup>2</sup></div>
 				</div>
 
 				<div class="grid grid-cols-2 items-center gap-4 font-medium">
@@ -50,16 +55,10 @@
 					class="grid grid-cols-2 items-center gap-4 {asAdotado < (resultados.as ?? 0) ||
 					asAdotado < asMin
 						? 'text-red-500'
-						: 'text-green-700'} font-medium"
+						: 'text-green-600'} font-medium"
 				>
 					<div class="text-sm">A<sub>s<sub>adotado</sub></sub></div>
 					<div>{asAdotado.toFixed(2)} cm<sup>2</sup></div>
-				</div>
-				<div class="grid grid-cols-2 items-center gap-4 font-medium">
-					<div class="text-sm">Cobrimento</div>
-					<div>
-						{(secao.dLinha - (armaduras.inferior?.bitola ?? 0) / 10).toFixed(2)} cm
-					</div>
 				</div>
 			</div>
 
@@ -78,16 +77,10 @@
 				<div
 					class="grid grid-cols-2 items-center gap-4 {asLinhaAdotado < (resultados.asLinha ?? 0)
 						? 'text-red-500'
-						: 'text-green-700'} font-medium"
+						: 'text-green-600'} font-medium"
 				>
 					<div>A'<sub>s<sub>adotado</sub></sub></div>
 					<div>{asLinhaAdotado.toFixed(2)} cm<sup>2</sup></div>
-				</div>
-				<div class="grid grid-cols-2 items-center gap-4 font-medium">
-					<div class="text-sm">Cobrimento</div>
-					<div>
-						{(secao.dLinha - (armaduras.superior?.bitola ?? 0) / 10).toFixed(2)} cm
-					</div>
 				</div>
 			</div>
 

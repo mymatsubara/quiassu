@@ -25,23 +25,27 @@ describe('NBR6118 - ELU', () => {
 	});
 
 	it('calcula FNS (Flexão Normal Simples) com armadura simples', () => {
-		const result = dimensionaSecao({
-			geometria: {
-				tipo: 'retangulo',
-				largura: 14,
-				altura: 40
+		const dLinha = 4;
+		const result = dimensionaSecao(
+			{
+				geometria: {
+					tipo: 'retangulo',
+					largura: 14,
+					altura: 40
+				},
+				fck: 25,
+				cobrimento: 4,
+				fy: 500,
+				es: 210,
+				mskx: 28.57,
+				msky: 0,
+				nsd: 0,
+				gamac: 1.4,
+				gamas: 1.15,
+				gamaf: 1.4
 			},
-			fck: 25,
-			dLinha: 4,
-			fy: 500,
-			es: 210,
-			mskx: 28.57,
-			msky: 0,
-			nsd: 0,
-			gamac: 1.4,
-			gamas: 1.15,
-			gamaf: 1.4
-		});
+			dLinha
+		);
 
 		expect(result?.x?.toFixed(2)).toBe('7.09');
 		expect(result?.as?.toFixed(2)).toBe('2.77');
@@ -49,23 +53,27 @@ describe('NBR6118 - ELU', () => {
 	});
 
 	it('calcula FNS (Flexão Normal Simples) com armadura dupla', () => {
-		const result = dimensionaSecao({
-			geometria: {
-				tipo: 'retangulo',
-				largura: 14,
-				altura: 40
+		const dLinha = 4;
+		const result = dimensionaSecao(
+			{
+				geometria: {
+					tipo: 'retangulo',
+					largura: 14,
+					altura: 40
+				},
+				fck: 25,
+				cobrimento: 4,
+				fy: 500,
+				es: 210,
+				mskx: 83.57,
+				msky: 0,
+				nsd: 0,
+				gamac: 1.4,
+				gamas: 1.15,
+				gamaf: 1.4
 			},
-			fck: 25,
-			dLinha: 4,
-			fy: 500,
-			es: 210,
-			mskx: 83.57,
-			msky: 0,
-			nsd: 0,
-			gamac: 1.4,
-			gamas: 1.15,
-			gamaf: 1.4
-		});
+			dLinha
+		);
 
 		expect(result?.x?.toFixed(2)).toBe('16.20');
 		expect(result?.as?.toFixed(2)).toBe('8.90');
@@ -73,23 +81,27 @@ describe('NBR6118 - ELU', () => {
 	});
 
 	it('calcula FNS (Flexão Normal Simples) com armadura simples e concreto de alta resistência', () => {
-		const result = dimensionaSecao({
-			geometria: {
-				tipo: 'retangulo',
-				largura: 20,
-				altura: 50
+		const dLinha = 5;
+		const result = dimensionaSecao(
+			{
+				geometria: {
+					tipo: 'retangulo',
+					largura: 20,
+					altura: 50
+				},
+				fck: 70,
+				cobrimento: 4,
+				fy: 500,
+				es: 210,
+				mskx: 200,
+				msky: 0,
+				nsd: 0,
+				gamac: 1.4,
+				gamas: 1.15,
+				gamaf: 1.4
 			},
-			fck: 70,
-			dLinha: 5,
-			fy: 500,
-			es: 210,
-			mskx: 200,
-			msky: 0,
-			nsd: 0,
-			gamac: 1.4,
-			gamas: 1.15,
-			gamaf: 1.4
-		});
+			dLinha
+		);
 
 		expect(result?.x?.toFixed(2)).toBe('12.06');
 		expect(result?.as?.toFixed(1)).toBe('15.9');
@@ -97,23 +109,27 @@ describe('NBR6118 - ELU', () => {
 	});
 
 	it('calcula FNS (Flexão Normal Simples) com armadura dupla e concreto de alta resistência', () => {
-		const result = dimensionaSecao({
-			geometria: {
-				tipo: 'retangulo',
-				largura: 20,
-				altura: 50
+		const dLinha = 5;
+		const result = dimensionaSecao(
+			{
+				geometria: {
+					tipo: 'retangulo',
+					largura: 20,
+					altura: 50
+				},
+				fck: 70,
+				cobrimento: 4,
+				fy: 500,
+				es: 210,
+				mskx: 300,
+				msky: 0,
+				nsd: 0,
+				gamac: 1.4,
+				gamas: 1.15,
+				gamaf: 1.4
 			},
-			fck: 70,
-			dLinha: 5,
-			fy: 500,
-			es: 210,
-			mskx: 300,
-			msky: 0,
-			nsd: 0,
-			gamac: 1.4,
-			gamas: 1.15,
-			gamaf: 1.4
-		});
+			dLinha
+		);
 
 		expect(result?.x?.toFixed(2)).toBe('15.75');
 		expect(result?.as?.toFixed(2)).toBe('24.62');
@@ -121,23 +137,27 @@ describe('NBR6118 - ELU', () => {
 	});
 
 	it('calcula FNC (Flexão Normal Composta) com pequena excentricidade e armadura dupla', () => {
-		const result = dimensionaSecao({
-			geometria: {
-				tipo: 'retangulo',
-				largura: 25,
-				altura: 70
+		const dLinha = 5;
+		const result = dimensionaSecao(
+			{
+				geometria: {
+					tipo: 'retangulo',
+					largura: 25,
+					altura: 70
+				},
+				fck: 25,
+				cobrimento: 4,
+				fy: 500,
+				es: 210,
+				mskx: 200,
+				msky: 0,
+				nsd: 3000,
+				gamac: 1.4,
+				gamas: 1.15,
+				gamaf: 1.4
 			},
-			fck: 25,
-			dLinha: 5,
-			fy: 500,
-			es: 210,
-			mskx: 200,
-			msky: 0,
-			nsd: 3000,
-			gamac: 1.4,
-			gamas: 1.15,
-			gamaf: 1.4
-		});
+			dLinha
+		);
 
 		expect(result?.x?.toFixed(1)).toBe('87.5');
 		expect(result?.as?.toFixed(1)).toBe('7.3');
@@ -145,23 +165,27 @@ describe('NBR6118 - ELU', () => {
 	});
 
 	it('calcula FNC (Flexão Normal Composta) com grande excentricidade e armadura simples', () => {
-		const result = dimensionaSecao({
-			geometria: {
-				tipo: 'retangulo',
-				largura: 20,
-				altura: 50
+		const dLinha = 5;
+		const result = dimensionaSecao(
+			{
+				geometria: {
+					tipo: 'retangulo',
+					largura: 20,
+					altura: 50
+				},
+				fck: 25,
+				cobrimento: 5,
+				fy: 500,
+				es: 210,
+				mskx: 111,
+				msky: 0,
+				nsd: 93,
+				gamac: 1.4,
+				gamas: 1.15,
+				gamaf: 1.4
 			},
-			fck: 25,
-			dLinha: 5,
-			fy: 500,
-			es: 210,
-			mskx: 111,
-			msky: 0,
-			nsd: 93,
-			gamac: 1.4,
-			gamas: 1.15,
-			gamaf: 1.4
-		});
+			dLinha
+		);
 
 		expect(result?.x?.toFixed(1)).toBe('20.2');
 		expect(result?.as?.toFixed(2)).toBe('8.31');
@@ -169,23 +193,27 @@ describe('NBR6118 - ELU', () => {
 	});
 
 	it('calcula FNC (Flexão Normal Composta) com tração, grande excentricidade e armadura simples', () => {
-		const result = dimensionaSecao({
-			geometria: {
-				tipo: 'retangulo',
-				largura: 20,
-				altura: 50
+		const dLinha = 5;
+		const result = dimensionaSecao(
+			{
+				geometria: {
+					tipo: 'retangulo',
+					largura: 20,
+					altura: 50
+				},
+				fck: 25,
+				cobrimento: 4,
+				fy: 500,
+				es: 210,
+				mskx: 111.7,
+				msky: 0,
+				nsd: -93,
+				gamac: 1.4,
+				gamas: 1.15,
+				gamaf: 1.4
 			},
-			fck: 25,
-			dLinha: 5,
-			fy: 500,
-			es: 210,
-			mskx: 111.7,
-			msky: 0,
-			nsd: -93,
-			gamac: 1.4,
-			gamas: 1.15,
-			gamaf: 1.4
-		});
+			dLinha
+		);
 
 		expect(result?.x?.toFixed(1)).toBe('13.6');
 		expect(result?.as?.toFixed(2)).toBe('10.57');
@@ -193,23 +221,27 @@ describe('NBR6118 - ELU', () => {
 	});
 
 	it('calcula FNC (Flexão Normal Composta) com grande excentricidade e armadura dupla', () => {
-		const result = dimensionaSecao({
-			geometria: {
-				tipo: 'retangulo',
-				largura: 20,
-				altura: 40
+		const dLinha = 4;
+		const result = dimensionaSecao(
+			{
+				geometria: {
+					tipo: 'retangulo',
+					largura: 20,
+					altura: 40
+				},
+				fck: 15,
+				cobrimento: 4,
+				fy: 500,
+				es: 210,
+				mskx: 100,
+				msky: 0,
+				nsd: 100,
+				gamac: 1.4,
+				gamas: 1.15,
+				gamaf: 1
 			},
-			fck: 15,
-			dLinha: 4,
-			fy: 500,
-			es: 210,
-			mskx: 100,
-			msky: 0,
-			nsd: 100,
-			gamac: 1.4,
-			gamas: 1.15,
-			gamaf: 1
-		});
+			dLinha
+		);
 
 		expect(result?.x?.toFixed(1)).toBe('16.2');
 		expect(result?.as?.toFixed(2)).toBe('6.46');
@@ -217,23 +249,27 @@ describe('NBR6118 - ELU', () => {
 	});
 
 	it('calcula FNC (Flexão Normal Composta) com pequena excentricidade e armadura simples', () => {
-		const result = dimensionaSecao({
-			geometria: {
-				tipo: 'retangulo',
-				largura: 25,
-				altura: 70
+		const dLinha = 5;
+		const result = dimensionaSecao(
+			{
+				geometria: {
+					tipo: 'retangulo',
+					largura: 25,
+					altura: 70
+				},
+				fck: 25,
+				cobrimento: 4,
+				fy: 500,
+				es: 210,
+				mskx: 200,
+				msky: 0,
+				nsd: 1500,
+				gamac: 1.4,
+				gamas: 1.15,
+				gamaf: 1.4
 			},
-			fck: 25,
-			dLinha: 5,
-			fy: 500,
-			es: 210,
-			mskx: 200,
-			msky: 0,
-			nsd: 1500,
-			gamac: 1.4,
-			gamas: 1.15,
-			gamaf: 1.4
-		});
+			dLinha
+		);
 
 		expect(result?.x?.toFixed(1)).toBe('60.3');
 		expect(result?.asLinha?.toFixed(1)).toBe('6.2');
@@ -241,23 +277,27 @@ describe('NBR6118 - ELU', () => {
 	});
 
 	it('calcula FNC (Flexão Normal Composta) com tração, pequena excentricidade e armadura dupla', () => {
-		const result = dimensionaSecao({
-			geometria: {
-				tipo: 'retangulo',
-				largura: 20,
-				altura: 100
+		const dLinha = 10;
+		const result = dimensionaSecao(
+			{
+				geometria: {
+					tipo: 'retangulo',
+					largura: 20,
+					altura: 100
+				},
+				fck: 25,
+				cobrimento: 4,
+				fy: 500,
+				es: 210,
+				mskx: 300,
+				msky: 0,
+				nsd: -1000,
+				gamac: 1.4,
+				gamas: 1.15,
+				gamaf: 1.4
 			},
-			fck: 25,
-			dLinha: 10,
-			fy: 500,
-			es: 210,
-			mskx: 300,
-			msky: 0,
-			nsd: -1000,
-			gamac: 1.4,
-			gamas: 1.15,
-			gamaf: 1.4
-		});
+			dLinha
+		);
 
 		expect(result?.x?.toFixed(1)).toBe('-6.2');
 		expect(result?.asLinha?.toFixed(1)).toBe('4.0');
