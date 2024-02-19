@@ -10,6 +10,7 @@ interface BoundingBox {
 export interface Drawing {
 	draw: (ctx: CanvasRenderingContext2D) => void;
 	getBoundingBox: () => BoundingBox;
+	fill: boolean;
 }
 
 export class Rectangle implements Drawing {
@@ -17,11 +18,16 @@ export class Rectangle implements Drawing {
 		public width: number,
 		public height: number,
 		public x: number = 0,
-		public y: number = 0
+		public y: number = 0,
+		public fill = false
 	) {}
 
 	draw(ctx: CanvasRenderingContext2D) {
-		ctx.strokeRect(this.x, this.y, this.width, this.height);
+		if (this.fill) {
+			ctx.fillRect(this.x, this.y, this.width, this.height);
+		} else {
+			ctx.strokeRect(this.x, this.y, this.width, this.height);
+		}
 	}
 
 	getBoundingBox(): BoundingBox {
@@ -58,7 +64,7 @@ export class Circle implements Drawing {
 }
 
 export class Polygon implements Drawing {
-	constructor(public points: Vec2[]) {}
+	constructor(public points: Vec2[], public fill = false) {}
 
 	draw(ctx: CanvasRenderingContext2D) {
 		if (this.points.length === 0) {

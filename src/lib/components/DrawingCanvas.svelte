@@ -24,10 +24,16 @@
 	function draw(ctx: CanvasRenderingContext2D, drawings: Drawing[]) {
 		centerPath(ctx, drawings);
 
-		for (let drawing of drawings) {
+		const fillDrawings = drawings.filter((drawing) => drawing.fill);
+		for (let drawing of fillDrawings) {
 			drawing.draw(ctx);
 		}
+		ctx.fill();
 
+		const strokeDrawings = drawings.filter((drawing) => !drawing.fill);
+		for (let drawing of strokeDrawings) {
+			drawing.draw(ctx);
+		}
 		ctx.stroke();
 	}
 

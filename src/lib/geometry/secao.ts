@@ -71,7 +71,9 @@ function desenhaCirculosEspacados(
 	quantidade: number,
 	espacamento: number
 ): Circle[] {
-	return new Array(quantidade).fill(0).map((_, i) => new Circle(raio, x + i * espacamento, y));
+	return new Array(quantidade)
+		.fill(0)
+		.map((_, i) => new Circle(raio, x + i * espacamento, y, true));
 }
 
 function obtemDesenhoDaSecao(secao: GeometriaSecao): Drawing {
