@@ -1,7 +1,7 @@
-import { dimensionaSecao, parametrosDimensionamento } from '$lib/calculations/nbr6118';
+import { dimensionaSecao, parametrosDimensionamento } from '$lib/calculations/nbr6118-elu';
 import { describe, expect, it } from 'vitest';
 
-describe('NBR6118', () => {
+describe('NBR6118 - ELU', () => {
 	it('calcula parâmetros de dimensionamento para fck 60MPa', () => {
 		const fck = 60;
 		const parametros = parametrosDimensionamento(fck);

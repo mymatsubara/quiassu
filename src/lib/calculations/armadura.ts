@@ -12,7 +12,7 @@ export function areaAcoArmadura({ quantidade, bitola }: Armadura) {
 	return bitola && quantidade ? quantidade * areaBitola(bitola) : 0;
 }
 
-function areaBitola(bitola: number) {
+export function areaBitola(bitola: number) {
 	const raio = bitola / (2 * 10);
 	return Math.PI * raio ** 2;
 }

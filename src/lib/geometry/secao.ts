@@ -1,5 +1,5 @@
 import type { Armaduras } from '$lib/calculations/armadura';
-import type { Secao } from '$lib/calculations/nbr6118';
+import type { Secao } from '$lib/calculations/nbr6118-elu';
 import { Circle, Polygon, Rectangle, type Drawing } from '$lib/geometry/drawing';
 import { Vec2 } from '$lib/geometry/vec2';
 

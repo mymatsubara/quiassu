@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { areaAcoArmadura, type Armaduras } from '$lib/calculations/armadura';
-	import { dimensionaSecao, type Secao } from '$lib/calculations/nbr6118';
+	import { dimensionaSecao, type Secao } from '$lib/calculations/nbr6118-elu';
 	import DrawingCanvas from '$lib/components/DrawingCanvas.svelte';
 	import InputArmadura from '$lib/components/InputArmadura.svelte';
 	import { Input } from '$lib/components/ui/input';
