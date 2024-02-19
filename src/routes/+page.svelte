@@ -78,7 +78,7 @@
 		</div>
 	</div>
 
-	<div class="min-w-64 border-l max-md:hidden">
+	<div class="min-w-80 border-l max-md:hidden">
 		<div class="flex flex-col gap-2 border-t p-4">
 			<h2 class="mb-2 text-lg font-medium leading-none">Resultados</h2>
 

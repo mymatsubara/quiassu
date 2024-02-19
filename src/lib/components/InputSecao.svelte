@@ -7,6 +7,8 @@
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import type { TipoSecao } from '$lib/geometry/secao';
+	import { deepMap } from '$lib/utils/object';
+	import { isNumeric } from '$lib/utils/string';
 	import { PenTool, Square } from 'lucide-svelte';
 
 	export let secao: Secao;
@@ -14,6 +16,13 @@
 
 	let tipoSecao: TipoSecao = secao.geometria.tipo;
 	const rand = Math.random();
+
+	$: secao = cast(secao);
+	function cast(secao: Secao): Secao {
+		return deepMap(secao, (_, value) =>
+			typeof value === 'string' && isNumeric(value) ? Number(value) : value
+		);
+	}
 </script>
 
 <div class="grid gap-5">
