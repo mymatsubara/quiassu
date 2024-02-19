@@ -200,46 +200,54 @@
 					{@const asAdotado = areaAcoArmadura(armaduras.inferior)}
 					{@const asLinhaAdotado = areaAcoArmadura(armaduras.superior)}
 
-					<div class="font-medium">Domínio {resultados.dominio}</div>
+					<div class="flex flex-col gap-4">
+						<div class="font-medium">Domínio {resultados.dominio}</div>
 
-					<Separator />
-					<h4 class="font-medium leading-none">Armadura - ELU</h4>
+						<Separator />
 
-					{#if resultados.as !== undefined}
-						<div class="grid grid-cols-2 items-center gap-4">
-							<div class="font-medium">A<sub>s<sub>min</sub></sub></div>
-							<div>{isNaN(resultados.as) ? '0.0' : resultados.as.toFixed(2)} cm/2</div>
+						<div>
+							<h4 class="mb-1 font-medium leading-none">Armadura inferior</h4>
+
+							<div class="grid grid-cols-2 items-center gap-4 font-medium">
+								<div>
+									A<sub>s<sub>mín</sub></sub>
+								</div>
+								<div class="font-semibold">{resultados.as?.toFixed(2) ?? '0.00'} cm/2</div>
+							</div>
+
+							<div
+								class="grid grid-cols-2 items-center gap-4 {asAdotado < (resultados.as ?? 0)
+									? 'text-red-500'
+									: 'text-green-700'} font-medium"
+							>
+								<div>A<sub>s<sub>adotado</sub></sub></div>
+								<div class="font-semibold">{asAdotado.toFixed(2)} cm/2</div>
+							</div>
 						</div>
-					{/if}
 
-					{#if asAdotado || resultados.as}
-						<div
-							class="grid grid-cols-2 items-center gap-4 {asAdotado < (resultados.as ?? 0)
-								? 'text-red-500'
-								: 'text-green-700'}"
-						>
-							<div class="font-medium">A<sub>s<sub>adotado</sub></sub></div>
-							<div>{asAdotado.toFixed(2)} cm/2</div>
-						</div>
-					{/if}
+						<Separator />
 
-					{#if resultados.asLinha}
-						<div class="grid grid-cols-2 items-center gap-4">
-							<div class="font-medium">A'<sub>s<sub>min</sub></sub></div>
-							<div>{isNaN(resultados.asLinha) ? '0.0' : resultados.asLinha.toFixed(2)} cm/2</div>
-						</div>
-					{/if}
+						<div>
+							<h4 class="mb-1 font-medium leading-none">Armadura superior</h4>
 
-					{#if asLinhaAdotado || resultados.asLinha}
-						<div
-							class="grid grid-cols-2 items-center gap-4 {asLinhaAdotado < (resultados.asLinha ?? 0)
-								? 'text-red-500'
-								: 'text-green-700'}"
-						>
-							<div class="font-medium">A'<sub>s<sub>adotado</sub></sub></div>
-							<div>{asLinhaAdotado.toFixed(2)} cm/2</div>
+							<div class="grid grid-cols-2 items-center gap-4 font-medium">
+								<div>
+									A'<sub>s<sub>mín</sub></sub>
+								</div>
+								<div class="text-semibold">{resultados.asLinha?.toFixed(2) ?? '0.00'} cm/2</div>
+							</div>
+
+							<div
+								class="grid grid-cols-2 items-center gap-4 {asLinhaAdotado <
+								(resultados.asLinha ?? 0)
+									? 'text-red-500'
+									: 'text-green-700'} font-medium"
+							>
+								<div>A'<sub>s<sub>adotado</sub></sub></div>
+								<div class="text-semibold">{asLinhaAdotado.toFixed(2)} cm/2</div>
+							</div>
 						</div>
-					{/if}
+					</div>
 				{/if}
 			{/if}
 		</div>
