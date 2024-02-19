@@ -196,6 +196,11 @@
 					<span class="text-red-600"
 						>Aumente as dimensões da seção ou a resistência do concreto</span
 					>
+				{:else if secao.geometria.tipo === 'retangulo' && secao.geometria.altura === 2 * secao.dLinha}
+					<span class="text-red-600"
+						>As armaduras inferiores e superiores podem coincidir. Ajuste o valor de d' ou a altura
+						da seção.</span
+					>
 				{:else}
 					{@const asAdotado = areaAcoArmadura(armaduras.inferior)}
 					{@const asLinhaAdotado = areaAcoArmadura(armaduras.superior)}
@@ -206,13 +211,13 @@
 						<Separator />
 
 						<div>
-							<h4 class="mb-1 font-medium leading-none">Armadura inferior</h4>
+							<h4 class="mb-2 font-medium leading-none">Armadura inferior</h4>
 
 							<div class="grid grid-cols-2 items-center gap-4 font-medium">
-								<div>
+								<div class="text-sm">
 									A<sub>s<sub>mín</sub></sub>
 								</div>
-								<div class="font-semibold">{resultados.as?.toFixed(2) ?? '0.00'} cm/2</div>
+								<div>{resultados.as?.toFixed(2) ?? '0.00'} cm<sup>2</sup></div>
 							</div>
 
 							<div
@@ -220,21 +225,27 @@
 									? 'text-red-500'
 									: 'text-green-700'} font-medium"
 							>
-								<div>A<sub>s<sub>adotado</sub></sub></div>
-								<div class="font-semibold">{asAdotado.toFixed(2)} cm/2</div>
+								<div class="text-sm">A<sub>s<sub>adotado</sub></sub></div>
+								<div>{asAdotado.toFixed(2)} cm<sup>2</sup></div>
+							</div>
+							<div class="grid grid-cols-2 items-center gap-4 font-medium">
+								<div class="text-sm">Cobrimento</div>
+								<div>
+									{(secao.dLinha - (armaduras.inferior?.bitola ?? 0) / 10).toFixed(2)} cm
+								</div>
 							</div>
 						</div>
 
 						<Separator />
 
 						<div>
-							<h4 class="mb-1 font-medium leading-none">Armadura superior</h4>
+							<h4 class="mb-2 font-medium leading-none">Armadura superior</h4>
 
 							<div class="grid grid-cols-2 items-center gap-4 font-medium">
 								<div>
 									A'<sub>s<sub>mín</sub></sub>
 								</div>
-								<div class="text-semibold">{resultados.asLinha?.toFixed(2) ?? '0.00'} cm/2</div>
+								<div>{resultados.asLinha?.toFixed(2) ?? '0.00'} cm<sup>2</sup></div>
 							</div>
 
 							<div
@@ -244,7 +255,13 @@
 									: 'text-green-700'} font-medium"
 							>
 								<div>A'<sub>s<sub>adotado</sub></sub></div>
-								<div class="text-semibold">{asLinhaAdotado.toFixed(2)} cm/2</div>
+								<div>{asLinhaAdotado.toFixed(2)} cm<sup>2</sup></div>
+							</div>
+							<div class="grid grid-cols-2 items-center gap-4 font-medium">
+								<div class="text-sm">Cobrimento</div>
+								<div>
+									{(secao.dLinha - (armaduras.superior?.bitola ?? 0) / 10).toFixed(2)} cm
+								</div>
 							</div>
 						</div>
 					</div>
