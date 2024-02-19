@@ -39,20 +39,6 @@
 
 	let tipoSecao: TipoSecao = 'retangulo';
 	$: resultados = dimensionaSecao(secao);
-
-	function changeHeight(e: Event) {
-		const value = (e.target as HTMLInputElement).value;
-		if (secao.geometria.tipo === 'retangulo') {
-			secao.geometria.altura = Number(value);
-		}
-	}
-
-	function changeWidth(e: Event) {
-		const value = (e.target as HTMLInputElement).value;
-		if (secao.geometria.tipo === 'retangulo') {
-			secao.geometria.largura = Number(value);
-		}
-	}
 </script>
 
 <div class="flex h-full">
@@ -69,27 +55,23 @@
 
 					<Tabs.Content value="retangulo">
 						{#if secao.geometria.tipo === 'retangulo'}
-							{@const largura = secao.geometria.largura}
-							{@const altura = secao.geometria.altura}
 							<div class="mt-4 grid gap-2">
 								<div class="grid grid-cols-2 items-center gap-4">
 									<Label for="largura">Largura (cm)</Label>
 									<Input
-										value={largura}
+										bind:value={secao.geometria.largura}
 										type="number"
 										id="largura"
 										class="h-8"
-										on:change={changeWidth}
 									/>
 								</div>
 								<div class="grid grid-cols-2 items-center gap-4">
 									<Label for="altura">Altura (cm)</Label>
 									<Input
-										value={altura}
+										bind:value={secao.geometria.altura}
 										type="number"
 										id="altura"
 										class="h-8"
-										on:change={changeHeight}
 									/>
 								</div>
 							</div>
