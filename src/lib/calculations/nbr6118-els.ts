@@ -10,11 +10,7 @@ import { convertStress, convertToque } from '$lib/calculations/units';
 export function calcularELSW(secao: Secao, armaduras: Armaduras) {
 	const armadura = armaduras.inferior;
 	if (!armadura.bitola || !armadura.quantidade || secao.geometria.tipo !== 'retangulo') {
-		return {
-			wk1: NaN,
-			wk2: NaN,
-			wk: NaN
-		};
+		return;
 	}
 
 	const alfa = 1.5; // seção retangular

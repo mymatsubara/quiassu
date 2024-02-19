@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { areaAcoArmadura, type Armaduras } from '$lib/calculations/armadura';
+	import { calcularELSW } from '$lib/calculations/nbr6118-els';
 	import { dimensionaSecao, type Secao } from '$lib/calculations/nbr6118-elu';
 	import DrawingCanvas from '$lib/components/DrawingCanvas.svelte';
 	import InputArmadura from '$lib/components/InputArmadura.svelte';
@@ -187,9 +188,9 @@
 		>Desenho da seção transversal</DrawingCanvas
 	>
 
-	<div class="min-w-80 border-l">
+	<div class="min-w-64 border-l">
 		<div class="flex flex-col gap-2 border-t p-4">
-			<h3 class="mb-2 text-lg font-medium leading-none">Resultados</h3>
+			<h2 class="mb-2 text-lg font-medium leading-none">Resultados</h2>
 
 			{#if resultados}
 				{#if !resultados.valido || isNaN(resultados.x)}
@@ -204,6 +205,7 @@
 				{:else}
 					{@const asAdotado = areaAcoArmadura(armaduras.inferior)}
 					{@const asLinhaAdotado = areaAcoArmadura(armaduras.superior)}
+					{@const elsw = calcularELSW(secao, armaduras)}
 
 					<div class="flex flex-col gap-4">
 						<div class="font-medium">Domínio {resultados.dominio}</div>
@@ -264,6 +266,33 @@
 								</div>
 							</div>
 						</div>
+
+						{#if elsw}
+							<Separator />
+
+							<div>
+								<h3 class="mb-2 font-medium">ELS-W (Fissuração)</h3>
+
+								<div class="grid grid-cols-2 items-center gap-4 font-medium">
+									<div>
+										w<sub>k1</sub>
+									</div>
+									<div>{elsw.wk1.toFixed(2)} mm</div>
+								</div>
+								<div class="grid grid-cols-2 items-center gap-4 font-medium">
+									<div>
+										w<sub>k2</sub>
+									</div>
+									<div>{elsw.wk2.toFixed(2)} mm</div>
+								</div>
+								<div class="grid grid-cols-2 items-center gap-4 font-medium">
+									<div>
+										w<sub>k</sub>
+									</div>
+									<div>{elsw.wk.toFixed(2)} mm</div>
+								</div>
+							</div>
+						{/if}
 					</div>
 				{/if}
 			{/if}
