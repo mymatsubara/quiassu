@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { areaAcoArmadura, type Armaduras } from '$lib/calculations/armadura';
 	import { calcularELSW } from '$lib/calculations/nbr6118-els';
-	import { dimensionaSecao, type Secao } from '$lib/calculations/nbr6118-elu';
+	import { calcularAreaAcoMin, dimensionaSecao, type Secao } from '$lib/calculations/nbr6118-elu';
 	import { Separator } from '$lib/components/ui/select';
 
 	export let secao: Secao;
@@ -22,6 +22,7 @@
 		{@const asAdotado = areaAcoArmadura(armaduras.inferior)}
 		{@const asLinhaAdotado = areaAcoArmadura(armaduras.superior)}
 		{@const elsw = calcularELSW(secao, armaduras)}
+		{@const asMin = calcularAreaAcoMin(secao)}
 
 		<div class="flex flex-col gap-4">
 			<div class="font-medium">Domínio {resultados.dominio}</div>
@@ -35,11 +36,19 @@
 					<div class="text-sm">
 						A<sub>s<sub>mín</sub></sub>
 					</div>
+					<div>{asMin} cm<sup>2</sup></div>
+				</div>
+
+				<div class="grid grid-cols-2 items-center gap-4 font-medium">
+					<div class="text-sm">
+						A<sub>s<sub>calc</sub></sub>
+					</div>
 					<div>{resultados.as?.toFixed(2) ?? '0.00'} cm<sup>2</sup></div>
 				</div>
 
 				<div
-					class="grid grid-cols-2 items-center gap-4 {asAdotado < (resultados.as ?? 0)
+					class="grid grid-cols-2 items-center gap-4 {asAdotado < (resultados.as ?? 0) ||
+					asAdotado < asMin
 						? 'text-red-500'
 						: 'text-green-700'} font-medium"
 				>
@@ -61,7 +70,7 @@
 
 				<div class="grid grid-cols-2 items-center gap-4 font-medium">
 					<div>
-						A'<sub>s<sub>mín</sub></sub>
+						A'<sub>s<sub>calc</sub></sub>
 					</div>
 					<div>{resultados.asLinha?.toFixed(2) ?? '0.00'} cm<sup>2</sup></div>
 				</div>

@@ -238,6 +238,49 @@ export function dimensionaSecao(secao: Secao): ResultadoDimensionamentoSecao {
 	}
 }
 
+export function calcularAreaAcoMin(secao: Secao) {
+	const taxaMin = taxaArmaduraMin(secao.fck);
+	const geometria = secao.geometria;
+	if (geometria.tipo === 'retangulo') {
+		const area = geometria.altura * geometria.largura;
+		return area * taxaMin;
+	} else {
+		throw new Error('Seção poligonar não implementada');
+	}
+}
+
+function taxaArmaduraMin(fck: number) {
+	if (fck <= 30) {
+		return 0.0015;
+	} else if (fck <= 35) {
+		return 0.00164;
+	} else if (fck <= 40) {
+		return 0.00179;
+	} else if (fck <= 45) {
+		return 0.00194;
+	} else if (fck <= 50) {
+		return 0.00208;
+	} else if (fck <= 55) {
+		return 0.00211;
+	} else if (fck <= 60) {
+		return 0.00219;
+	} else if (fck <= 65) {
+		return 0.00226;
+	} else if (fck <= 70) {
+		return 0.00233;
+	} else if (fck <= 75) {
+		return 0.00239;
+	} else if (fck <= 80) {
+		return 0.00245;
+	} else if (fck <= 85) {
+		return 0.00251;
+	} else if (fck <= 90) {
+		return 0.00256;
+	} else {
+		throw new Error('fck acima de 90MPa não implementado');
+	}
+}
+
 export function calculaDominio({ x, d, ecu, es, fyd, h }: DominioInput) {
 	const eyd = fyd / es;
 	const lim2 = ecu / (0.01 + eyd);
