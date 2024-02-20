@@ -10,48 +10,91 @@ interface BoundingBox {
 export interface Drawing {
 	draw: (ctx: CanvasRenderingContext2D) => void;
 	getBoundingBox: () => BoundingBox;
-	fill: boolean;
 }
 
-export class Rectangle implements Drawing {
-	constructor(
-		public width: number,
-		public height: number,
-		public x: number = 0,
-		public y: number = 0,
-		public fill = false
-	) {}
+export interface CustomPath {
+	getPath: () => Path2D;
+	getBoundingBox: () => BoundingBox;
+}
 
-	draw(ctx: CanvasRenderingContext2D) {
-		if (this.fill) {
-			ctx.fillRect(this.x, this.y, this.width, this.height);
+export function joinPaths(...paths: (CustomPath | CustomPath[])[]) {
+	const result = new Path2D();
+
+	for (let path of paths) {
+		if (Array.isArray(path)) {
+			if (path.length > 0) {
+				const p = joinPaths(...path);
+				result.addPath(p);
+			}
 		} else {
-			ctx.strokeRect(this.x, this.y, this.width, this.height);
+			result.addPath(path.getPath());
 		}
 	}
 
-	getBoundingBox(): BoundingBox {
-		return {
-			minX: this.x,
-			minY: this.y,
-			maxX: this.x + this.width,
-			maxY: this.y + this.height
-		};
-	}
+	return result;
 }
 
-export class RoundedRectangle implements Drawing {
+export function mergePathsBoundingBoxes(...paths: (CustomPath | CustomPath[] | undefined)[]) {
+	return mergeBoundingBoxes(
+		...paths.map((path) =>
+			Array.isArray(path)
+				? path.map((p) => p.getBoundingBox())
+				: path?.getBoundingBox() ?? { maxX: 0, minX: 0, maxY: 0, minY: 0 }
+		)
+	);
+}
+
+export function mergeBoundingBoxes(...boundingBoxes: (BoundingBox | BoundingBox[])[]) {
+	let maxX = 0;
+	let minX = 0;
+	let maxY = 0;
+	let minY = 0;
+
+	for (let boundingBox of boundingBoxes) {
+		if (Array.isArray(boundingBox)) {
+			if (boundingBox.length > 0) {
+				debugger;
+				const bb = mergeBoundingBoxes(...boundingBox);
+				maxX = Math.max(maxX, bb.maxX);
+				minX = Math.min(minX, bb.minY);
+				maxY = Math.max(maxY, bb.maxY);
+				minY = Math.min(minY, bb.minY);
+			}
+		} else {
+			maxX = Math.max(maxX, boundingBox.maxX);
+			minX = Math.min(minX, boundingBox.minY);
+			maxY = Math.max(maxY, boundingBox.maxY);
+			minY = Math.min(minY, boundingBox.minY);
+		}
+	}
+
+	return {
+		maxX,
+		minX,
+		minY,
+		maxY
+	};
+}
+
+export class Rectangle implements CustomPath {
 	constructor(
 		public width: number,
 		public height: number,
 		public x: number = 0,
 		public y: number = 0,
-		public borderRadius: number = 5,
-		public fill = false
+		public borderRadius: number = 0
 	) {}
 
-	draw(ctx: CanvasRenderingContext2D) {
-		ctx.roundRect(this.x, this.y, this.width, this.height, this.borderRadius);
+	getPath(): Path2D {
+		const path = new Path2D();
+
+		if (this.borderRadius > 0) {
+			path.roundRect(this.x, this.y, this.width, this.height, this.borderRadius);
+		} else {
+			path.rect(this.x, this.y, this.width, this.height);
+		}
+
+		return path;
 	}
 
 	getBoundingBox(): BoundingBox {
@@ -64,17 +107,15 @@ export class RoundedRectangle implements Drawing {
 	}
 }
 
-export class Circle implements Drawing {
-	constructor(
-		public radius: number,
-		public x: number = 0,
-		public y: number = 0,
-		public fill = false
-	) {}
+export class Circle implements CustomPath {
+	constructor(public radius: number, public x: number = 0, public y: number = 0) {}
 
-	draw(ctx: CanvasRenderingContext2D) {
-		ctx.moveTo(this.x + this.radius, this.y);
-		ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+	getPath(): Path2D {
+		const path = new Path2D();
+		path.moveTo(this.x + this.radius, this.y);
+		path.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+
+		return path;
 	}
 
 	getBoundingBox(): BoundingBox {
@@ -87,23 +128,23 @@ export class Circle implements Drawing {
 	}
 }
 
-export class Polygon implements Drawing {
-	constructor(public points: Vec2[], public fill = false) {}
+export class Polygon implements CustomPath {
+	constructor(public points: Vec2[]) {}
 
-	draw(ctx: CanvasRenderingContext2D) {
-		if (this.points.length === 0) {
-			return;
-		}
+	getPath(): Path2D {
+		const path = new Path2D();
 
 		const start = this.points[0];
-		ctx.moveTo(start.x, start.y);
+		path.moveTo(start.x, start.y);
 
 		for (let i = 1; i < this.points.length; i++) {
 			const point = this.points[i];
-			ctx.lineTo(point.x, point.y);
+			path.lineTo(point.x, point.y);
 		}
 
-		ctx.closePath();
+		path.closePath();
+
+		return path;
 	}
 
 	getBoundingBox(): BoundingBox {

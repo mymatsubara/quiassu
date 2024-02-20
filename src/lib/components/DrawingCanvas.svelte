@@ -3,7 +3,7 @@
 	import type { Drawing } from '$lib/geometry/drawing';
 	import { onDestroy, onMount } from 'svelte';
 
-	export let drawings: Drawing[];
+	export let drawing: Drawing;
 
 	let ctx: CanvasRenderingContext2D;
 	let containerElement: HTMLDivElement;
@@ -15,44 +15,22 @@
 
 			ctx.fillStyle = '#fff';
 			ctx.clearRect(0, 0, width, height);
-			draw(ctx, drawings);
+			draw(ctx, drawing);
 		}
 	}
 
 	$: updateCanvasSize(ctx, containerElement);
 
-	function draw(ctx: CanvasRenderingContext2D, drawings: Drawing[]) {
-		centerPath(ctx, drawings);
-
-		const fillDrawings = drawings.filter((drawing) => drawing.fill);
-		for (let drawing of fillDrawings) {
-			drawing.draw(ctx);
-		}
-		ctx.fill();
-
-		const strokeDrawings = drawings.filter((drawing) => !drawing.fill);
-		for (let drawing of strokeDrawings) {
-			drawing.draw(ctx);
-		}
-		ctx.stroke();
+	function draw(ctx: CanvasRenderingContext2D, drawing: Drawing) {
+		centerPath(ctx, drawing);
+		drawing.draw(ctx);
 	}
 
-	function centerPath(ctx: CanvasRenderingContext2D, drawings: Drawing[]) {
+	function centerPath(ctx: CanvasRenderingContext2D, drawing: Drawing) {
 		const width = ctx.canvas.width;
 		const height = ctx.canvas.height;
 
-		let maxX = 0;
-		let minX = 0;
-		let maxY = 0;
-		let minY = 0;
-
-		for (let drawing of drawings) {
-			const bounding = drawing.getBoundingBox();
-			maxX = Math.max(maxX, bounding.maxX);
-			minX = Math.min(minX, bounding.minX);
-			maxY = Math.max(maxY, bounding.maxY);
-			minY = Math.min(minY, bounding.minY);
-		}
+		const { maxX, minX, maxY, minY } = drawing.getBoundingBox();
 
 		const sectionWidth = maxX - minX;
 		const sectionHeight = maxY - minY;
@@ -94,7 +72,7 @@
 		if (containerElement && ctx) {
 			ctx.canvas.width = containerElement.clientWidth;
 			ctx.canvas.height = containerElement.clientHeight;
-			draw(ctx, drawings);
+			draw(ctx, drawing);
 		}
 	}
 

@@ -51,7 +51,7 @@
 	</div>
 
 	<div class="relative w-full">
-		<DrawingCanvas drawings={obtemDesenhoDaSecaoComArmaduras(secao, armaduras)}
+		<DrawingCanvas drawing={obtemDesenhoDaSecaoComArmaduras(secao, armaduras)}
 			>Desenho da seção transversal</DrawingCanvas
 		>
 

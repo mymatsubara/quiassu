@@ -1,6 +1,14 @@
 import { calculaDLinha, type Armaduras } from '$lib/calculations/armadura';
 import type { Secao } from '$lib/calculations/nbr6118-elu';
-import { Circle, Polygon, Rectangle, RoundedRectangle, type Drawing } from '$lib/geometry/drawing';
+import {
+	Circle,
+	Polygon,
+	Rectangle,
+	joinPaths,
+	mergePathsBoundingBoxes,
+	type CustomPath,
+	type Drawing
+} from '$lib/geometry/drawing';
 import { Vec2 } from '$lib/geometry/vec2';
 
 export type GeometriaSecao =
@@ -16,15 +24,32 @@ export type GeometriaSecao =
 
 export type TipoSecao = GeometriaSecao['tipo'];
 
-export function obtemDesenhoDaSecaoComArmaduras(secao: Secao, armaduras: Armaduras): Drawing[] {
-	return [
-		obtemDesenhoDaSecao(secao.geometria),
-		...obtemEstribos(secao, armaduras),
-		...obtemDesenhoDasArmaduras(secao, armaduras)
-	];
+export function obtemDesenhoDaSecaoComArmaduras(secao: Secao, armaduras: Armaduras): Drawing {
+	const secaoPath = obtemDesenhoDaSecao(secao.geometria);
+	const estriboPath = obtemEstribos(secao, armaduras);
+	const armadurasPath = obtemDesenhoDasArmaduras(secao, armaduras);
+
+	const boundingBox = mergePathsBoundingBoxes(secaoPath, estriboPath, armadurasPath);
+	const bitolaEstribo = (armaduras.estribo?.bitola ?? 0) / 10; // converte para cm
+
+	return {
+		draw: (ctx) => {
+			const secao = secaoPath.getPath();
+			ctx.stroke(secao);
+
+			if (estriboPath) {
+				const estribo = joinPaths(estriboPath);
+				ctx.stroke(estribo);
+			}
+
+			const armaduras = joinPaths(armadurasPath);
+			ctx.fill(armaduras);
+		},
+		getBoundingBox: () => boundingBox
+	};
 }
 
-function obtemEstribos(secao: Secao, armaduras: Armaduras): RoundedRectangle[] {
+function obtemEstribos(secao: Secao, armaduras: Armaduras): Rectangle[] {
 	if (secao.geometria.tipo !== 'retangulo' || !armaduras.estribo) {
 		return [];
 	}
@@ -43,13 +68,13 @@ function obtemEstribos(secao: Secao, armaduras: Armaduras): RoundedRectangle[] {
 	const h1 = h - 2 * c;
 	const x1 = c;
 	const y1 = c;
-	const rec1 = new RoundedRectangle(w1, h1, x1, y1, raio);
+	const rec1 = new Rectangle(w1, h1, x1, y1, raio);
 
 	const w2 = w1 - 2 * bitola;
 	const h2 = h1 - 2 * bitola;
 	const x2 = x1 + bitola;
 	const y2 = y1 + bitola;
-	const rec2 = new RoundedRectangle(w2, h2, x2, y2, raio - bitola);
+	const rec2 = new Rectangle(w2, h2, x2, y2, raio - bitola);
 
 	return [rec1, rec2];
 }
@@ -107,12 +132,10 @@ function desenhaCirculosEspacados(
 	quantidade: number,
 	espacamento: number
 ): Circle[] {
-	return new Array(quantidade)
-		.fill(0)
-		.map((_, i) => new Circle(raio, x + i * espacamento, y, true));
+	return new Array(quantidade).fill(0).map((_, i) => new Circle(raio, x + i * espacamento, y));
 }
 
-function obtemDesenhoDaSecao(secao: GeometriaSecao): Drawing {
+function obtemDesenhoDaSecao(secao: GeometriaSecao): CustomPath {
 	switch (secao.tipo) {
 		case 'poligono':
 			return new Polygon(secao.pontos);
