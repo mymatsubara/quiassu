@@ -2,7 +2,6 @@
 	import { arquivoProjeto, projeto } from '$lib/stores/projeto';
 	import { saveToFile, saveToFileOld } from '$lib/utils/file';
 	import { Save } from 'lucide-svelte';
-	import { onMount } from 'svelte';
 	import { twMerge } from 'tailwind-merge';
 	import { Button, type ButtonProps } from '../ui/button';
 
@@ -10,17 +9,17 @@
 	export let variant: ButtonProps['variant'] = 'secondary';
 	export let size: ButtonProps['size'] = 'icon';
 
-	function handleShortcut(e: KeyboardEvent) {
-		if (e.ctrlKey && e.key === 's') {
-			e.preventDefault();
-			salvarProjeto();
-		}
-	}
+	// function handleShortcut(e: KeyboardEvent) {
+	// 	if (e.ctrlKey && e.key === 's') {
+	// 		e.preventDefault();
+	// 		salvarProjeto();
+	// 	}
+	// }
 
-	onMount(() => {
-		document.removeEventListener('keydown', handleShortcut);
-		document.addEventListener('keydown', handleShortcut);
-	});
+	// onMount(() => {
+	// 	document.removeEventListener('keydown', handleShortcut);
+	// 	document.addEventListener('keydown', handleShortcut);
+	// });
 
 	async function salvarProjeto() {
 		const data = JSON.stringify($projeto, null, 2);
