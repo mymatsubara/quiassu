@@ -21,7 +21,7 @@ export function criaNovaSecao(projeto: Projeto): DadosSecao {
 
 	const novaSecao: DadosSecao = {
 		id: (secaoComMaiorId?.id ?? 0) + 1,
-		nome: 'Nova seção',
+		nome: '',
 		secao: {
 			// Secao
 			geometria: { tipo: 'retangulo', altura: 40, largura: 20 },

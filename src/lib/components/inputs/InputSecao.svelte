@@ -11,10 +11,11 @@
 	import type { TipoSecao } from '$lib/geometry/secao';
 	import { deepMap } from '$lib/utils/object';
 	import { isNumeric } from '$lib/utils/string';
-	import { PenTool, Square } from 'lucide-svelte';
+	import { PenLine, PenTool, Square } from 'lucide-svelte';
 
 	export let secao: Secao;
 	export let armaduras: Armaduras;
+	export let nome: string;
 
 	let tipoSecao: TipoSecao = secao.geometria.tipo;
 	const rand = Math.random();
@@ -41,6 +42,17 @@
 
 <div class="grid gap-5">
 	<div class="grid gap-2">
+		<label class="mb-1 flex w-full items-center gap-2">
+			<PenLine class="h-4 w-4 cursor-pointer text-muted-foreground" />
+			<input
+				placeholder="Seção sem nome"
+				class="w-full overflow-hidden text-ellipsis whitespace-nowrap border-0 text-lg font-semibold focus:outline-0"
+				type="text"
+				title={nome}
+				bind:value={nome}
+			/>
+		</label>
+
 		<h4 class="font-medium leading-none">Seção</h4>
 
 		<Tabs.Root bind:value={tipoSecao}>

@@ -20,10 +20,10 @@
 
 <div class="flex h-full">
 	<div class="min-w-80 overflow-y-auto border-r p-4 max-md:hidden">
-		<Button class="mb-4 pl-0 text-base hover:bg-transparent" variant="ghost" on:click={onBack}
+		<Button class="mb-2 pl-0 text-base hover:bg-transparent" variant="ghost" on:click={onBack}
 			><ArrowLeft class="mr-1 h-5 w-5" /> Voltar</Button
 		>
-		<InputSecao bind:secao={dados.secao} bind:armaduras={dados.armaduras} />
+		<InputSecao bind:nome={dados.nome} bind:secao={dados.secao} bind:armaduras={dados.armaduras} />
 	</div>
 
 	<div class="relative w-full">
@@ -46,7 +46,11 @@
 					<div class="grid h-full grid-rows-[70vh_1fr]">
 						<div class="mt-10 overflow-y-auto px-4">
 							<div class="mb-4">
-								<InputSecao bind:secao={dados.secao} bind:armaduras={dados.armaduras} />
+								<InputSecao
+									bind:nome={dados.nome}
+									bind:secao={dados.secao}
+									bind:armaduras={dados.armaduras}
+								/>
 							</div>
 						</div>
 

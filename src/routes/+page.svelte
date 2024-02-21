@@ -11,6 +11,7 @@
 	import {
 		FolderInput,
 		MoreVertical,
+		PenLine,
 		Plus,
 		Save,
 		SaveAll,
@@ -19,11 +20,11 @@
 	} from 'lucide-svelte';
 
 	let projeto: Projeto = {
-		nome: 'Novo projeto',
+		nome: '',
 		secoes: [
 			{
 				id: 1,
-				nome: 'Nova seção',
+				nome: '',
 				armaduras: {
 					estribo: { bitola: 5 },
 					inferior: { bitola: undefined as any, quantidade: undefined as any },
@@ -80,13 +81,17 @@
 	<div class="flex h-full flex-col">
 		<nav class="border-b">
 			<div class="container">
-				<div class="flex h-16 items-center justify-between space-y-0 py-4">
-					<h2
-						class="w-64 overflow-hidden text-ellipsis whitespace-nowrap text-xl font-semibold sm:w-96 sm:text-2xl"
-						title={projeto.nome}
-					>
-						{projeto.nome}
-					</h2>
+				<div class="flex h-16 items-center justify-between gap-2 py-4">
+					<label class="flex w-full items-center gap-2">
+						<PenLine class="h-5 w-5 cursor-pointer text-muted-foreground" />
+						<input
+							placeholder="Projeto sem nome"
+							class="w-full overflow-hidden text-ellipsis whitespace-nowrap border-0 text-lg font-semibold focus:outline-0 sm:text-xl"
+							type="text"
+							title={projeto.nome}
+							bind:value={projeto.nome}
+						/>
+					</label>
 
 					<div class="ml-auto flex w-full justify-end gap-3">
 						<Tooltip.Root>
@@ -174,14 +179,14 @@
 							</div>
 
 							<div class="mt-1 flex w-full items-end justify-between px-2 pb-1">
-								<div class="ml-2 flex flex-col gap-1">
+								<div class="ml-1 flex flex-col gap-1">
 									<!-- svelte-ignore a11y-no-static-element-interactions -->
 									<!-- svelte-ignore a11y-click-events-have-key-events -->
 									<div
 										class="cursor-pointer text-base font-semibold"
 										on:click={() => (secaoAtual = secao)}
 									>
-										{secao.nome}
+										{secao.nome || 'Seção sem nome'}
 									</div>
 									<div class="text-xs font-medium text-muted-foreground">
 										{secao.ultimaModificao.toLocaleTimeString('pt-BR', {
