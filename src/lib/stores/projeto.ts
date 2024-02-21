@@ -1,39 +1,30 @@
 import type { Projeto } from '$lib/project/projeto';
+import { isDeepEqual } from '$lib/utils/object';
 import { writable } from 'svelte/store';
 
 export let projeto = writable<Projeto>({
 	nome: '',
-	secoes: [
-		{
-			id: 1,
-			nome: '',
-			armaduras: {
-				estribo: { bitola: 5 },
-				inferior: { bitola: undefined as any, quantidade: undefined as any },
-				superior: { bitola: undefined as any, quantidade: undefined as any }
-			},
-			secao: {
-				// Secao
-				geometria: { tipo: 'retangulo', altura: 40, largura: 20 },
-				cobrimento: 4,
+	secoes: [],
+	salvo: true
+});
+let prevState: Projeto;
 
-				// Concreto
-				fck: 20,
-				gamac: 1.4,
+export let arquivoProjeto = writable<FileSystemFileHandle>();
 
-				// Aço
-				fy: 500,
-				es: 210,
-				gamas: 1.15,
+// Indica que o estado do projeto foi modificado
+projeto.subscribe((proj) => {
+	if (proj.salvo) {
+		let { salvo: s1, ...p0 } = prevState ?? {};
+		let { salvo: s2, ...p1 } = proj;
 
-				gamaf: 1.4,
+		const foiModificado = !isDeepEqual(p0, p1);
 
-				// Esforços
-				mskx: 0,
-				msky: 0,
-				nsd: 0
-			},
-			ultimaModificao: new Date()
+		if (foiModificado) {
+			projeto.update((proj) => {
+				proj.salvo = false;
+				prevState = structuredClone(proj);
+				return proj;
+			});
 		}
-	]
+	}
 });

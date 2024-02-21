@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import DrawingCanvas from '$lib/components/DrawingCanvas.svelte';
+	import SaveProjectButton from '$lib/components/buttons/SaveProjectButton.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -14,7 +15,6 @@
 		MoreVertical,
 		PenLine,
 		Plus,
-		Save,
 		SaveAll,
 		SquareStackIcon,
 		X
@@ -22,7 +22,7 @@
 
 	function adicionaNovaSecao() {
 		const novaSecao = criaNovaSecao($projeto);
-		$projeto.secoes.push(novaSecao);
+		$projeto.secoes.unshift(novaSecao);
 		$projeto = $projeto;
 		goto(`/secao/${novaSecao.id}`);
 	}
@@ -51,9 +51,7 @@
 				<div class="ml-auto flex w-full justify-end gap-3">
 					<Tooltip.Root>
 						<Tooltip.Trigger asChild let:builder>
-							<Button builders={[builder]} class="rounded-full" variant="secondary" size="icon"
-								><Save class="h-5 w-5" /></Button
-							>
+							<SaveProjectButton builders={[builder]} />
 						</Tooltip.Trigger>
 						<Tooltip.Content>
 							<p>Salvar <DropdownMenu.Shortcut>(Ctrl+S)</DropdownMenu.Shortcut></p>
@@ -119,7 +117,7 @@
 		{/if}
 
 		<div
-			class="mt-8 grid gap-5 min-[550px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+			class="mt-8 grid gap-6 min-[550px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
 		>
 			{#each $projeto.secoes as secao (secao.id)}
 				{@const href = `/secao/${secao.id}`}
