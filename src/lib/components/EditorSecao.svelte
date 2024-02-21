@@ -11,7 +11,6 @@
 	import { onMount } from 'svelte';
 
 	export let dados: DadosSecao;
-	export let onBack: () => void = () => {};
 
 	let inputNome: HTMLInputElement;
 	let innerWidth: number;
@@ -33,7 +32,7 @@
 
 <div class="flex h-full">
 	<div class="min-w-80 overflow-y-auto border-r p-4 max-md:hidden">
-		<Button class="mb-2 pl-0 text-base hover:bg-transparent" variant="ghost" on:click={onBack}
+		<Button class="mb-2 pl-0 text-base hover:bg-transparent" variant="ghost" href="/"
 			><ArrowLeft class="mr-1 h-5 w-5" /> Voltar</Button
 		>
 
@@ -51,7 +50,7 @@
 
 		<div class="md:hidden">
 			<div class="absolute top-0 z-10 flex w-full items-center gap-2 p-4">
-				<Button class="h-14 w-14 rounded-full" variant="ghost" on:click={onBack}
+				<Button class="h-14 w-14 rounded-full" variant="ghost" href="/"
 					><ArrowLeft class="h-5 w-5" /></Button
 				>
 				<InputNomeSecao bind:value={dados.nome} />
