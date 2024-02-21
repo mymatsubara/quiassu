@@ -13,7 +13,15 @@ export interface DadosSecao {
 	nome: string;
 	secao: Secao;
 	armaduras: Armaduras;
-	ultimaModificao: Date;
+	ultimaModificao: number;
+}
+
+export function projetoVazio() {
+	return {
+		nome: '',
+		secoes: [],
+		salvo: true
+	};
 }
 
 export function criaNovaSecao(projeto: Projeto): DadosSecao {
@@ -59,7 +67,7 @@ export function criaNovaSecao(projeto: Projeto): DadosSecao {
 				quantidade: undefined as any
 			}
 		},
-		ultimaModificao: new Date()
+		ultimaModificao: Date.now()
 	};
 
 	return novaSecao;

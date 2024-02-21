@@ -8,8 +8,8 @@
 	import { Input } from '$lib/components/ui/input';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { obtemDesenhoDaSecaoComArmaduras } from '$lib/geometry/secao';
-	import { criaNovaSecao, type DadosSecao } from '$lib/project/projeto';
-	import { projeto } from '$lib/stores/projeto';
+	import { criaNovaSecao, projetoVazio, type DadosSecao } from '$lib/project/projeto';
+	import { arquivoProjeto, projeto } from '$lib/stores/projeto';
 	import {
 		FolderInput,
 		MoreVertical,
@@ -60,8 +60,32 @@
 
 					<Tooltip.Root>
 						<Tooltip.Trigger asChild let:builder>
-							<Button builders={[builder]} class="rounded-full" variant="secondary" size="icon"
-								><FolderInput class="h-5 w-5" /></Button
+							<Button
+								builders={[builder]}
+								class="rounded-full"
+								variant="secondary"
+								size="icon"
+								on:click={async () => {
+									if ('showOpenFilePicker' in window) {
+										const [fileHandle] = await window.showOpenFilePicker({
+											types: [{ description: 'JSON file', accept: { 'text/json': ['.json'] } }],
+											multiple: false
+										});
+										try {
+											$arquivoProjeto = fileHandle;
+											const file = await fileHandle.getFile();
+											const textData = await file.text();
+											const data = JSON.parse(textData);
+
+											$projeto = { ...projetoVazio(), ...data };
+											console.log({ projeto });
+										} catch (e) {
+											alert('Arquivo inválido');
+										}
+									} else {
+										alert('Não implementado ainda');
+									}
+								}}><FolderInput class="h-5 w-5" /></Button
 							>
 						</Tooltip.Trigger>
 						<Tooltip.Content>
@@ -138,7 +162,7 @@
 									{secao.nome || 'Seção sem nome'}
 								</a>
 								<div class="text-xs font-medium text-muted-foreground">
-									{secao.ultimaModificao.toLocaleTimeString('pt-BR', {
+									{new Date(secao.ultimaModificao).toLocaleTimeString('pt-BR', {
 										day: 'numeric',
 										month: 'numeric',
 										year: 'numeric',

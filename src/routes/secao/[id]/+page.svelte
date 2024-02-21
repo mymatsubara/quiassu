@@ -18,5 +18,5 @@
 </script>
 
 {#if secaoAtual}
-	<EditorSecao bind:dados={secaoAtual} onBack={() => (secaoAtual = undefined)} />
+	<EditorSecao bind:dados={secaoAtual} />
 {/if}

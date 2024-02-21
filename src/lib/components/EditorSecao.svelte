@@ -17,7 +17,7 @@
 
 	$: {
 		if (dados) {
-			dados.ultimaModificao = new Date();
+			dados.ultimaModificao = Date.now();
 		}
 	}
 
