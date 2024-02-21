@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
 	import DrawingCanvas from '$lib/components/DrawingCanvas.svelte';
 	import SaveProjectButton from '$lib/components/buttons/SaveProjectButton.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -25,7 +24,7 @@
 		const novaSecao = criaNovaSecao($projeto);
 		$projeto.secoes.unshift(novaSecao);
 		$projeto = $projeto;
-		goto(`${base}/secao?id=${novaSecao.id}`);
+		goto(`/secao?id=${novaSecao.id}`);
 	}
 
 	function removeSecao(secao: DadosSecao) {
@@ -145,7 +144,7 @@
 			class="mt-8 grid gap-6 min-[550px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
 		>
 			{#each $projeto.secoes as secao (secao.id)}
-				{@const href = `${base}/secao?id=${secao.id}`}
+				{@const href = `/secao?id=${secao.id}`}
 				<Card.Root class="h-max w-full shadow">
 					<Card.Content class="flex w-full flex-col items-start p-4">
 						<div class="aspect-square w-full">
