@@ -2,8 +2,10 @@
 	import { browser } from '$app/environment';
 	import type { Drawing } from '$lib/geometry/drawing';
 	import { onDestroy, onMount } from 'svelte';
+	import { twMerge } from 'tailwind-merge';
 
 	export let drawing: Drawing;
+	export let offset = 0.75;
 
 	let ctx: CanvasRenderingContext2D;
 	let containerElement: HTMLDivElement;
@@ -39,7 +41,7 @@
 
 		const scaleX = width / sectionWidth;
 		const scaleY = height / sectionHeight;
-		const scale = Math.min(scaleX, scaleY) * 0.75;
+		const scale = Math.min(scaleX, scaleY) * offset;
 
 		ctx.translate(width / 2 - scale * middleX, height / 2 - scale * middleY);
 		ctx.scale(scale, scale);
@@ -85,6 +87,6 @@
 	});
 </script>
 
-<div bind:this={containerElement} class="h-full w-full">
+<div bind:this={containerElement} class={twMerge('h-full w-full', $$restProps.class)}>
 	<canvas class="h-full w-full -scale-y-100" use:initCanvas><slot /></canvas>
 </div>

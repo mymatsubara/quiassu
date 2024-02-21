@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fonts */
+@layer base {
+	@font-face {
+		font-family: 'Geist';
+		src: url('fonts/Geist/GeistVariableVF.woff2') format('woff2'),
+			url('fonts/Geist/GeistVariableVF.ttf') format('truetype');
+		font-weigth: 100 900;
+		font-style: normal;
+	}
+}
+
 @layer base {
 	:root {
 		--background: 0 0% 100%;
@@ -53,6 +64,12 @@
 		height: 100%;
 	}
 
+	/* Font */
+	html {
+		font-family: Geist, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+			'Segoe UI Symbol', 'Noto Color Emoji';
+	}
+
 	/* Scrollbar */
 	::-webkit-scrollbar {
 		width: 0.5rem;
@@ -75,6 +92,16 @@
 
 	html.dark {
 		scrollbar-color: hsl(215.4 16.3% 56.9% / 0.3);
+	}
+
+	/* Search clear icon */
+	input[type='search']::-webkit-search-cancel-button {
+		-webkit-appearance: none;
+		height: 16px;
+		width: 16px;
+		margin-left: 0.4em;
+		background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23777'><path d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/></svg>");
+		cursor: pointer;
 	}
 }
 

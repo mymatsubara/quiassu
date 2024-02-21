@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { Armaduras } from '$lib/calculations/armadura';
 	import type { Secao } from '$lib/calculations/nbr6118-elu';
-	import InputArmadura from '$lib/components/InputArmadura.svelte';
-	import SelectBitola from '$lib/components/SelectBitola.svelte';
+	import InputArmadura from '$lib/components/inputs/InputArmadura.svelte';
+	import SelectBitola from '$lib/components/inputs/SelectBitola.svelte';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';

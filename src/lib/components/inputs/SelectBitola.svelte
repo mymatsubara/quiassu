@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { unchecked } from '$lib/utils/ui';
 	import type { Selected } from 'bits-ui';
-	import * as Select from './ui/select';
+	import * as Select from '../ui/select';
 
 	export let bitola: number | undefined;
 

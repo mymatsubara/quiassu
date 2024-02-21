@@ -53,7 +53,6 @@ export function mergeBoundingBoxes(...boundingBoxes: (BoundingBox | BoundingBox[
 	for (let boundingBox of boundingBoxes) {
 		if (Array.isArray(boundingBox)) {
 			if (boundingBox.length > 0) {
-				debugger;
 				const bb = mergeBoundingBoxes(...boundingBox);
 				maxX = Math.max(maxX, bb.maxX);
 				minX = Math.min(minX, bb.minY);
