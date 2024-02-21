@@ -25,7 +25,9 @@
 				id: 1,
 				nome: 'Nova seção',
 				armaduras: {
-					estribo: { bitola: 5 }
+					estribo: { bitola: 5 },
+					inferior: { bitola: undefined as any, quantidade: undefined as any },
+					superior: { bitola: undefined as any, quantidade: undefined as any }
 				},
 				secao: {
 					// Secao
@@ -115,7 +117,7 @@
 									><MoreVertical class="h-5 w-5" /></Button
 								>
 							</DropdownMenu.Trigger>
-							<DropdownMenu.Content class="w-56">
+							<DropdownMenu.Content class="w-60">
 								<DropdownMenu.Label>Mais opções</DropdownMenu.Label>
 								<DropdownMenu.Separator />
 								<DropdownMenu.Group>
@@ -218,5 +220,7 @@
 		</div>
 	</div>
 {:else}
-	<EditorSecao bind:dados={secaoAtual} />
+	<div class="h-full">
+		<EditorSecao bind:dados={secaoAtual} onBack={() => (secaoAtual = undefined)} />
+	</div>
 {/if}

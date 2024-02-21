@@ -6,9 +6,10 @@
 	import * as Sheet from '$lib/components/ui/sheet';
 	import { obtemDesenhoDaSecaoComArmaduras } from '$lib/geometry/secao';
 	import type { DadosSecao } from '$lib/project/projeto';
-	import { PencilRuler } from 'lucide-svelte';
+	import { ArrowLeft, PencilRuler } from 'lucide-svelte';
 
 	export let dados: DadosSecao;
+	export let onBack: () => void = () => {};
 
 	$: {
 		if (dados) {
@@ -19,6 +20,9 @@
 
 <div class="flex h-full">
 	<div class="min-w-80 overflow-y-auto border-r p-4 max-md:hidden">
+		<Button class="mb-4 pl-0 text-base hover:bg-transparent" variant="ghost" on:click={onBack}
+			><ArrowLeft class="mr-1 h-5 w-5" /> Voltar</Button
+		>
 		<InputSecao bind:secao={dados.secao} bind:armaduras={dados.armaduras} />
 	</div>
 
