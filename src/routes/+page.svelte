@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import DrawingCanvas from '$lib/components/DrawingCanvas.svelte';
 	import FuncoesProjeto from '$lib/components/FuncoesProjeto.svelte';
@@ -23,7 +22,6 @@
 		SquareStackIcon,
 		X
 	} from 'lucide-svelte';
-	import { onDestroy, onMount } from 'svelte';
 
 	// Seções
 	let pesquisaSecao: string = '';
@@ -60,39 +58,6 @@
 	// Funções do projeto
 	let salvarProjeto: FuncoesProjeto['salvarProjeto'];
 	let abrirProjeto: FuncoesProjeto['abrirProjeto'];
-
-	// Shortcuts
-	function handleShortcuts(e: KeyboardEvent) {
-		if (e.ctrlKey) {
-			switch (e.key.toLowerCase()) {
-				case 's':
-					e.preventDefault();
-					salvarProjeto();
-					return;
-				case 'o':
-					e.preventDefault();
-					abrirProjeto();
-					return;
-			}
-
-			if (e.shiftKey) {
-				switch (e.code.toUpperCase()) {
-					case 'KEYS':
-						e.preventDefault();
-						salvarProjeto(true);
-						return;
-				}
-			}
-		}
-	}
-
-	onMount(() => {
-		document.addEventListener('keypress', handleShortcuts);
-	});
-
-	onDestroy(() => {
-		browser && document.removeEventListener('keypress', handleShortcuts);
-	});
 </script>
 
 <FuncoesProjeto bind:salvarProjeto bind:abrirProjeto />
