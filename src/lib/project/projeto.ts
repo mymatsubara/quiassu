@@ -5,7 +5,6 @@ import { max } from '$lib/utils/array';
 export interface Projeto {
 	nome: string;
 	secoes: DadosSecao[];
-	salvo: boolean;
 }
 
 export interface DadosSecao {
@@ -19,8 +18,7 @@ export interface DadosSecao {
 export function projetoVazio() {
 	return {
 		nome: '',
-		secoes: [],
-		salvo: true
+		secoes: []
 	};
 }
 

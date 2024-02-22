@@ -1,25 +1,34 @@
 <script lang="ts">
 	import DisplayResultados from '$lib/components/DisplayResultados.svelte';
 	import DrawingCanvas from '$lib/components/DrawingCanvas.svelte';
+	import FuncoesProjeto from '$lib/components/FuncoesProjeto.svelte';
 	import InputNomeSecao from '$lib/components/inputs/InputNomeSecao.svelte';
 	import InputSecao from '$lib/components/inputs/InputSecao.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Sheet from '$lib/components/ui/sheet';
+	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { obtemDesenhoDaSecaoComArmaduras } from '$lib/geometry/secao';
 	import type { DadosSecao } from '$lib/project/projeto';
-	import { ArrowLeft, PencilRuler } from 'lucide-svelte';
+	import { isDeepEqual } from '$lib/utils/object';
+	import { ArrowLeft, PencilRuler, Save } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
 	export let dados: DadosSecao;
 
 	let inputNome: HTMLInputElement;
 	let innerWidth: number;
+	let loaded = false;
+	let prevDados: DadosSecao = structuredClone(dados);
 
 	$: {
-		if (dados) {
+		if (loaded || (prevDados !== undefined && !isDeepEqual(dados, prevDados))) {
 			dados.ultimaModificao = Date.now();
+			loaded = true;
 		}
 	}
+
+	let salvarProjeto: FuncoesProjeto['salvarProjeto'];
 
 	onMount(() => {
 		if (!dados.nome) {
@@ -28,17 +37,38 @@
 	});
 </script>
 
+<FuncoesProjeto bind:salvarProjeto />
 <svelte:window bind:innerWidth />
 
 <div class="flex h-full">
 	<div class="min-w-80 overflow-y-auto border-r p-4 max-md:hidden">
-		<Button class="mb-2 pl-0 text-base hover:bg-transparent" variant="ghost" href="/"
-			><ArrowLeft class="mr-1 h-5 w-5" /> Voltar</Button
-		>
+		<div class="mb-3 flex items-start justify-between">
+			<Button class="p-0 pr-2 text-base hover:bg-transparent" variant="ghost" href="/"
+				><ArrowLeft class="mr-1 h-5 w-5" /> Voltar</Button
+			>
+
+			<Tooltip.Root>
+				<Tooltip.Trigger asChild let:builder>
+					<Button
+						builders={[builder]}
+						class="rounded-full"
+						variant="ghost"
+						size="icon"
+						on:click={() => salvarProjeto()}
+					>
+						<Save class="h-5 w-5" />
+					</Button>
+				</Tooltip.Trigger>
+				<Tooltip.Content>
+					<p>Salvar <DropdownMenu.Shortcut>(Ctrl+S)</DropdownMenu.Shortcut></p>
+				</Tooltip.Content>
+			</Tooltip.Root>
+		</div>
 
 		<div class="mb-3">
 			<InputNomeSecao bind:value={dados.nome} bind:inputElement={inputNome} />
 		</div>
+
 		<InputSecao bind:secao={dados.secao} bind:armaduras={dados.armaduras} />
 	</div>
 
@@ -54,6 +84,23 @@
 					><ArrowLeft class="h-5 w-5" /></Button
 				>
 				<InputNomeSecao bind:value={dados.nome} />
+
+				<Tooltip.Root>
+					<Tooltip.Trigger asChild let:builder>
+						<Button
+							builders={[builder]}
+							class="rounded-full px-2 hover:bg-transparent"
+							variant="ghost"
+							size="icon"
+							on:click={() => salvarProjeto()}
+						>
+							<Save class="h-5 w-5" />
+						</Button>
+					</Tooltip.Trigger>
+					<Tooltip.Content>
+						<p>Salvar <DropdownMenu.Shortcut>(Ctrl+S)</DropdownMenu.Shortcut></p>
+					</Tooltip.Content>
+				</Tooltip.Root>
 			</div>
 
 			<Sheet.Root>

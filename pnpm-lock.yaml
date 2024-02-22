@@ -17,6 +17,9 @@ dependencies:
   lucide-svelte:
     specifier: ^0.323.0
     version: 0.323.0(svelte@4.2.10)
+  svelte-sonner:
+    specifier: ^0.3.18
+    version: 0.3.18(svelte@4.2.10)
   tailwind-merge:
     specifier: ^2.2.1
     version: 2.2.1
@@ -2657,6 +2660,14 @@ packages:
       svelte: 4.2.10
       typescript: 5.3.3
     dev: true
+
+  /svelte-sonner@0.3.18(svelte@4.2.10):
+    resolution: {integrity: sha512-DkpbeLB1yZ6CQ0vg/tpFUv2KGxdugODBjZYk9KWsxIAMOsnKg2VEyV2h1ycDztaEbiwoIGBObPvv+MG/4z1HSg==}
+    peerDependencies:
+      svelte: '>=3 <5'
+    dependencies:
+      svelte: 4.2.10
+    dev: false
 
   /svelte@4.2.10:
     resolution: {integrity: sha512-Ep06yCaCdgG1Mafb/Rx8sJ1QS3RW2I2BxGp2Ui9LBHSZ2/tO/aGLc5WqPjgiAP6KAnLJGaIr/zzwQlOo1b8MxA==}

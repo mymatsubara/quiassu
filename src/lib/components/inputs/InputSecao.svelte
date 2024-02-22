@@ -2,9 +2,9 @@
 	import type { Armaduras } from '$lib/calculations/armadura';
 	import type { Secao } from '$lib/calculations/nbr6118-elu';
 	import InputArmadura from '$lib/components/inputs/InputArmadura.svelte';
+	import NumberInput from '$lib/components/inputs/NumberInput.svelte';
 	import SelectBitola from '$lib/components/inputs/SelectBitola.svelte';
 	import { Checkbox } from '$lib/components/ui/checkbox';
-	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
@@ -18,19 +18,6 @@
 
 	let tipoSecao: TipoSecao = secao.geometria.tipo;
 	const rand = Math.random();
-	let possuiEstribo = !!armaduras.estribo;
-
-	$: {
-		armaduras.estribo = possuiEstribo
-			? {
-					bitola: armaduras.estribo?.bitola ?? 5
-			  }
-			: undefined;
-	}
-	$: {
-		secao = cast(secao);
-		secao = secao; // indica atualização para o svelte
-	}
 
 	function cast(secao: Secao): Secao {
 		return deepMap(secao, (_, value) =>
@@ -54,7 +41,7 @@
 					<div class="mt-4 grid gap-2">
 						<div class="grid grid-cols-2 items-center gap-4">
 							<Label for="largura-{rand}">Largura (cm)</Label>
-							<Input
+							<NumberInput
 								bind:value={secao.geometria.largura}
 								type="number"
 								id="largura-{rand}"
@@ -63,7 +50,7 @@
 						</div>
 						<div class="grid grid-cols-2 items-center gap-4">
 							<Label for="altura-{rand}">Altura (cm)</Label>
-							<Input
+							<NumberInput
 								bind:value={secao.geometria.altura}
 								type="number"
 								id="altura-{rand}"
@@ -79,7 +66,7 @@
 		</Tabs.Root>
 		<div class="grid grid-cols-2 items-center gap-4">
 			<Label for="cobrimento-{rand}">Cobrimento (cm)</Label>
-			<Input bind:value={secao.cobrimento} type="number" id="cobrimento-{rand}" class="h-8" />
+			<NumberInput bind:value={secao.cobrimento} type="number" id="cobrimento-{rand}" class="h-8" />
 		</div>
 	</div>
 
@@ -90,19 +77,19 @@
 
 		<div class="grid grid-cols-2 items-center gap-4">
 			<Label for="mskx-{rand}">M<sub>sk,x</sub> (KNm)</Label>
-			<Input bind:value={secao.mskx} type="number" id="mskx-{rand}" class="h-8" />
+			<NumberInput bind:value={secao.mskx} type="number" id="mskx-{rand}" class="h-8" />
 		</div>
 		<!-- <div class="grid grid-cols-2 items-center gap-4">
 					<Label for="msky-{rand}">M<sub>sk,y</sub> (KNm)</Label>
-					<Input bind:value={secao.msky} type="number" id="msky-{rand}" class="h-8" />
+					<NumberInput bind:value={secao.msky} type="number" id="msky-{rand}" class="h-8" />
 				</div> -->
 		<div class="grid grid-cols-2 items-center gap-4">
 			<Label for="nsd-{rand}">N<sub>sd</sub> (KN)</Label>
-			<Input bind:value={secao.nsd} type="number" id="nsd-{rand}" class="h-8" />
+			<NumberInput bind:value={secao.nsd} type="number" id="nsd-{rand}" class="h-8" />
 		</div>
 		<div class="grid grid-cols-2 items-center gap-4">
 			<Label for="gamaf-{rand}">γ<sub>f</sub></Label>
-			<Input bind:value={secao.gamaf} type="number" id="gamaf-{rand}" class="h-8" />
+			<NumberInput bind:value={secao.gamaf} type="number" id="gamaf-{rand}" class="h-8" />
 		</div>
 	</div>
 
@@ -114,9 +101,16 @@
 		<div class="grid grid-cols-2">
 			<div class="flex h-8 items-center space-x-2">
 				<Checkbox
-					bind:checked={possuiEstribo}
 					id="possui-estribo-{rand}"
 					aria-labelledby="Possui estribo?"
+					checked={!!armaduras.estribo}
+					onCheckedChange={(value) => {
+						if (value) {
+							armaduras.estribo = { bitola: 5 };
+						} else {
+							armaduras.estribo = undefined;
+						}
+					}}
 				/>
 				<Label
 					for="possui-estribo-{rand}"
@@ -162,11 +156,11 @@
 
 		<div class="grid grid-cols-2 items-center gap-4">
 			<Label for="fck-{rand}">f<sub>ck</sub> (MPa)</Label>
-			<Input bind:value={secao.fck} type="number" id="fck-{rand}" class="h-8" />
+			<NumberInput bind:value={secao.fck} type="number" id="fck-{rand}" class="h-8" />
 		</div>
 		<div class="grid grid-cols-2 items-center gap-4">
 			<Label for="gamac-{rand}">γ<sub>c</sub></Label>
-			<Input bind:value={secao.gamac} type="number" id="gamac-{rand}" class="h-8" />
+			<NumberInput bind:value={secao.gamac} type="number" id="gamac-{rand}" class="h-8" />
 		</div>
 	</div>
 
@@ -177,15 +171,15 @@
 
 		<div class="grid grid-cols-2 items-center gap-4">
 			<Label for="fy-{rand}">f<sub>y</sub> (MPa)</Label>
-			<Input bind:value={secao.fy} type="number" id="fy-{rand}" class="h-8" />
+			<NumberInput bind:value={secao.fy} type="number" id="fy-{rand}" class="h-8" />
 		</div>
 		<div class="grid grid-cols-2 items-center gap-4">
 			<Label for="es-{rand}">E<sub>s</sub> (GPa)</Label>
-			<Input bind:value={secao.es} type="number" id="es-{rand}" class="h-8" />
+			<NumberInput bind:value={secao.es} type="number" id="es-{rand}" class="h-8" />
 		</div>
 		<div class="grid grid-cols-2 items-center gap-4">
 			<Label for="gamas-{rand}">γ<sub>s</sub></Label>
-			<Input bind:value={secao.gamas} type="number" id="gamas-{rand}" class="h-8" />
+			<NumberInput bind:value={secao.gamas} type="number" id="gamas-{rand}" class="h-8" />
 		</div>
 	</div>
 </div>
