@@ -114,7 +114,7 @@
 		<div class="grid grid-cols-2">
 			<div class="flex h-8 items-center space-x-2">
 				<Checkbox
-					bind:checked={possuiEstribo}
+					on:change={() => }
 					id="possui-estribo-{rand}"
 					aria-labelledby="Possui estribo?"
 				/>
