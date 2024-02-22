@@ -1,20 +1,21 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import DrawingCanvas from '$lib/components/DrawingCanvas.svelte';
-	import SaveProjectButton from '$lib/components/buttons/SaveProjectButton.svelte';
+	import FuncoesProjeto from '$lib/components/FuncoesProjeto.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Input } from '$lib/components/ui/input';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { obtemDesenhoDaSecaoComArmaduras } from '$lib/geometry/secao';
-	import { criaNovaSecao, projetoVazio, type DadosSecao } from '$lib/project/projeto';
-	import { arquivoProjeto, projeto } from '$lib/stores/projeto';
+	import { criaNovaSecao, type DadosSecao } from '$lib/project/projeto';
+	import { projeto } from '$lib/stores/projeto';
 	import {
 		FolderInput,
 		MoreVertical,
 		PenLine,
 		Plus,
+		Save,
 		SaveAll,
 		SquareStackIcon,
 		X
@@ -31,7 +32,12 @@
 		$projeto.secoes = $projeto.secoes.filter((s) => s.id !== secao.id);
 		$projeto = $projeto;
 	}
+
+	let salvarProjeto: FuncoesProjeto['salvarProjeto'];
+	let abrirProjeto: FuncoesProjeto['abrirProjeto'];
 </script>
+
+<FuncoesProjeto bind:salvarProjeto bind:abrirProjeto />
 
 <div class="flex h-full flex-col">
 	<nav class="border-b">
@@ -51,7 +57,16 @@
 				<div class="ml-auto flex w-full justify-end gap-3">
 					<Tooltip.Root>
 						<Tooltip.Trigger asChild let:builder>
-							<SaveProjectButton builders={[builder]} />
+							<Button
+								builders={[builder]}
+								class={'rounded-full'}
+								variant="secondary"
+								size="icon"
+								disabled={$projeto.salvo}
+								on:click={() => salvarProjeto()}
+							>
+								<Save class="h-5 w-5" />
+							</Button>
 						</Tooltip.Trigger>
 						<Tooltip.Content>
 							<p>Salvar <DropdownMenu.Shortcut>(Ctrl+S)</DropdownMenu.Shortcut></p>
@@ -65,27 +80,7 @@
 								class="rounded-full"
 								variant="secondary"
 								size="icon"
-								on:click={async () => {
-									if ('showOpenFilePicker' in window) {
-										const [fileHandle] = await window.showOpenFilePicker({
-											types: [{ description: 'JSON file', accept: { 'text/json': ['.json'] } }],
-											multiple: false
-										});
-										try {
-											$arquivoProjeto = fileHandle;
-											const file = await fileHandle.getFile();
-											const textData = await file.text();
-											const data = JSON.parse(textData);
-
-											$projeto = { ...projetoVazio(), ...data };
-											console.log({ projeto });
-										} catch (e) {
-											alert('Arquivo inválido');
-										}
-									} else {
-										alert('Não implementado ainda');
-									}
-								}}><FolderInput class="h-5 w-5" /></Button
+								on:click={abrirProjeto}><FolderInput class="h-5 w-5" /></Button
 							>
 						</Tooltip.Trigger>
 						<Tooltip.Content>
@@ -103,7 +98,11 @@
 							<DropdownMenu.Label>Mais opções</DropdownMenu.Label>
 							<DropdownMenu.Separator />
 							<DropdownMenu.Group>
-								<DropdownMenu.Item>
+								<DropdownMenu.Item
+									on:click={() => {
+										salvarProjeto(true);
+									}}
+								>
 									<SaveAll class="mr-2 h-4 w-4" />
 									<span>Salvar como...</span>
 									<DropdownMenu.Shortcut>Ctrl+Shift+S</DropdownMenu.Shortcut>
