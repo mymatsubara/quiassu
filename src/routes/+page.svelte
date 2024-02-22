@@ -20,6 +20,7 @@
 		SquareStackIcon,
 		X
 	} from 'lucide-svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	function adicionaNovaSecao() {
 		const novaSecao = criaNovaSecao($projeto);
@@ -35,6 +36,38 @@
 
 	let salvarProjeto: FuncoesProjeto['salvarProjeto'];
 	let abrirProjeto: FuncoesProjeto['abrirProjeto'];
+
+	function handleShortcuts(e: KeyboardEvent) {
+		if (e.ctrlKey) {
+			switch (e.key.toLowerCase()) {
+				case 's':
+					e.preventDefault();
+					salvarProjeto();
+					return;
+				case 'o':
+					e.preventDefault();
+					abrirProjeto();
+					return;
+			}
+
+			if (e.shiftKey) {
+				switch (e.code.toUpperCase()) {
+					case 'KEYS':
+						e.preventDefault();
+						salvarProjeto(true);
+						return;
+				}
+			}
+		}
+	}
+
+	onMount(() => {
+		document.addEventListener('keypress', handleShortcuts);
+	});
+
+	onDestroy(() => {
+		document.removeEventListener('keypress', handleShortcuts);
+	});
 </script>
 
 <FuncoesProjeto bind:salvarProjeto bind:abrirProjeto />
