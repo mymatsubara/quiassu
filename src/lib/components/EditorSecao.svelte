@@ -11,6 +11,7 @@
 	import { obtemDesenhoDaSecaoComArmaduras } from '$lib/geometry/secao';
 	import type { DadosSecao } from '$lib/project/projeto';
 	import { projeto } from '$lib/stores/projeto';
+	import { isDeepEqual } from '$lib/utils/object';
 	import { ArrowLeft, PencilRuler, Save } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 
@@ -18,10 +19,13 @@
 
 	let inputNome: HTMLInputElement;
 	let innerWidth: number;
+	let loaded = false;
+	let prevDados: DadosSecao = structuredClone(dados);
 
 	$: {
-		if (dados) {
+		if (loaded || (prevDados !== undefined && !isDeepEqual(dados, prevDados))) {
 			dados.ultimaModificao = Date.now();
+			loaded = true;
 		}
 	}
 
