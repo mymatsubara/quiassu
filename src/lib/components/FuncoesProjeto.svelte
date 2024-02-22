@@ -49,8 +49,5 @@
 			const blob = new Blob([data], { type: 'text/json' });
 			saveToFileOld(filename, blob);
 		}
-
-		$projeto.salvo = true;
-		$projeto = $projeto;
 	}
 </script>

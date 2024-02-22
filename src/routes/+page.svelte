@@ -120,7 +120,6 @@
 								class="rounded-full"
 								variant="secondary"
 								size="icon"
-								disabled={$projeto.salvo}
 								on:click={() => salvarProjeto()}
 							>
 								<Save class="h-5 w-5" />

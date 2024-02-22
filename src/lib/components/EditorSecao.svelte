@@ -10,7 +10,6 @@
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { obtemDesenhoDaSecaoComArmaduras } from '$lib/geometry/secao';
 	import type { DadosSecao } from '$lib/project/projeto';
-	import { projeto } from '$lib/stores/projeto';
 	import { isDeepEqual } from '$lib/utils/object';
 	import { ArrowLeft, PencilRuler, Save } from 'lucide-svelte';
 	import { onMount } from 'svelte';
@@ -55,7 +54,6 @@
 						class="rounded-full"
 						variant="ghost"
 						size="icon"
-						disabled={$projeto.salvo}
 						on:click={() => salvarProjeto()}
 					>
 						<Save class="h-5 w-5" />
@@ -94,7 +92,6 @@
 							class="rounded-full px-2 hover:bg-transparent"
 							variant="ghost"
 							size="icon"
-							disabled={$projeto.salvo}
 							on:click={() => salvarProjeto()}
 						>
 							<Save class="h-5 w-5" />
