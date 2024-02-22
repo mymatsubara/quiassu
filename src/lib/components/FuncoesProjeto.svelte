@@ -2,6 +2,7 @@
 	import { projetoVazio } from '$lib/project/projeto';
 	import { arquivoProjeto, projeto } from '$lib/stores/projeto';
 	import { saveToFile, saveToFileOld } from '$lib/utils/file';
+	import { toast } from 'svelte-sonner';
 
 	export async function abrirProjeto() {
 		if ('showOpenFilePicker' in window) {
@@ -49,5 +50,7 @@
 			const blob = new Blob([data], { type: 'text/json' });
 			saveToFileOld(filename, blob);
 		}
+
+		toast.success('Projeto salvo');
 	}
 </script>
