@@ -117,7 +117,7 @@
 						<Tooltip.Trigger asChild let:builder>
 							<Button
 								builders={[builder]}
-								class={'rounded-full'}
+								class="rounded-full"
 								variant="secondary"
 								size="icon"
 								disabled={$projeto.salvo}
