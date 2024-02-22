@@ -18,18 +18,9 @@
 
 	let tipoSecao: TipoSecao = secao.geometria.tipo;
 	const rand = Math.random();
-	let possuiEstribo = !!armaduras.estribo;
 
 	$: {
-		armaduras.estribo = possuiEstribo
-			? {
-					bitola: armaduras.estribo?.bitola ?? 5
-			  }
-			: undefined;
-	}
-	$: {
 		secao = cast(secao);
-		secao = secao; // indica atualização para o svelte
 	}
 
 	function cast(secao: Secao): Secao {
@@ -114,9 +105,16 @@
 		<div class="grid grid-cols-2">
 			<div class="flex h-8 items-center space-x-2">
 				<Checkbox
-					on:change={() => }
 					id="possui-estribo-{rand}"
 					aria-labelledby="Possui estribo?"
+					checked={!!armaduras.estribo}
+					onCheckedChange={(value) => {
+						if (value) {
+							armaduras.estribo = { bitola: 5 };
+						} else {
+							armaduras.estribo = undefined;
+						}
+					}}
 				/>
 				<Label
 					for="possui-estribo-{rand}"
