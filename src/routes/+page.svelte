@@ -1,24 +1,49 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import DrawingCanvas from '$lib/components/DrawingCanvas.svelte';
-	import SaveProjectButton from '$lib/components/buttons/SaveProjectButton.svelte';
+	import FuncoesProjeto from '$lib/components/FuncoesProjeto.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Input } from '$lib/components/ui/input';
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { obtemDesenhoDaSecaoComArmaduras } from '$lib/geometry/secao';
-	import { criaNovaSecao, projetoVazio, type DadosSecao } from '$lib/project/projeto';
-	import { arquivoProjeto, projeto } from '$lib/stores/projeto';
+	import { criaNovaSecao, type DadosSecao } from '$lib/project/projeto';
+	import { projeto } from '$lib/stores/projeto';
+	import Fuse from 'fuse.js';
 	import {
 		FolderInput,
+		HelpCircle,
 		MoreVertical,
 		PenLine,
 		Plus,
+		Save,
 		SaveAll,
 		SquareStackIcon,
 		X
 	} from 'lucide-svelte';
+	import { onDestroy, onMount } from 'svelte';
+
+	// Seções
+	let pesquisaSecao: string = '';
+	let secoesFiltradas: DadosSecao[] = [];
+
+	$: {
+		if (pesquisaSecao) {
+			const secoes = $projeto.secoes.map((secao) => ({
+				...secao,
+				nome: secao.nome || 'Seção sem nome'
+			}));
+			const fuse = new Fuse(secoes, {
+				keys: ['nome'],
+				threshold: 0.4
+			});
+			secoesFiltradas = fuse.search(pesquisaSecao).map((r) => r.item);
+		} else {
+			secoesFiltradas = $projeto.secoes;
+		}
+	}
 
 	function adicionaNovaSecao() {
 		const novaSecao = criaNovaSecao($projeto);
@@ -31,7 +56,46 @@
 		$projeto.secoes = $projeto.secoes.filter((s) => s.id !== secao.id);
 		$projeto = $projeto;
 	}
+
+	// Funções do projeto
+	let salvarProjeto: FuncoesProjeto['salvarProjeto'];
+	let abrirProjeto: FuncoesProjeto['abrirProjeto'];
+
+	// Shortcuts
+	function handleShortcuts(e: KeyboardEvent) {
+		if (e.ctrlKey) {
+			switch (e.key.toLowerCase()) {
+				case 's':
+					e.preventDefault();
+					salvarProjeto();
+					return;
+				case 'o':
+					e.preventDefault();
+					abrirProjeto();
+					return;
+			}
+
+			if (e.shiftKey) {
+				switch (e.code.toUpperCase()) {
+					case 'KEYS':
+						e.preventDefault();
+						salvarProjeto(true);
+						return;
+				}
+			}
+		}
+	}
+
+	onMount(() => {
+		document.addEventListener('keypress', handleShortcuts);
+	});
+
+	onDestroy(() => {
+		browser && document.removeEventListener('keypress', handleShortcuts);
+	});
 </script>
+
+<FuncoesProjeto bind:salvarProjeto bind:abrirProjeto />
 
 <div class="flex h-full flex-col">
 	<nav class="border-b">
@@ -48,50 +112,41 @@
 					/>
 				</label>
 
-				<div class="ml-auto flex w-full justify-end gap-3">
+				<div class="flex justify-end gap-3">
 					<Tooltip.Root>
 						<Tooltip.Trigger asChild let:builder>
-							<SaveProjectButton builders={[builder]} />
+							<Button
+								builders={[builder]}
+								class={'rounded-full'}
+								variant="secondary"
+								size="icon"
+								disabled={$projeto.salvo}
+								on:click={() => salvarProjeto()}
+							>
+								<Save class="h-5 w-5" />
+							</Button>
 						</Tooltip.Trigger>
 						<Tooltip.Content>
 							<p>Salvar <DropdownMenu.Shortcut>(Ctrl+S)</DropdownMenu.Shortcut></p>
 						</Tooltip.Content>
 					</Tooltip.Root>
 
-					<Tooltip.Root>
-						<Tooltip.Trigger asChild let:builder>
-							<Button
-								builders={[builder]}
-								class="rounded-full"
-								variant="secondary"
-								size="icon"
-								on:click={async () => {
-									if ('showOpenFilePicker' in window) {
-										const [fileHandle] = await window.showOpenFilePicker({
-											types: [{ description: 'JSON file', accept: { 'text/json': ['.json'] } }],
-											multiple: false
-										});
-										try {
-											$arquivoProjeto = fileHandle;
-											const file = await fileHandle.getFile();
-											const textData = await file.text();
-											const data = JSON.parse(textData);
-
-											$projeto = { ...projetoVazio(), ...data };
-											console.log({ projeto });
-										} catch (e) {
-											alert('Arquivo inválido');
-										}
-									} else {
-										alert('Não implementado ainda');
-									}
-								}}><FolderInput class="h-5 w-5" /></Button
-							>
-						</Tooltip.Trigger>
-						<Tooltip.Content>
-							<p>Abrir projeto <DropdownMenu.Shortcut>(Ctrl+O)</DropdownMenu.Shortcut></p>
-						</Tooltip.Content>
-					</Tooltip.Root>
+					<div class="hidden sm:block">
+						<Tooltip.Root>
+							<Tooltip.Trigger asChild let:builder>
+								<Button
+									builders={[builder]}
+									class="rounded-full"
+									variant="secondary"
+									size="icon"
+									on:click={abrirProjeto}><FolderInput class="h-5 w-5" /></Button
+								>
+							</Tooltip.Trigger>
+							<Tooltip.Content>
+								<p>Abrir projeto <DropdownMenu.Shortcut>(Ctrl+O)</DropdownMenu.Shortcut></p>
+							</Tooltip.Content>
+						</Tooltip.Root>
+					</div>
 
 					<DropdownMenu.Root>
 						<DropdownMenu.Trigger asChild let:builder>
@@ -103,7 +158,21 @@
 							<DropdownMenu.Label>Mais opções</DropdownMenu.Label>
 							<DropdownMenu.Separator />
 							<DropdownMenu.Group>
-								<DropdownMenu.Item>
+								<DropdownMenu.Item
+									class="sm:hidden"
+									on:click={() => {
+										abrirProjeto();
+									}}
+								>
+									<FolderInput class="mr-2 h-4 w-4" />
+									<span>Abrir projeto</span>
+									<DropdownMenu.Shortcut>Ctrl+O</DropdownMenu.Shortcut>
+								</DropdownMenu.Item>
+								<DropdownMenu.Item
+									on:click={() => {
+										salvarProjeto(true);
+									}}
+								>
 									<SaveAll class="mr-2 h-4 w-4" />
 									<span>Salvar como...</span>
 									<DropdownMenu.Shortcut>Ctrl+Shift+S</DropdownMenu.Shortcut>
@@ -122,7 +191,12 @@
 
 	<div class="container mt-10 pb-5">
 		<div class="flex h-10 items-center justify-between gap-5">
-			<Input type="search" placeholder="Pesquisar seção" class="h-full max-w-xs bg-gray-50" />
+			<Input
+				type="search"
+				placeholder="Pesquisar seção"
+				bind:value={pesquisaSecao}
+				class="h-full max-w-xs bg-gray-50"
+			/>
 			<Button class="flex h-full items-center" on:click={() => adicionaNovaSecao()}
 				><Plus class="mr-1 h-5 w-5" /> Nova seção</Button
 			>
@@ -130,7 +204,7 @@
 
 		{#if $projeto.secoes.length === 0}
 			<div class="mt-20 flex flex-col items-center justify-center gap-5">
-				<SquareStackIcon strokeWidth={1} class="h-48 w-48" />
+				<SquareStackIcon strokeWidth={0.5} class="h-48 w-48 text-gray-800" />
 				<div class="max-w mb-1 text-center text-muted-foreground">
 					O projeto ainda não contém nenhuma seção
 				</div>
@@ -138,62 +212,69 @@
 					><Plus class="mr-2 h-6 w-6" /> Adicionar nova seção</Button
 				>
 			</div>
-		{/if}
-
-		<div
-			class="mt-8 grid gap-6 min-[550px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
-		>
-			{#each $projeto.secoes as secao (secao.id)}
-				{@const href = `/secao?id=${secao.id}`}
-				<Card.Root class="h-max w-full shadow">
-					<Card.Content class="flex w-full flex-col items-start p-4">
-						<div class="aspect-square w-full">
-							<Button class="h-full w-full" variant="ghost" {href}>
-								<DrawingCanvas
-									offset={0.9}
-									drawing={obtemDesenhoDaSecaoComArmaduras(secao.secao, secao.armaduras)}
-								/>
-							</Button>
-						</div>
-
-						<div class="mt-1 flex w-full items-end justify-between px-2 pb-1">
-							<div class="ml-1 flex flex-col gap-1">
-								<a class="cursor-pointer text-base font-semibold" {href}>
-									{secao.nome || 'Seção sem nome'}
-								</a>
-								<div class="text-xs font-medium text-muted-foreground">
-									{new Date(secao.ultimaModificao).toLocaleTimeString('pt-BR', {
-										day: 'numeric',
-										month: 'numeric',
-										year: 'numeric',
-										hour: 'numeric',
-										minute: 'numeric',
-										second: 'numeric'
-									})}
-								</div>
+		{:else if secoesFiltradas.length === 0}
+			<div class="mt-20 flex flex-col items-center justify-center gap-5">
+				<HelpCircle strokeWidth={0.5} class="h-48 w-48 text-gray-800" />
+				<div class="max-w mb-1 text-center text-muted-foreground">
+					Nenhuma seção encontrada para o filtro: '{pesquisaSecao}'
+				</div>
+			</div>
+		{:else}
+			<div
+				class="mt-8 grid gap-6 min-[550px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+			>
+				{#each secoesFiltradas as secao (secao.id)}
+					{@const href = `/secao?id=${secao.id}`}
+					<Card.Root class="h-max w-full shadow">
+						<Card.Content class="flex w-full flex-col items-start p-4">
+							<div class="aspect-square w-full">
+								<Button class="h-full w-full" variant="ghost" {href}>
+									<DrawingCanvas
+										offset={0.9}
+										drawing={obtemDesenhoDaSecaoComArmaduras(secao.secao, secao.armaduras)}
+									/>
+								</Button>
 							</div>
 
-							<DropdownMenu.Root>
-								<DropdownMenu.Trigger asChild let:builder>
-									<Button variant="ghost" builders={[builder]} size="icon"
-										><MoreVertical class="h-5 w-5" /></Button
-									>
-								</DropdownMenu.Trigger>
-								<DropdownMenu.Content class="w-40">
-									<!-- <DropdownMenu.Label>Mais</DropdownMenu.Label>
+							<div class="mt-1 flex w-full items-end justify-between px-2 pb-1">
+								<div class="ml-1 flex flex-col gap-1">
+									<a class="cursor-pointer text-base font-semibold" {href}>
+										{secao.nome || 'Seção sem nome'}
+									</a>
+									<div class="text-xs font-medium text-muted-foreground">
+										{new Date(secao.ultimaModificao).toLocaleTimeString('pt-BR', {
+											day: 'numeric',
+											month: 'numeric',
+											year: 'numeric',
+											hour: 'numeric',
+											minute: 'numeric',
+											second: 'numeric'
+										})}
+									</div>
+								</div>
+
+								<DropdownMenu.Root>
+									<DropdownMenu.Trigger asChild let:builder>
+										<Button variant="ghost" builders={[builder]} size="icon"
+											><MoreVertical class="h-5 w-5" /></Button
+										>
+									</DropdownMenu.Trigger>
+									<DropdownMenu.Content class="w-40">
+										<!-- <DropdownMenu.Label>Mais</DropdownMenu.Label>
 										<DropdownMenu.Separator /> -->
-									<DropdownMenu.Group>
-										<DropdownMenu.Item on:click={() => removeSecao(secao)}>
-											<X class="mr-2 h-4 w-4" />
-											<span>Remover</span>
-										</DropdownMenu.Item>
-									</DropdownMenu.Group>
-								</DropdownMenu.Content>
-							</DropdownMenu.Root>
-						</div>
-					</Card.Content>
-				</Card.Root>
-			{/each}
-		</div>
+										<DropdownMenu.Group>
+											<DropdownMenu.Item on:click={() => removeSecao(secao)}>
+												<X class="mr-2 h-4 w-4" />
+												<span>Remover</span>
+											</DropdownMenu.Item>
+										</DropdownMenu.Group>
+									</DropdownMenu.Content>
+								</DropdownMenu.Root>
+							</div>
+						</Card.Content>
+					</Card.Root>
+				{/each}
+			</div>
+		{/if}
 	</div>
 </div>
