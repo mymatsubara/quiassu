@@ -226,6 +226,27 @@
 	const boldColsSet: Set<Col> = new Set(boldCols);
 	const { filterValue } = pluginStates.filter;
 	const { selectedDataIds } = pluginStates.select;
+
+	function exportParaCsv() {
+		const filename = `Resultados - ${projeto.nome || 'Projeto sem nome'}.csv`;
+		const data = selectedData();
+		const csv = toCsv(data);
+		const encoder = new TextEncoder();
+		// Prefixa o arquivo com BOM (https://en.wikipedia.org/wiki/Byte_order_mark) para indicar que o arquivo foi salvo com utf-8
+		const bom = new Uint8Array([0xef, 0xbb, 0xbf]);
+
+		const blob = new Blob([bom, encoder.encode(csv)], {
+			type: 'text/csv'
+		});
+		saveToFileOld(filename, blob);
+		toast.success('Arquivo exportado com sucesso');
+	}
+
+	function selectedData() {
+		return Object.keys($selectedDataIds).length > 0
+			? data.filter((secao) => $selectedDataIds[secao.id])
+			: data;
+	}
 </script>
 
 <div>
@@ -245,22 +266,7 @@
 				<DropdownMenu.Label>Exportar</DropdownMenu.Label>
 				<DropdownMenu.Separator />
 				<DropdownMenu.Group>
-					<DropdownMenu.Item
-						class="cursor-pointer"
-						on:click={() => {
-							const filename = `Resultados - ${projeto.nome || 'Projeto sem nome'}.csv`;
-							const csv = toCsv(data);
-							const encoder = new TextEncoder();
-							// Prefixa o arquivo com BOM (https://en.wikipedia.org/wiki/Byte_order_mark) para indicar que o arquivo foi salvo com utf-8
-							const bom = new Uint8Array([0xef, 0xbb, 0xbf]);
-
-							const blob = new Blob([bom, encoder.encode(csv)], {
-								type: 'text/csv'
-							});
-							saveToFileOld(filename, blob);
-							toast.success('Arquivo exportado com sucesso');
-						}}
-					>
+					<DropdownMenu.Item class="cursor-pointer" on:click={exportParaCsv}>
 						<FileSpreadsheet class="mr-2 size-4" />
 						<span>Para csv...</span>
 					</DropdownMenu.Item>
