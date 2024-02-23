@@ -105,7 +105,7 @@
 	});
 
 	const numberCell = ({ value }: { value: number }) =>
-		value.toLocaleString('en-US', { maximumFractionDigits: 2 });
+		value.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
 
 	const columns = table.createColumns([
 		table.column({
@@ -200,7 +200,7 @@
 			accessor: 'asAdotado',
 			header: 'As,adot (cm²)',
 			cell: ({ value }) =>
-				value ? value.toLocaleString('en-US', { maximumFractionDigits: 2 }) : '-'
+				value ? value.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : '-'
 		}),
 		table.column({
 			accessor: 'armaduraSuperiorAdotada',
@@ -210,7 +210,7 @@
 			accessor: 'asLinhaAdotado',
 			header: "A's,adot (cm²)",
 			cell: ({ value }) =>
-				value ? value.toLocaleString('en-US', { maximumFractionDigits: 2 }) : '-'
+				value ? value.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : '-'
 		})
 	]);
 
