@@ -112,10 +112,8 @@
 								>
 							</DropdownMenu.Trigger>
 							<DropdownMenu.Content class="w-40">
-								<!-- <DropdownMenu.Label>Mais</DropdownMenu.Label>
-										<DropdownMenu.Separator /> -->
 								<DropdownMenu.Group>
-									<DropdownMenu.Item on:click={() => removeSecao(secao)}>
+									<DropdownMenu.Item class="cursor-pointer" on:click={() => removeSecao(secao)}>
 										<X class="mr-2 h-4 w-4" />
 										<span>Remover</span>
 									</DropdownMenu.Item>

@@ -9,11 +9,16 @@
 	import DataTableCheckbox from '$lib/components/datatables/DataTableCheckbox.svelte';
 	import NomeDisplay from '$lib/components/datatables/resultados/NomeDisplay.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
+	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import { Input } from '$lib/components/ui/input';
 	import * as Table from '$lib/components/ui/table';
 	import type { DadosSecao, Projeto } from '$lib/project/projeto';
+	import { toCsv } from '$lib/utils/csv';
+	import { saveToFileOld } from '$lib/utils/file';
+	import { ChevronDown, FileSpreadsheet } from 'lucide-svelte';
 	import { Render, Subscribe, createRender, createTable } from 'svelte-headless-table';
 	import { addSelectedRows, addTableFilter } from 'svelte-headless-table/plugins';
+	import { toast } from 'svelte-sonner';
 	import { readable } from 'svelte/store';
 
 	export let projeto: Projeto;
@@ -224,13 +229,44 @@
 </script>
 
 <div>
-	<div class="flex items-center">
+	<div class="flex items-center justify-between">
 		<Input
 			class="max-w-sm bg-gray-50"
 			placeholder="Filtra seções..."
 			type="text"
 			bind:value={$filterValue}
 		/>
+
+		<DropdownMenu.Root>
+			<DropdownMenu.Trigger asChild let:builder>
+				<Button builders={[builder]}>Exportar <ChevronDown class="ml-2 size-4" /></Button>
+			</DropdownMenu.Trigger>
+			<DropdownMenu.Content class="w-40">
+				<DropdownMenu.Label>Exportar</DropdownMenu.Label>
+				<DropdownMenu.Separator />
+				<DropdownMenu.Group>
+					<DropdownMenu.Item
+						class="cursor-pointer"
+						on:click={() => {
+							const filename = `Resultados - ${projeto.nome || 'Projeto sem nome'}.csv`;
+							const csv = toCsv(data);
+							const encoder = new TextEncoder();
+							// Prefixa o arquivo com BOM (https://en.wikipedia.org/wiki/Byte_order_mark) para indicar que o arquivo foi salvo com utf-8
+							const bom = new Uint8Array([0xef, 0xbb, 0xbf]);
+
+							const blob = new Blob([bom, encoder.encode(csv)], {
+								type: 'text/csv'
+							});
+							saveToFileOld(filename, blob);
+							toast.success('Arquivo exportado com sucesso');
+						}}
+					>
+						<FileSpreadsheet class="mr-2 size-4" />
+						<span>Para csv...</span>
+					</DropdownMenu.Item>
+				</DropdownMenu.Group>
+			</DropdownMenu.Content>
+		</DropdownMenu.Root>
 	</div>
 
 	<div class="mt-6 rounded-md border">

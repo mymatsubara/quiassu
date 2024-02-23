@@ -76,7 +76,7 @@
 							<DropdownMenu.Separator />
 							<DropdownMenu.Group>
 								<DropdownMenu.Item
-									class="sm:hidden"
+									class="cursor-pointer sm:hidden"
 									on:click={() => {
 										abrirProjeto();
 									}}
@@ -86,6 +86,7 @@
 									<DropdownMenu.Shortcut>Ctrl+O</DropdownMenu.Shortcut>
 								</DropdownMenu.Item>
 								<DropdownMenu.Item
+									class="cursor-pointer"
 									on:click={() => {
 										salvarProjeto(true);
 									}}
