@@ -35,3 +35,34 @@ export function calculaDLinha(secao: Secao, armaduras: Armaduras) {
 function calculaDLinhaDireto(cobrimento: number, bitolaEstribo: number, bitolaArmadura: number) {
 	return cobrimento + bitolaEstribo + bitolaArmadura / 2;
 }
+
+export function calculaEspacamento(largura: number, cobrimento: number, armaduras: Armaduras) {
+	const bitolaEstribo = armaduras.estribo?.bitola ?? 0;
+
+	return {
+		inferior: armaduras.inferior
+			? calculaEspacamentoNum(largura, cobrimento, bitolaEstribo, armaduras.inferior)
+			: undefined,
+		superior: armaduras.superior
+			? calculaEspacamentoNum(largura, cobrimento, bitolaEstribo, armaduras.superior)
+			: undefined
+	};
+}
+
+function calculaEspacamentoNum(
+	largura: number,
+	cobrimento: number,
+	bitolaEstribo: number,
+	armadura: Armadura
+) {
+	const dLinha = cobrimento + bitolaEstribo / 10 + armadura.bitola / (2 * 10);
+	const larguraUtil = largura - 2 * dLinha;
+
+	return armadura.quantidade > 1 ? larguraUtil / (armadura.quantidade - 1) : larguraUtil;
+}
+
+export function descricaoArmadura(bitola: number, espacamento: number) {
+	return `${bitola.toLocaleString('pt-BR')}Φ${espacamento.toLocaleString('pt-BR', {
+		maximumFractionDigits: 1
+	})}`;
+}

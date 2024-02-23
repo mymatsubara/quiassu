@@ -3,6 +3,7 @@
 	import CustomTabs from '$lib/components/CustomTabs.svelte';
 	import DrawingCanvas from '$lib/components/DrawingCanvas.svelte';
 	import FuncoesProjeto from '$lib/components/FuncoesProjeto.svelte';
+	import TabelaResultados from '$lib/components/datatables/resultados/ResultadosDataTable.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
@@ -161,7 +162,7 @@
 			<div class="flex h-10 items-center justify-between gap-5">
 				<Input
 					type="search"
-					placeholder="Pesquisar seção"
+					placeholder="Pesquisar seções"
 					bind:value={pesquisaSecao}
 					class="h-full max-w-xs bg-gray-50"
 				/>
@@ -245,7 +246,7 @@
 				</div>
 			{/if}
 		{:else if tab === 'Resultados'}
-			hello
+			<TabelaResultados projeto={$projeto} />
 		{/if}
 	</div>
 </div>
