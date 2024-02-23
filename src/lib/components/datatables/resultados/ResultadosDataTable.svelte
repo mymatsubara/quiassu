@@ -7,6 +7,8 @@
 	} from '$lib/calculations/armadura';
 	import { calcularAreaAcoMin, dimensionaSecao } from '$lib/calculations/nbr6118-elu';
 	import DataTableCheckbox from '$lib/components/datatables/DataTableCheckbox.svelte';
+	import NomeDisplay from '$lib/components/datatables/resultados/NomeDisplay.svelte';
+	import Button from '$lib/components/ui/button/button.svelte';
 	import { Input } from '$lib/components/ui/input';
 	import * as Table from '$lib/components/ui/table';
 	import type { DadosSecao, Projeto } from '$lib/project/projeto';
@@ -37,6 +39,7 @@
 		asLinhaAdotado?: number;
 	};
 	type Col = keyof ResultadoSecao;
+
 	let data = calculaResultados(projeto);
 
 	$: data = calculaResultados(projeto);
@@ -61,7 +64,7 @@
 
 			return {
 				id: dados.id,
-				nome: dados.nome,
+				nome: dados.nome || 'Seção sem nome',
 				bw: variaveis.b,
 				h: variaveis.h,
 				d: variaveis.d,
@@ -118,9 +121,11 @@
 			}
 		}),
 		table.column({
-			accessor: 'nome',
+			accessor: (item) => ({ nome: item.nome, id: item.id }),
 			header: 'Nome',
-			cell: ({ value }) => value || 'Seção sem nome'
+			cell: ({ value }) => {
+				return createRender(NomeDisplay, value);
+			}
 		}),
 		table.column({
 			accessor: 'bw',
@@ -204,11 +209,10 @@
 		})
 	]);
 
-	const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates } =
+	const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates, rows } =
 		table.createViewModel(columns);
 
 	const boldCols: Col[] = [
-		'nome',
 		'asAdotado',
 		'armaduraInferiorAdotada',
 		'asLinhaAdotado',
@@ -217,6 +221,9 @@
 	const boldColsSet: Set<Col> = new Set(boldCols);
 	const { filterValue } = pluginStates.filter;
 	const { selectedDataIds } = pluginStates.select;
+
+	$: d = $rows[0].cells[1]?.state?.data;
+	$: console.log($d);
 </script>
 
 <div>
@@ -262,7 +269,13 @@
 												? 'font-medium'
 												: ''}"
 										>
-											<Render of={cell.render()} />
+											{#if cell.id === 'nome'}
+												<Button variant="ghost" href="/secao?id={row.state?.data}">
+													<Render of={cell.render()} />
+												</Button>
+											{:else}
+												<Render of={cell.render()} />
+											{/if}
 										</div>
 									</Table.Cell>
 								</Subscribe>
