@@ -126,6 +126,10 @@
 			}
 		}),
 		table.column({
+			accessor: 'nome',
+			header: 'Nome'
+		}),
+		table.column({
 			accessor: (item) => ({ nome: item.nome, id: item.id }),
 			header: 'Nome',
 			cell: ({ value }) => {
@@ -217,13 +221,16 @@
 	const { headerRows, pageRows, tableAttrs, tableBodyAttrs, pluginStates, rows } =
 		table.createViewModel(columns);
 
+	const hiddenCols: Col[] = ['nome'] as const;
+	const hiddenColsSet: Set<string> = new Set(hiddenCols);
+
 	const boldCols: Col[] = [
 		'asAdotado',
 		'armaduraInferiorAdotada',
 		'asLinhaAdotado',
 		'armaduraSuperiorAdotada'
-	];
-	const boldColsSet: Set<Col> = new Set(boldCols);
+	] as const;
+	const boldColsSet: Set<string> = new Set(boldCols);
 	const { filterValue } = pluginStates.filter;
 	const { selectedDataIds } = pluginStates.select;
 
@@ -282,13 +289,19 @@
 					<Subscribe rowAttrs={headerRow.attrs()}>
 						<Table.Row>
 							{#each headerRow.cells as cell (cell.id)}
-								<Subscribe attrs={cell.attrs()} let:attrs props={cell.props()} let:props>
-									<Table.Head {...attrs}>
-										<div class="[&:has([role='checkbox'])]:px-2">
-											<Render of={cell.render()} />
-										</div>
-									</Table.Head>
-								</Subscribe>
+								{#if !hiddenColsSet.has(cell.id)}
+									<Subscribe attrs={cell.attrs()} let:attrs props={cell.props()} let:props>
+										<Table.Head {...attrs}>
+											<div
+												class="[&:has([role='checkbox'])]:px-2 {cell.label === 'Nome'
+													? 'px-4'
+													: ''}"
+											>
+												<Render of={cell.render()} />
+											</div>
+										</Table.Head>
+									</Subscribe>
+								{/if}
 							{/each}
 						</Table.Row>
 					</Subscribe>
@@ -299,25 +312,27 @@
 					<Subscribe rowAttrs={row.attrs()} let:rowAttrs>
 						<Table.Row {...rowAttrs} data-state={$selectedDataIds[row.id] && 'selected'}>
 							{#each row.cells as cell (cell.id)}
-								<Subscribe attrs={cell.attrs()} let:attrs>
-									<Table.Cell {...attrs}>
-										<div
-											class="truncate [&:has([role='checkbox'])]:px-2 {boldColsSet.has(
-												cell.column.id
-											)
-												? 'font-medium'
-												: ''}"
-										>
-											{#if cell.id === 'nome'}
-												<Button variant="ghost" href="/secao?id={row.state?.data}">
+								{#if !hiddenColsSet.has(cell.id)}
+									<Subscribe attrs={cell.attrs()} let:attrs>
+										<Table.Cell {...attrs}>
+											<div
+												class="truncate [&:has([role='checkbox'])]:px-2 {boldColsSet.has(
+													cell.column.id
+												)
+													? 'font-medium'
+													: ''}"
+											>
+												{#if cell.id === 'nome'}
+													<Button variant="ghost" href="/secao?id={row.state?.data}">
+														<Render of={cell.render()} />
+													</Button>
+												{:else}
 													<Render of={cell.render()} />
-												</Button>
-											{:else}
-												<Render of={cell.render()} />
-											{/if}
-										</div>
-									</Table.Cell>
-								</Subscribe>
+												{/if}
+											</div>
+										</Table.Cell>
+									</Subscribe>
+								{/if}
 							{/each}
 						</Table.Row>
 					</Subscribe>
