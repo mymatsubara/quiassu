@@ -41,7 +41,6 @@
 
 	function carregaProjeto(textData: string) {
 		const data = JSON.parse(textData);
-		console.log({ data });
 		$projeto = { ...projetoVazio(), ...data };
 	}
 

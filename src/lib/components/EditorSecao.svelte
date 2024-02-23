@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import DisplayResultados from '$lib/components/DisplayResultados.svelte';
 	import DrawingCanvas from '$lib/components/DrawingCanvas.svelte';
 	import FuncoesProjeto from '$lib/components/FuncoesProjeto.svelte';
@@ -30,6 +31,14 @@
 
 	let salvarProjeto: FuncoesProjeto['salvarProjeto'];
 
+	function voltar() {
+		if (history.length <= 2) {
+			goto('/');
+		} else {
+			history.back();
+		}
+	}
+
 	onMount(() => {
 		if (!dados.nome) {
 			inputNome?.focus();
@@ -41,9 +50,9 @@
 <svelte:window bind:innerWidth />
 
 <div class="flex h-full">
-	<div class="min-w-80 overflow-y-auto border-r p-4 max-md:hidden">
-		<div class="mb-3 flex items-start justify-between">
-			<Button class="p-0 pr-2 text-base hover:bg-transparent" variant="ghost" href="/"
+	<div class="border-r max-md:hidden">
+		<div class="sticky top-0 z-10 flex items-start justify-between bg-background px-4 pt-4">
+			<Button class="p-0 pr-2 text-base hover:bg-transparent" variant="ghost" on:click={voltar}
 				><ArrowLeft class="mr-1 h-5 w-5" /> Voltar</Button
 			>
 
@@ -65,11 +74,13 @@
 			</Tooltip.Root>
 		</div>
 
-		<div class="mb-3">
-			<InputNomeSecao bind:value={dados.nome} bind:inputElement={inputNome} />
-		</div>
+		<div class="min-w-80 overflow-y-auto p-4">
+			<div class="mb-3">
+				<InputNomeSecao bind:value={dados.nome} bind:inputElement={inputNome} />
+			</div>
 
-		<InputSecao bind:secao={dados.secao} bind:armaduras={dados.armaduras} />
+			<InputSecao bind:secao={dados.secao} bind:armaduras={dados.armaduras} />
+		</div>
 	</div>
 
 	<div class="relative w-full">
@@ -80,7 +91,7 @@
 
 		<div class="md:hidden">
 			<div class="absolute top-0 z-10 flex w-full items-center gap-2 p-4">
-				<Button class="h-14 w-14 rounded-full" variant="ghost" href="/"
+				<Button class="h-14 w-14 rounded-full" variant="ghost" on:click={voltar}
 					><ArrowLeft class="h-5 w-5" /></Button
 				>
 				<InputNomeSecao bind:value={dados.nome} />

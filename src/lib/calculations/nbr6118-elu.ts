@@ -42,7 +42,7 @@ interface ResultadoDimensionamentoSecao {
 	valido: boolean;
 }
 
-export function dimensionaSecao(secao: Secao, dLinha: number): ResultadoDimensionamentoSecao {
+export function dimensionaSecao(secao: Secao, dLinha: number) {
 	const fcd = convertStress(secao.fck, 'MPa', 'KN/cm2') / secao.gamac;
 	const fyd = convertStress(secao.fy, 'MPa', 'KN/cm2') / secao.gamas;
 	const msdx = secao.gamaf * convertToque(secao.mskx, 'KNm', 'KNcm');
@@ -57,6 +57,8 @@ export function dimensionaSecao(secao: Secao, dLinha: number): ResultadoDimensio
 			const h = secao.geometria.altura;
 			const xLim = d * xLimRel;
 			const maxX = h / lambda;
+
+			const variaveis = { fcd, fyd, msdx, nsd, es, b, d, h };
 
 			// Calcular A's and As em compressão e para FNC com pequena excentricidade
 			const fnc = FNC.PequenaExcentricidade.ArmaduraDupla.areaAco({
@@ -79,7 +81,8 @@ export function dimensionaSecao(secao: Secao, dLinha: number): ResultadoDimensio
 					asLinha: fnc.asLinha,
 					x,
 					dominio,
-					valido: true
+					valido: true,
+					variaveis
 				};
 			}
 
@@ -101,7 +104,8 @@ export function dimensionaSecao(secao: Secao, dLinha: number): ResultadoDimensio
 					return {
 						x,
 						dominio,
-						valido: false
+						valido: false,
+						variaveis
 					};
 				}
 
@@ -127,7 +131,8 @@ export function dimensionaSecao(secao: Secao, dLinha: number): ResultadoDimensio
 					asLinha,
 					x,
 					dominio,
-					valido: true
+					valido: true,
+					variaveis
 				};
 			}
 
@@ -158,7 +163,8 @@ export function dimensionaSecao(secao: Secao, dLinha: number): ResultadoDimensio
 					asLinha: flexotracao.asLinha,
 					x,
 					dominio,
-					valido: true
+					valido: true,
+					variaveis
 				};
 			}
 
@@ -206,7 +212,8 @@ export function dimensionaSecao(secao: Secao, dLinha: number): ResultadoDimensio
 					dominio,
 					as,
 					asLinha,
-					valido: true
+					valido: true,
+					variaveis
 				};
 			} else {
 				const as = FNC.GrandeExcentricidade.ArmaduraSimples.areaAco({
@@ -223,7 +230,8 @@ export function dimensionaSecao(secao: Secao, dLinha: number): ResultadoDimensio
 					x,
 					dominio,
 					as,
-					valido: true
+					valido: true,
+					variaveis
 				};
 			}
 

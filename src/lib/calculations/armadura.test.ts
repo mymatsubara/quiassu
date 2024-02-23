@@ -1,4 +1,4 @@
-import { areaAcoArmadura } from '$lib/calculations/armadura';
+import { areaAcoArmadura, calculaEspacamento, descricaoArmadura } from '$lib/calculations/armadura';
 import { describe, expect, it } from 'vitest';
 
 describe('Armadura', () => {
@@ -14,5 +14,33 @@ describe('Armadura', () => {
 		expect(a3.toFixed(3)).toBe('3.142');
 		expect(a4.toFixed(3)).toBe('8.042');
 		expect(a5.toFixed(3)).toBe('40.212');
+	});
+
+	it('calcula espacemento corretamente', () => {
+		const largura = 40;
+		const cobrimento = 4;
+
+		const espacamento1 = calculaEspacamento(largura, cobrimento, {
+			inferior: { bitola: 10, quantidade: 6 },
+			estribo: { bitola: 5 }
+		});
+		const espacamento2 = calculaEspacamento(largura, cobrimento, {
+			superior: { bitola: 20, quantidade: 5 },
+			estribo: { bitola: 10 }
+		});
+
+		expect(espacamento1).toStrictEqual({
+			inferior: 6,
+			superior: undefined
+		});
+		expect(espacamento2).toStrictEqual({
+			inferior: undefined,
+			superior: 7
+		});
+	});
+
+	it('gera descrição da armadura corretamente', () => {
+		expect(descricaoArmadura({ quantidade: 5, bitola: 20 })).toBe('5Φ20');
+		expect(descricaoArmadura({ quantidade: 6, bitola: 20.1 })).toBe('6Φ20,1');
 	});
 });
