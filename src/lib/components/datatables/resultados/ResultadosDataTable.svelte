@@ -221,9 +221,6 @@
 	const boldColsSet: Set<Col> = new Set(boldCols);
 	const { filterValue } = pluginStates.filter;
 	const { selectedDataIds } = pluginStates.select;
-
-	$: d = $rows[0].cells[1]?.state?.data;
-	$: console.log($d);
 </script>
 
 <div>
