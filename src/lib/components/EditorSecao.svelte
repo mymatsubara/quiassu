@@ -50,7 +50,7 @@
 <svelte:window bind:innerWidth />
 
 <div class="flex h-full">
-	<div class="border-r max-md:hidden">
+	<div class="min-w-80 overflow-y-auto border-r max-md:hidden">
 		<div class="sticky top-0 z-10 flex items-start justify-between bg-background px-4 pt-4">
 			<Button class="p-0 pr-2 text-base hover:bg-transparent" variant="ghost" on:click={voltar}
 				><ArrowLeft class="mr-1 h-5 w-5" /> Voltar</Button
@@ -74,7 +74,7 @@
 			</Tooltip.Root>
 		</div>
 
-		<div class="min-w-80 overflow-y-auto p-4">
+		<div class="p-4">
 			<div class="mb-3">
 				<InputNomeSecao bind:value={dados.nome} bind:inputElement={inputNome} />
 			</div>
