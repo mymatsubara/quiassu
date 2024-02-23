@@ -40,7 +40,7 @@ describe('Armadura', () => {
 	});
 
 	it('gera descrição da armadura corretamente', () => {
-		expect(descricaoArmadura(5, 20)).toBe('5Φ20');
-		expect(descricaoArmadura(6.2, 20.123)).toBe('6,2Φ20,1');
+		expect(descricaoArmadura({ quantidade: 5, bitola: 20 })).toBe('5Φ20');
+		expect(descricaoArmadura({ quantidade: 6, bitola: 20.1 })).toBe('6Φ20,1');
 	});
 });

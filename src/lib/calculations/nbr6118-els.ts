@@ -39,16 +39,19 @@ export function calcularELSW(secao: Secao, armaduras: Armaduras) {
 
 	// Para apenas barra da armadura
 	const coef = ((fi1 * sigmas) / (12.5 * eta1 * Es)) * 10; // converte para mm
-	const ro = relacaoAcoConcretoTirante(secao, armadura, dLinha);
+	const { ro, acri } = relacaoAcoConcretoTirante(secao, armadura, dLinha);
 
 	const wk1 = coef * ((3 * sigmas) / fctm);
 	const wk2 = coef * (4 / ro + 45);
 	const wk = Math.min(wk1, wk2);
 
+	const variaveis = { acri, ecs: Ecs, es: Es, mdserv: Mdserv };
+
 	return {
 		wk1,
 		wk2,
-		wk
+		wk,
+		variaveis
 	};
 }
 
@@ -79,7 +82,7 @@ function relacaoAcoConcretoTirante(secao: Secao, armadura: Armadura, dLinha: num
 	}
 
 	if (!armadura.bitola || !armadura.quantidade) {
-		return 0;
+		return { ro: 0, acri: 0 };
 	}
 
 	const fi = armadura.bitola / 10; // converte para cm
@@ -96,16 +99,18 @@ function relacaoAcoConcretoTirante(secao: Secao, armadura: Armadura, dLinha: num
 	const b2 = Math.min(7.5 * fi, espacamento / 2);
 	const h1 = Math.min(7.5 * fi, dLinha);
 	const h2 = Math.min(7.5 * fi, h - dLinha);
-	const areaConcretoBarra = (b1 + b2) * (h1 + h2);
-	const ro1 = areaBarra / areaConcretoBarra;
+	const areaConcretoBarra1 = (b1 + b2) * (h1 + h2);
+	const ro1 = areaBarra / areaConcretoBarra1;
 
 	if (armadura.quantidade > 2) {
 		// Situação 2: barra interna
-		const areaConcretoBarra = (b2 + b2) * (h1 + h2);
-		const ro2 = areaBarra / areaConcretoBarra;
+		const areaConcretoBarra2 = (b2 + b2) * (h1 + h2);
+		const ro2 = areaBarra / areaConcretoBarra2;
 
-		return Math.min(ro1, ro2);
+		const ro = Math.min(ro1, ro2);
+		const acri = ro === ro1 ? areaConcretoBarra1 : areaConcretoBarra2;
+		return { ro, acri };
 	} else {
-		return ro1;
+		return { ro: ro1, acri: areaConcretoBarra1 };
 	}
 }

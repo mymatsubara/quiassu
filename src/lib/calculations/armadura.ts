@@ -61,8 +61,6 @@ function calculaEspacamentoNum(
 	return armadura.quantidade > 1 ? larguraUtil / (armadura.quantidade - 1) : larguraUtil;
 }
 
-export function descricaoArmadura(bitola: number, espacamento: number) {
-	return `${bitola.toLocaleString('pt-BR')}Φ${espacamento.toLocaleString('pt-BR', {
-		maximumFractionDigits: 1
-	})}`;
+export function descricaoArmadura(armadura: Armadura) {
+	return `${armadura.quantidade}Φ${armadura.bitola.toLocaleString('pt-BR')}`;
 }

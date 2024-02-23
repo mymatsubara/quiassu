@@ -14,10 +14,21 @@ const toNewtonMeter = {
 	KNcm: 10
 };
 
+type ForceUnit = 'MN' | 'KN' | 'N';
+const toNewton = {
+	N: 1,
+	KN: 1_000,
+	MN: 1_000_000
+};
+
 export function convertStress(value: number, from: StressUnit, to: StressUnit) {
 	return (value * toPascal[from]) / toPascal[to];
 }
 
 export function convertToque(value: number, from: TorqueUnit, to: TorqueUnit) {
 	return (value * toNewtonMeter[from]) / toNewtonMeter[to];
+}
+
+export function convertForce(value: number, from: ForceUnit, to: ForceUnit) {
+	return (value * toNewton[from]) / toNewton[to];
 }

@@ -5,7 +5,9 @@
 		calculaEspacamento,
 		descricaoArmadura
 	} from '$lib/calculations/armadura';
+	import { calcularELSW } from '$lib/calculations/nbr6118-els';
 	import { calcularAreaAcoMin, dimensionaSecao } from '$lib/calculations/nbr6118-elu';
+	import { convertStress, convertToque } from '$lib/calculations/units';
 	import DataTableCheckbox from '$lib/components/datatables/DataTableCheckbox.svelte';
 	import NomeDisplay from '$lib/components/datatables/resultados/NomeDisplay.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
@@ -42,6 +44,13 @@
 		asAdotado?: number;
 		armaduraSuperiorAdotada?: string;
 		asLinhaAdotado?: number;
+		mdserv?: number;
+		es: number;
+		ecs?: number;
+		acri?: number;
+		wk1?: number;
+		wk2?: number;
+		wk?: number;
 	};
 	type Col = keyof ResultadoSecao;
 
@@ -60,6 +69,7 @@
 		const resultados = dimensionaSecao(secao, dLinha);
 		const variaveis = resultados.variaveis;
 		const asMin = calcularAreaAcoMin(secao);
+		const elsw = calcularELSW(secao, armaduras);
 
 		if (!variaveis) {
 			alert('Seção não retangular');
@@ -76,26 +86,65 @@
 				fck: secao.fck,
 				fyk: secao.fy,
 				mk: secao.mskx,
-				md: variaveis.msdx,
+				md: convertToque(variaveis.msdx, 'KNcm', 'KNm'),
 				nk: secao.nsd,
 				nd: variaveis.nsd,
 				x_d: resultados.x / variaveis.d,
 				as: resultados.as ?? 0,
 				asMin: asMin,
 				armaduraInferiorAdotada: armaduras.inferior?.quantidade
-					? descricaoArmadura(armaduras.inferior.bitola, espacamento.inferior ?? 0)
+					? descricaoArmadura(armaduras.inferior)
 					: '-',
 				asAdotado:
 					armaduras.inferior && armaduras.inferior?.quantidade
 						? areaAcoArmadura(armaduras.inferior)
 						: 0,
 				armaduraSuperiorAdotada: armaduras.superior?.quantidade
-					? descricaoArmadura(armaduras.superior.bitola, espacamento.superior ?? 0)
+					? descricaoArmadura(armaduras.superior)
 					: '-',
-				asLinhaAdotado: armaduras.superior?.quantidade ? areaAcoArmadura(armaduras.superior) : 0
+				asLinhaAdotado: armaduras.superior?.quantidade ? areaAcoArmadura(armaduras.superior) : 0,
+				mdserv: elsw?.variaveis?.mdserv
+					? convertToque(elsw?.variaveis?.mdserv, 'KNcm', 'KNm')
+					: undefined,
+				es: convertStress(secao.es, 'GPa', 'MPa'),
+				ecs: elsw?.variaveis?.ecs
+					? convertStress(elsw?.variaveis?.ecs, 'KN/cm2', 'MPa')
+					: undefined,
+				acri: elsw?.variaveis?.acri,
+				wk1: elsw?.wk1,
+				wk2: elsw?.wk2,
+				wk: elsw?.wk
 			};
 		}
 	}
+
+	const headers: Record<Col, string> = {
+		id: 'ID',
+		nome: 'Nome',
+		bw: 'bw (cm)',
+		h: 'h (cm)',
+		d: 'd (cm)',
+		fck: 'fck (MPa)',
+		fyk: 'fyk (MPa)',
+		mk: 'Mskx (KNm)',
+		md: 'Msdx (KNm)',
+		nk: 'Nsk (KN)',
+		nd: 'Nsd (KN)',
+		x_d: 'x/d (cm)',
+		as: 'As (cm²)',
+		asMin: 'As,mín (cm²)',
+		armaduraInferiorAdotada: 'Armadura inf. adot.',
+		asAdotado: 'As,adot (cm²)',
+		armaduraSuperiorAdotada: 'Armadura sup. adot.',
+		asLinhaAdotado: "A's,adot (cm²)",
+		mdserv: 'Md,serv (KNm)',
+		es: 'Es (MPa)',
+		ecs: 'Ecs (MPa)',
+		acri: 'Acri (cm²)',
+		wk1: 'wk1 (mm)',
+		wk2: 'wk2 (mm)',
+		wk: 'wk2 (mm)'
+	};
 
 	const table = createTable(readable(data), {
 		filter: addTableFilter({
@@ -104,8 +153,8 @@
 		select: addSelectedRows()
 	});
 
-	const numberCell = ({ value }: { value: number }) =>
-		value.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
+	const numberCell = ({ value }: { value?: number }) =>
+		value?.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) ?? '-';
 
 	const columns = table.createColumns([
 		table.column({
@@ -127,7 +176,7 @@
 		}),
 		table.column({
 			accessor: 'nome',
-			header: 'Nome'
+			header: headers['nome']
 		}),
 		table.column({
 			accessor: (item) => ({ nome: item.nome, id: item.id }),
@@ -138,83 +187,118 @@
 		}),
 		table.column({
 			accessor: 'bw',
-			header: 'bw (cm)',
+			header: headers['bw'],
 			cell: numberCell
 		}),
 		table.column({
 			accessor: 'h',
-			header: 'h (cm)',
+			header: headers['h'],
 			cell: numberCell
 		}),
 		table.column({
 			accessor: 'd',
-			header: 'd (cm)',
+			header: headers['d'],
 			cell: numberCell
 		}),
 		table.column({
 			accessor: 'fck',
-			header: 'fck (MPa)',
+			header: headers['fck'],
 			cell: numberCell
 		}),
 		table.column({
 			accessor: 'fyk',
-			header: 'fyk (MPa)',
+			header: headers['fyk'],
 			cell: numberCell
 		}),
 		table.column({
 			accessor: 'mk',
-			header: 'Mskx (KNm)',
+			header: headers['mk'],
 			cell: numberCell
 		}),
 		table.column({
 			accessor: 'md',
-			header: 'Msdx (KNcm)',
+			header: headers['md'],
 			cell: numberCell
 		}),
 		table.column({
 			accessor: 'nk',
-			header: 'Nsk (KN)',
+			header: headers['nk'],
 			cell: numberCell
 		}),
 		table.column({
 			accessor: 'nd',
-			header: 'Nsd (KN)',
+			header: headers['nd'],
 			cell: numberCell
 		}),
 		table.column({
 			accessor: 'x_d',
-			header: 'x/d (cm)',
+			header: headers['x_d'],
 			cell: numberCell
 		}),
 		table.column({
 			accessor: 'as',
-			header: 'As (cm²)',
+			header: headers['as'],
 			cell: numberCell
 		}),
 		table.column({
 			accessor: 'asMin',
-			header: 'As,mín (cm²)',
+			header: headers['asMin'],
 			cell: numberCell
 		}),
 		table.column({
 			accessor: 'armaduraInferiorAdotada',
-			header: 'Armadura inf. adot.'
+			header: headers['armaduraInferiorAdotada']
 		}),
 		table.column({
 			accessor: 'asAdotado',
-			header: 'As,adot (cm²)',
+			header: headers['asAdotado'],
 			cell: ({ value }) =>
 				value ? value.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : '-'
 		}),
 		table.column({
 			accessor: 'armaduraSuperiorAdotada',
-			header: 'Armadura sup. adot.'
+			header: headers['armaduraSuperiorAdotada']
 		}),
 		table.column({
 			accessor: 'asLinhaAdotado',
-			header: "A's,adot (cm²)",
+			header: headers['asLinhaAdotado'],
 			cell: ({ value }) =>
 				value ? value.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : '-'
+		}),
+		table.column({
+			accessor: 'mdserv',
+			header: headers['mdserv'],
+			cell: numberCell
+		}),
+		table.column({
+			accessor: 'es',
+			header: headers['es'],
+			cell: numberCell
+		}),
+		table.column({
+			accessor: 'ecs',
+			header: headers['ecs'],
+			cell: numberCell
+		}),
+		table.column({
+			accessor: 'acri',
+			header: headers['acri'],
+			cell: numberCell
+		}),
+		table.column({
+			accessor: 'wk1',
+			header: headers['wk1'],
+			cell: numberCell
+		}),
+		table.column({
+			accessor: 'wk2',
+			header: headers['wk2'],
+			cell: numberCell
+		}),
+		table.column({
+			accessor: 'wk',
+			header: headers['wk'],
+			cell: numberCell
 		})
 	]);
 
@@ -228,7 +312,8 @@
 		'asAdotado',
 		'armaduraInferiorAdotada',
 		'asLinhaAdotado',
-		'armaduraSuperiorAdotada'
+		'armaduraSuperiorAdotada',
+		'wk'
 	] as const;
 	const boldColsSet: Set<string> = new Set(boldCols);
 	const { filterValue } = pluginStates.filter;
@@ -237,7 +322,7 @@
 	function exportParaCsv() {
 		const filename = `Resultados - ${projeto.nome || 'Projeto sem nome'}.csv`;
 		const data = selectedData();
-		const csv = toCsv(data);
+		const csv = toCsv(data, { labels: headers });
 		const encoder = new TextEncoder();
 		// Prefixa o arquivo com BOM (https://en.wikipedia.org/wiki/Byte_order_mark) para indicar que o arquivo foi salvo com utf-8
 		const bom = new Uint8Array([0xef, 0xbb, 0xbf]);

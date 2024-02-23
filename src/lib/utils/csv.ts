@@ -29,19 +29,21 @@ function buildHeaders<T extends object>(options: Required<CsvOptions<T>>) {
 	return options.cols
 		.map((col) => {
 			const label = options.labels[col] ?? col;
-			return displayValue(label);
+			return displayValue(label, options.separator);
 		})
 		.join(options.separator);
 }
 
 function buildRow<T extends object>(data: T, options: Required<CsvOptions<T>>) {
-	return options.cols.map((col) => displayValue(data[col])).join(options.separator);
+	return options.cols
+		.map((col) => displayValue(data[col], options.separator))
+		.join(options.separator);
 }
 
-function displayValue(value: any) {
+function displayValue(value: any, separator: string) {
 	switch (typeof value) {
 		case 'string':
-			if (value.includes('"')) {
+			if (value.includes('"') || value.includes(separator)) {
 				return `"${value.replaceAll('"', '""')}"`;
 			} else {
 				return value;
