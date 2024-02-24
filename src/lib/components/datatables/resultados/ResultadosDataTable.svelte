@@ -370,9 +370,18 @@
 	<div class="mt-6 rounded-md border">
 		<Table.Root {...$tableAttrs}>
 			<Table.Header>
+				<Table.Row class="divide-x bg-gray-50">
+					<Table.Head class="text-center" colspan={18}
+						>DIMENSIONAMENTO - ELU (NBR 6118-2014)</Table.Head
+					>
+					<Table.Head class="text-center" colspan={7}
+						>VERIFICAÇÃO À FISSURAÇÃO - ELS-W (NBR 6118-2014)</Table.Head
+					>
+				</Table.Row>
+
 				{#each $headerRows as headerRow}
 					<Subscribe rowAttrs={headerRow.attrs()}>
-						<Table.Row>
+						<Table.Row class="bg-gray-50">
 							{#each headerRow.cells as cell (cell.id)}
 								{#if !hiddenColsSet.has(cell.id)}
 									<Subscribe attrs={cell.attrs()} let:attrs props={cell.props()} let:props>
