@@ -44,7 +44,7 @@
 	}
 </script>
 
-<div class="flex h-10 items-center justify-between gap-5">
+<div class="flex h-10 items-center justify-between gap-2">
 	<Input
 		type="search"
 		placeholder="Pesquisar seções"
