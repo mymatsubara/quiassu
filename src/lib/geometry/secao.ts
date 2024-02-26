@@ -2,9 +2,12 @@ import { calculaDLinha, type Armaduras } from '$lib/calculations/armadura';
 import type { Secao } from '$lib/calculations/nbr6118-elu';
 import {
 	Circle,
+	Measurement,
 	Polygon,
 	Rectangle,
+	getBoundingBoxDimensions,
 	joinPaths,
+	mergeBoundingBoxes,
 	mergePathsBoundingBoxes,
 	type CustomPath,
 	type Drawing
@@ -29,13 +32,25 @@ export function obtemDesenhoDaSecaoComArmaduras(secao: Secao, armaduras: Armadur
 	const estriboPath = obtemEstribos(secao, armaduras);
 	const armadurasPath = obtemDesenhoDasArmaduras(secao, armaduras);
 
-	const boundingBox = mergePathsBoundingBoxes(secaoPath, estriboPath, armadurasPath);
-	const bitolaEstribo = (armaduras.estribo?.bitola ?? 0) / 10; // converte para cm
+	const boundingBoxSemMedidas = mergePathsBoundingBoxes(secaoPath, estriboPath, armadurasPath);
+
+	const { width, height } = getBoundingBoxDimensions(boundingBoxSemMedidas);
+	const scale = Math.max(width, height) / 100;
+	const medidas = obtemMedidas(secao, armaduras, scale);
+
+	const boundingBox = mergeBoundingBoxes(
+		boundingBoxSemMedidas,
+		medidas.map((medida) => medida.getBoundingBox())
+	);
 
 	return {
 		draw: (ctx) => {
 			const secao = secaoPath.getPath();
 			ctx.stroke(secao);
+
+			for (const medida of medidas) {
+				medida.draw(ctx);
+			}
 
 			if (estriboPath) {
 				const estribo = joinPaths(estriboPath);
@@ -123,6 +138,25 @@ function obtemDesenhoDasArmaduras(secao: Secao, armaduras: Armaduras): Circle[] 
 	}
 
 	return [...armadurasInferiores, ...armadurasSuperiores];
+}
+
+function obtemMedidas(secao: Secao, armaduras: Armaduras, scale: number): Measurement[] {
+	if (secao.geometria.tipo !== 'retangulo') {
+		return [];
+	}
+	const altura = secao.geometria.altura;
+	const largura = secao.geometria.largura;
+
+	const b = new Measurement(new Vec2(0, altura), new Vec2(largura, altura), 'b', scale);
+	const h = new Measurement(new Vec2(largura, altura), new Vec2(largura, 0), 'h', scale);
+
+	const resultados = [b, h];
+	if (armaduras.inferior?.quantidade) {
+		const dLinha = calculaDLinha(secao, armaduras);
+		resultados.push(new Measurement(new Vec2(0, dLinha), new Vec2(0, altura), 'd', scale));
+	}
+
+	return resultados;
 }
 
 function desenhaCirculosEspacados(
