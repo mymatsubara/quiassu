@@ -125,17 +125,17 @@
 					</Button>
 				</Sheet.Trigger>
 				<Sheet.Content class="p-0" side="right">
-					<div class="grid h-full grid-rows-[70vh_1fr]">
+					<div class="grid h-full grid-rows-[60vh_1fr]">
 						<div class="mt-10 overflow-y-auto px-4">
 							<div class="mb-4">
 								<InputSecao bind:secao={dados.secao} bind:armaduras={dados.armaduras} />
 							</div>
 						</div>
 
-						<div class="mb-4 overflow-y-auto border-t px-4 pt-2">
-							<h2 class="mb-4 text-lg font-medium leading-none">Resultados</h2>
+						<div class="overflow-y-auto border-t-4 px-4 pt-4">
+							<h2 class="sticky mb-4 text-lg font-medium leading-none">Resultados</h2>
 
-							<div class="h-full">
+							<div class="pb-6">
 								<DisplayResultados secao={dados.secao} armaduras={dados.armaduras} />
 							</div>
 						</div>
