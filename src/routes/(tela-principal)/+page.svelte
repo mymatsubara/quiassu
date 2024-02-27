@@ -82,7 +82,7 @@
 					<div class="aspect-square w-full">
 						<Button class="h-full w-full" variant="ghost" {href}>
 							<DrawingCanvas
-								offset={0.9}
+								offset={0.95}
 								drawing={obtemDesenhoDaSecaoComArmaduras(secao.secao, secao.armaduras)}
 							/>
 						</Button>
