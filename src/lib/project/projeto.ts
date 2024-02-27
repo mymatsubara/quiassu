@@ -5,6 +5,7 @@ import { max } from '$lib/utils/array';
 export interface Projeto {
 	nome: string;
 	secoes: DadosSecao[];
+	versao: number;
 }
 
 export interface DadosSecao {
@@ -18,7 +19,8 @@ export interface DadosSecao {
 export function projetoVazio() {
 	return {
 		nome: '',
-		secoes: []
+		secoes: [],
+		versao: 1
 	};
 }
 
@@ -69,4 +71,19 @@ export function criaNovaSecao(projeto: Projeto): DadosSecao {
 	};
 
 	return novaSecao;
+}
+
+export function parseProjeto(jsonText: string): Projeto {
+	const data = converteVersao(JSON.parse(jsonText));
+
+	return { ...projetoVazio(), ...data };
+}
+
+function converteVersao(projeto: Projeto) {
+	switch (projeto.versao) {
+		case undefined:
+			projeto.versao = 1;
+	}
+
+	return projeto;
 }
