@@ -149,23 +149,20 @@ function obtemMedidas(secao: Secao, armaduras: Armaduras, scale: number): Drawin
 	const largura = secao.geometria.largura;
 
 	const b = new Measurement(new Vec2(0, altura), new Vec2(largura, altura), 'b', scale);
-	const h = new Measurement(new Vec2(largura, altura), new Vec2(largura, 0), 'h', scale);
+	const h = new Measurement(new Vec2(largura, altura), new Vec2(largura, 0), 'h', scale, 2);
 
 	const resultados: Drawing[] = [b, h];
 	if (armaduras.inferior?.quantidade && armaduras.inferior.bitola) {
 		const dLinha = calculaDLinha(secao, armaduras);
-		resultados.push(new Measurement(new Vec2(0, dLinha), new Vec2(0, altura), 'd', scale));
+		resultados.push(
+			new Measurement(new Vec2(largura, altura), new Vec2(largura, dLinha), 'd', scale)
+		);
 
 		const bitola = armaduras.inferior.bitola / 10;
 
 		const descricao = descricaoArmadura(armaduras.inferior);
 		resultados.push(
-			new TextLabel(
-				descricao,
-				new Vec2(-15 * scale, -15 * scale),
-				scale,
-				new Vec2(dLinha - bitola, dLinha - bitola)
-			)
+			new TextLabel(descricao, new Vec2(-15 * scale, dLinha), scale, new Vec2(dLinha, dLinha))
 		);
 	}
 
@@ -175,14 +172,7 @@ function obtemMedidas(secao: Secao, armaduras: Armaduras, scale: number): Drawin
 		const bitola = armaduras.superior.bitola / 10;
 
 		const descricao = descricaoArmadura(armaduras.superior);
-		resultados.push(
-			new TextLabel(
-				descricao,
-				new Vec2(-15 * scale, 25 * scale + d),
-				scale,
-				new Vec2(dLinha - bitola, d + bitola)
-			)
-		);
+		resultados.push(new TextLabel(descricao, new Vec2(-15 * scale, d), scale, new Vec2(dLinha, d)));
 	}
 
 	return resultados;

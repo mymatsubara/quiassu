@@ -456,11 +456,12 @@ export class TextLabel implements Drawing {
 	) {}
 
 	draw(ctx: CanvasRenderingContext2D) {
-		console.log({ target: this.target, position: this.position });
-
 		const line = this.getLine();
 		if (line) {
+			const lineDash = ctx.getLineDash();
+			ctx.setLineDash([this.scale]);
 			ctx.stroke(line.getPath());
+			ctx.setLineDash(lineDash);
 		}
 
 		this.getText().draw(ctx);
