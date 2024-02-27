@@ -116,6 +116,15 @@ export function getBoundingBoxDimensions(boundingBox: BoundingBox) {
 	};
 }
 
+export function translateBoundingBox(bb: BoundingBox, vec: Vec2): BoundingBox {
+	return {
+		minX: bb.minX + vec.x,
+		maxX: bb.maxX + vec.x,
+		minY: bb.minY + vec.y,
+		maxY: bb.maxY + vec.y
+	};
+}
+
 export class Rectangle implements CustomPath {
 	constructor(
 		public width: number,
@@ -168,7 +177,7 @@ export class Circle implements CustomPath {
 	}
 }
 
-export class Polygon implements CustomPath {
+export class Polyline implements CustomPath {
 	constructor(public points: Vec2[]) {}
 
 	getPath(): Path2D {
@@ -182,18 +191,17 @@ export class Polygon implements CustomPath {
 			path.lineTo(point.x, point.y);
 		}
 
-		path.closePath();
-
 		return path;
 	}
 
 	getBoundingBox(): BoundingBox {
-		let maxX = 0;
-		let minX = 0;
-		let maxY = 0;
-		let minY = 0;
+		const points = this.points;
+		let maxX = points[0].x;
+		let minX = points[0].x;
+		let maxY = points[0].y;
+		let minY = points[0].y;
 
-		for (let point of this.points) {
+		for (let point of points) {
 			maxX = Math.max(maxX, point.x);
 			minX = Math.min(minX, point.x);
 			maxY = Math.max(maxY, point.y);
@@ -206,6 +214,20 @@ export class Polygon implements CustomPath {
 			minY,
 			maxY
 		};
+	}
+}
+
+export class Polygon implements CustomPath {
+	constructor(public points: Vec2[]) {}
+
+	getPath(): Path2D {
+		const path = new Polyline(this.points).getPath();
+		path.closePath();
+		return path;
+	}
+
+	getBoundingBox(): BoundingBox {
+		return new Polyline(this.points).getBoundingBox();
 	}
 }
 
@@ -254,7 +276,7 @@ export class Measurement implements Drawing {
 		let rotation = Math.asin(rightText ? lineDir.y : -lineDir.y);
 
 		const scale = 0.7 * this.scale;
-		const offset = (rightText ? 1 : 3) * this.scale;
+		const offset = (rightText ? 3 : 5) * this.scale;
 		const position = p0.add(p1).div(2).add(offsetDir.mult(offset));
 		const size = p1.sub(p0).length();
 
@@ -359,5 +381,110 @@ export class BoundingBoxDrawing implements Drawing {
 
 	getBoundingBox(): BoundingBox {
 		return this.boundingBox;
+	}
+}
+
+export class TextDrawing implements Drawing {
+	constructor(
+		public text: string,
+		public position: Vec2,
+		public scale: number,
+		public align: CanvasTextAlign = 'start',
+		public baseline: CanvasTextBaseline = 'alphabetic'
+	) {}
+
+	draw(ctx: CanvasRenderingContext2D) {
+		const scale = 0.7 * this.scale;
+
+		ctx.save();
+		ctx.translate(this.position.x, this.position.y);
+		ctx.scale(scale, -scale);
+		ctx.textBaseline = this.baseline;
+		ctx.textAlign = this.align;
+		ctx.fillText(this.text, 0, 0);
+		ctx.restore();
+	}
+
+	getBoundingBox(): BoundingBox {
+		const width = 4.5 * this.text.length * this.scale;
+		const height = 10 * this.scale;
+
+		const boundingBox: BoundingBox = {
+			minX: this.position.x,
+			minY: this.position.y,
+			maxX: this.position.x + width,
+			maxY: this.position.y + height
+		};
+
+		let alignTranslate = new Vec2(0, 0);
+		switch (this.align) {
+			case 'center':
+				alignTranslate = new Vec2(-width / 2, 0);
+				break;
+			case 'end':
+			case 'right':
+				alignTranslate = new Vec2(-width, 0);
+				break;
+		}
+
+		let baselineTranslate = new Vec2(0, 0);
+		switch (this.baseline) {
+			case 'top':
+			case 'hanging':
+				baselineTranslate = new Vec2(0, -height);
+				break;
+			case 'bottom':
+			case 'ideographic':
+				baselineTranslate = new Vec2(0, 1);
+				break;
+			case 'middle':
+				baselineTranslate = new Vec2(0, -height / 2);
+				break;
+		}
+
+		const translate = alignTranslate.add(baselineTranslate);
+		return translateBoundingBox(boundingBox, translate);
+	}
+}
+
+export class TextLabel implements Drawing {
+	constructor(
+		public text: string,
+		public position: Vec2,
+		public scale: number,
+		public target?: Vec2
+	) {}
+
+	draw(ctx: CanvasRenderingContext2D) {
+		console.log({ target: this.target, position: this.position });
+
+		const line = this.getLine();
+		if (line) {
+			ctx.stroke(line.getPath());
+		}
+
+		this.getText().draw(ctx);
+	}
+
+	getLine() {
+		if (this.target) {
+			const vec = this.position.sub(this.target);
+			const scale = 1 - 2 / vec.length();
+			const newPos = vec.mult(scale).add(this.target);
+
+			return new Polyline([newPos, this.target]);
+		}
+	}
+
+	getText() {
+		const align = this.target && this.target.x > this.position.x ? 'end' : 'start';
+
+		return new TextDrawing(this.text, this.position, this.scale, align, 'middle');
+	}
+
+	getBoundingBox(): BoundingBox {
+		const lineBb = this.getLine()?.getBoundingBox();
+		const text = this.getText();
+		return mergeBoundingBoxes(lineBb ? [lineBb] : [], text.getBoundingBox());
 	}
 }

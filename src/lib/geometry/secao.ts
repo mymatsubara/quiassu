@@ -1,10 +1,11 @@
-import { calculaDLinha, type Armaduras } from '$lib/calculations/armadura';
+import { calculaDLinha, descricaoArmadura, type Armaduras } from '$lib/calculations/armadura';
 import type { Secao } from '$lib/calculations/nbr6118-elu';
 import {
 	Circle,
 	Measurement,
 	Polygon,
 	Rectangle,
+	TextLabel,
 	getBoundingBoxDimensions,
 	joinPaths,
 	mergeBoundingBoxes,
@@ -140,7 +141,7 @@ function obtemDesenhoDasArmaduras(secao: Secao, armaduras: Armaduras): Circle[] 
 	return [...armadurasInferiores, ...armadurasSuperiores];
 }
 
-function obtemMedidas(secao: Secao, armaduras: Armaduras, scale: number): Measurement[] {
+function obtemMedidas(secao: Secao, armaduras: Armaduras, scale: number): Drawing[] {
 	if (secao.geometria.tipo !== 'retangulo') {
 		return [];
 	}
@@ -150,10 +151,38 @@ function obtemMedidas(secao: Secao, armaduras: Armaduras, scale: number): Measur
 	const b = new Measurement(new Vec2(0, altura), new Vec2(largura, altura), 'b', scale);
 	const h = new Measurement(new Vec2(largura, altura), new Vec2(largura, 0), 'h', scale);
 
-	const resultados = [b, h];
-	if (armaduras.inferior?.quantidade) {
+	const resultados: Drawing[] = [b, h];
+	if (armaduras.inferior?.quantidade && armaduras.inferior.bitola) {
 		const dLinha = calculaDLinha(secao, armaduras);
 		resultados.push(new Measurement(new Vec2(0, dLinha), new Vec2(0, altura), 'd', scale));
+
+		const bitola = armaduras.inferior.bitola / 10;
+
+		const descricao = descricaoArmadura(armaduras.inferior);
+		resultados.push(
+			new TextLabel(
+				descricao,
+				new Vec2(-15 * scale, -15 * scale),
+				scale,
+				new Vec2(dLinha - bitola, dLinha - bitola)
+			)
+		);
+	}
+
+	if (armaduras.superior?.quantidade && armaduras.superior.bitola) {
+		const dLinha = calculaDLinha(secao, armaduras);
+		const d = altura - dLinha;
+		const bitola = armaduras.superior.bitola / 10;
+
+		const descricao = descricaoArmadura(armaduras.superior);
+		resultados.push(
+			new TextLabel(
+				descricao,
+				new Vec2(-15 * scale, 25 * scale + d),
+				scale,
+				new Vec2(dLinha - bitola, d + bitola)
+			)
+		);
 	}
 
 	return resultados;
