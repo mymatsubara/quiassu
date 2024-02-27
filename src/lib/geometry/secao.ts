@@ -1,10 +1,14 @@
-import { calculaDLinha, type Armaduras } from '$lib/calculations/armadura';
+import { calculaDLinha, descricaoArmadura, type Armaduras } from '$lib/calculations/armadura';
 import type { Secao } from '$lib/calculations/nbr6118-elu';
 import {
 	Circle,
+	Measurement,
 	Polygon,
 	Rectangle,
+	TextLabel,
+	getBoundingBoxDimensions,
 	joinPaths,
+	mergeBoundingBoxes,
 	mergePathsBoundingBoxes,
 	type CustomPath,
 	type Drawing
@@ -29,13 +33,25 @@ export function obtemDesenhoDaSecaoComArmaduras(secao: Secao, armaduras: Armadur
 	const estriboPath = obtemEstribos(secao, armaduras);
 	const armadurasPath = obtemDesenhoDasArmaduras(secao, armaduras);
 
-	const boundingBox = mergePathsBoundingBoxes(secaoPath, estriboPath, armadurasPath);
-	const bitolaEstribo = (armaduras.estribo?.bitola ?? 0) / 10; // converte para cm
+	const boundingBoxSemMedidas = mergePathsBoundingBoxes(secaoPath, estriboPath, armadurasPath);
+
+	const { width, height } = getBoundingBoxDimensions(boundingBoxSemMedidas);
+	const scale = Math.max(width, height) / 100;
+	const medidas = obtemMedidas(secao, armaduras, scale);
+
+	const boundingBox = mergeBoundingBoxes(
+		boundingBoxSemMedidas,
+		medidas.map((medida) => medida.getBoundingBox())
+	);
 
 	return {
 		draw: (ctx) => {
 			const secao = secaoPath.getPath();
 			ctx.stroke(secao);
+
+			for (const medida of medidas) {
+				medida.draw(ctx);
+			}
 
 			if (estriboPath) {
 				const estribo = joinPaths(estriboPath);
@@ -123,6 +139,43 @@ function obtemDesenhoDasArmaduras(secao: Secao, armaduras: Armaduras): Circle[] 
 	}
 
 	return [...armadurasInferiores, ...armadurasSuperiores];
+}
+
+function obtemMedidas(secao: Secao, armaduras: Armaduras, scale: number): Drawing[] {
+	if (secao.geometria.tipo !== 'retangulo') {
+		return [];
+	}
+	const altura = secao.geometria.altura;
+	const largura = secao.geometria.largura;
+
+	const b = new Measurement(new Vec2(0, altura), new Vec2(largura, altura), 'b', scale);
+	const h = new Measurement(new Vec2(largura, altura), new Vec2(largura, 0), 'h', scale, 2);
+
+	const resultados: Drawing[] = [b, h];
+	if (armaduras.inferior?.quantidade && armaduras.inferior.bitola) {
+		const dLinha = calculaDLinha(secao, armaduras);
+		resultados.push(
+			new Measurement(new Vec2(largura, altura), new Vec2(largura, dLinha), 'd', scale)
+		);
+
+		const bitola = armaduras.inferior.bitola / 10;
+
+		const descricao = descricaoArmadura(armaduras.inferior);
+		resultados.push(
+			new TextLabel(descricao, new Vec2(-15 * scale, dLinha), scale, new Vec2(dLinha, dLinha))
+		);
+	}
+
+	if (armaduras.superior?.quantidade && armaduras.superior.bitola) {
+		const dLinha = calculaDLinha(secao, armaduras);
+		const d = altura - dLinha;
+		const bitola = armaduras.superior.bitola / 10;
+
+		const descricao = descricaoArmadura(armaduras.superior);
+		resultados.push(new TextLabel(descricao, new Vec2(-15 * scale, d), scale, new Vec2(dLinha, d)));
+	}
+
+	return resultados;
 }
 
 function desenhaCirculosEspacados(

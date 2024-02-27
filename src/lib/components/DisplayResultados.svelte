@@ -25,7 +25,11 @@
 		<div class="flex flex-col gap-4">
 			<div class="font-medium">
 				Domínio {resultados.dominio}
-				<span class="ml-1 text-sm font-normal">(x = {resultados.x.toFixed(2)} cm)</span>
+				<span class="ml-1 text-sm font-normal"
+					>(x/d = {(resultados.x / (resultados.variaveis?.d ?? 1)).toFixed(2)} | x = {resultados.x.toFixed(
+						2
+					)} cm)</span
+				>
 			</div>
 
 			<Separator />

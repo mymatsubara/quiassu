@@ -342,7 +342,7 @@
 </script>
 
 <div>
-	<div class="flex items-center justify-between">
+	<div class="flex items-center justify-between gap-2">
 		<Input
 			class="max-w-sm bg-gray-50"
 			placeholder="Filtra seções..."

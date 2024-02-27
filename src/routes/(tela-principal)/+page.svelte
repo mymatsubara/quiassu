@@ -44,7 +44,7 @@
 	}
 </script>
 
-<div class="flex h-10 items-center justify-between gap-5">
+<div class="flex h-10 items-center justify-between gap-2">
 	<Input
 		type="search"
 		placeholder="Pesquisar seções"
@@ -74,7 +74,7 @@
 		</div>
 	</div>
 {:else}
-	<div class="mt-8 grid gap-6 min-[550px]:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+	<div class="mt-8 grid gap-6 min-[550px]:grid-cols-2 sm:grid-cols-3 xl:grid-cols-4">
 		{#each secoesFiltradas as secao (secao.id)}
 			{@const href = `/secao?id=${secao.id}`}
 			<Card.Root class="h-max w-full shadow">
