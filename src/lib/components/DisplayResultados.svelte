@@ -35,7 +35,7 @@
 			<Separator />
 
 			<div>
-				<h4 class="mb-2 font-medium leading-none">Armadura inferior</h4>
+				<h4 class="mb-2 font-medium leading-none">Armadura de tração</h4>
 
 				<div class="grid grid-cols-2 items-center gap-4 font-medium">
 					<div class="text-sm">d'</div>
@@ -69,7 +69,7 @@
 			<Separator />
 
 			<div>
-				<h4 class="mb-2 font-medium leading-none">Armadura superior</h4>
+				<h4 class="mb-2 font-medium leading-none">Armadura de compressão</h4>
 
 				<div class="grid grid-cols-2 items-center gap-4 font-medium">
 					<div>

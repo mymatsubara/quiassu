@@ -128,7 +128,7 @@
 	<Separator />
 
 	<div>
-		<h3 class="mb-4 font-medium leading-none">Armadura inferior - A<sub>s</sub></h3>
+		<h3 class="mb-4 font-medium leading-none">Armadura de tração - A<sub>s</sub></h3>
 		{#if armaduras.inferior}
 			<InputArmadura
 				bind:quantidade={armaduras.inferior.quantidade}
@@ -140,7 +140,7 @@
 	<Separator />
 
 	<div>
-		<h3 class="mb-4 font-medium leading-none">Armadura superior - A'<sub>s</sub></h3>
+		<h3 class="mb-4 font-medium leading-none">Armadura de compressão - A'<sub>s</sub></h3>
 		{#if armaduras.superior}
 			<InputArmadura
 				bind:quantidade={armaduras.superior.quantidade}
