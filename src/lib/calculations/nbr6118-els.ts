@@ -20,7 +20,7 @@ export function calcularELSW(secao: Secao, armaduras: Armaduras) {
 	const as = areaAcoArmadura(armadura);
 	const b = secao.geometria.largura;
 	const h = secao.geometria.altura;
-	const d = secao.geometria.altura - dLinha;
+	const d = secao.geometria.altura - dLinha.inferior;
 	const Es = convertStress(secao.es, 'GPa', 'KN/cm2');
 	const Ecs = convertStress(0.85 * 5600 * Math.sqrt(secao.fck), 'MPa', 'KN/cm2');
 	const fctm = convertStress(0.3 * secao.fck ** (2 / 3), 'MPa', 'KN/cm2');
@@ -39,7 +39,7 @@ export function calcularELSW(secao: Secao, armaduras: Armaduras) {
 
 	// Para apenas barra da armadura
 	const coef = ((fi1 * sigmas) / (12.5 * eta1 * Es)) * 10; // converte para mm
-	const { ro, acri } = relacaoAcoConcretoTirante(secao, armadura, dLinha);
+	const { ro, acri } = relacaoAcoConcretoTirante(secao, armadura, dLinha.inferior);
 
 	const wk1 = coef * ((3 * sigmas) / fctm);
 	const wk2 = coef * (4 / ro + 45);

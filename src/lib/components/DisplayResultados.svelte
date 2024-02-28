@@ -7,8 +7,8 @@
 	export let secao: Secao;
 	export let armaduras: Armaduras;
 
-	$: dLinha = Number(calculaDLinha(secao, armaduras));
-	$: resultados = dimensionaSecao(secao, dLinha);
+	$: dLinha = calculaDLinha(secao, armaduras);
+	$: resultados = dimensionaSecao(secao, dLinha.inferior, dLinha.superior);
 </script>
 
 {#if resultados}
@@ -39,7 +39,7 @@
 
 				<div class="grid grid-cols-2 items-center gap-4 font-medium">
 					<div class="text-sm">d'</div>
-					<div>{dLinha?.toFixed(2)} cm</div>
+					<div>{dLinha.inferior?.toFixed(2)} cm</div>
 				</div>
 				<div class="grid grid-cols-2 items-center gap-4 font-medium">
 					<div class="text-sm">
@@ -71,6 +71,10 @@
 			<div>
 				<h4 class="mb-2 font-medium leading-none">Armadura de compressão</h4>
 
+				<div class="grid grid-cols-2 items-center gap-4 font-medium">
+					<div class="text-sm">d'</div>
+					<div>{dLinha.superior?.toFixed(2)} cm</div>
+				</div>
 				<div class="grid grid-cols-2 items-center gap-4 font-medium">
 					<div>
 						A'<sub>s<sub>calc</sub></sub>

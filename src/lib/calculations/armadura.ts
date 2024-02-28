@@ -25,11 +25,15 @@ export function areaBitola(bitola: number) {
 }
 
 export function calculaDLinha(secao: Secao, armaduras: Armaduras) {
-	return calculaDLinhaDireto(
-		secao.cobrimento ?? 0,
-		(armaduras.estribo?.bitola ?? 0) / 10, // converte para cm
-		(armaduras.inferior?.bitola ?? 0) / 10 // converte para cm
-	);
+	const cobrimento = secao.cobrimento ?? 0;
+	const bitolaEstribo = (armaduras.estribo?.bitola ?? 0) / 10;
+	const bitolaInferior = (armaduras.inferior?.bitola ?? 0) / 10; // converte para cm
+	const bitolaSuperior = (armaduras.superior?.bitola ?? 0) / 10; // converte para cm
+
+	return {
+		inferior: Number(calculaDLinhaDireto(cobrimento, bitolaEstribo, bitolaInferior)),
+		superior: Number(calculaDLinhaDireto(cobrimento, bitolaEstribo, bitolaSuperior))
+	};
 }
 
 function calculaDLinhaDireto(cobrimento: number, bitolaEstribo: number, bitolaArmadura: number) {

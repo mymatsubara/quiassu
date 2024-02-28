@@ -61,7 +61,7 @@
 		const secao = dados.secao;
 		const armaduras = dados.armaduras;
 		const dLinha = calculaDLinha(secao, armaduras);
-		const resultados = dimensionaSecao(secao, dLinha);
+		const resultados = dimensionaSecao(secao, dLinha.inferior, dLinha.superior);
 		const variaveis = resultados.variaveis;
 		const asMin = calcularAreaAcoMin(secao);
 		const elsw = calcularELSW(secao, armaduras);

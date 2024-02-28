@@ -105,22 +105,29 @@ function obtemDesenhoDasArmaduras(secao: Secao, armaduras: Armaduras): Circle[] 
 		return [];
 	}
 
-	const dLinha = calculaDLinha(secao, armaduras);
 	let armadurasInferiores: Circle[] = [];
 	let armadurasSuperiores: Circle[] = [];
 	const offset = (armaduras.estribo?.bitola ?? 0) / (2 * 10);
-	const larguraUtil = secao.geometria.largura - 2 * dLinha - 2 * offset;
 
 	if (armaduras.inferior?.bitola && armaduras.inferior?.quantidade) {
+		const dLinhaHorizontal =
+			secao.cobrimento + ((armaduras.estribo?.bitola ?? 0) + armaduras.inferior.bitola / 2) / 10;
+		console.log({
+			dLinhaHorizontal,
+			estribo: armaduras.estribo?.bitola,
+			armadura: armaduras.inferior.bitola
+		});
+		const larguraUtil = secao.geometria.largura - 2 * dLinhaHorizontal - 2 * offset;
+
 		const raio = armaduras.inferior.bitola / (2 * 10); // Converte raio para cm
 
 		if (armaduras.inferior.quantidade === 1) {
 			const x = secao.geometria.largura / 2;
-			const y = dLinha + 0.1;
+			const y = dLinhaHorizontal + 0.1;
 			armadurasInferiores = [new Circle(raio, x, y)];
 		} else {
-			const x = dLinha + offset;
-			const y = dLinha + 0.1;
+			const x = dLinhaHorizontal + offset;
+			const y = dLinhaHorizontal + 0.1;
 			const quantidade = armaduras.inferior.quantidade;
 			const espacamento = larguraUtil / (quantidade - 1);
 			armadurasInferiores = desenhaCirculosEspacados(x, y, raio, quantidade, espacamento);
@@ -128,15 +135,19 @@ function obtemDesenhoDasArmaduras(secao: Secao, armaduras: Armaduras): Circle[] 
 	}
 
 	if (armaduras.superior?.bitola && armaduras.superior?.quantidade) {
+		const dLinhaHorizontal =
+			secao.cobrimento + ((armaduras.estribo?.bitola ?? 0) + armaduras.superior.bitola / 2) / 10;
+		const larguraUtil = secao.geometria.largura - 2 * dLinhaHorizontal - 2 * offset;
+
 		const raio = armaduras.superior.bitola / (2 * 10); // Converte raio para cm
 
 		if (armaduras.superior.quantidade === 1) {
 			const x = secao.geometria.largura / 2;
-			const y = secao.geometria.altura - dLinha - 0.1;
+			const y = secao.geometria.altura - dLinhaHorizontal - 0.1;
 			armadurasSuperiores = [new Circle(raio, x, y)];
 		} else {
-			const x = dLinha + offset;
-			const y = secao.geometria.altura - dLinha - 0.1;
+			const x = dLinhaHorizontal + offset;
+			const y = secao.geometria.altura - dLinhaHorizontal - 0.1;
 			const quantidade = armaduras.superior.quantidade;
 			const espacamento = larguraUtil / (quantidade - 1);
 			armadurasSuperiores = desenhaCirculosEspacados(x, y, raio, quantidade, espacamento);
@@ -165,7 +176,7 @@ function obtemMedidas(secao: Secao, armaduras: Armaduras, scale: number): Drawin
 
 	const resultados: Drawing[] = [b, h];
 	if (possuiArmaduraInferior) {
-		const dLinha = calculaDLinha(secao, armaduras);
+		const dLinha = calculaDLinha(secao, armaduras).inferior;
 		resultados.push(
 			new Measurement(new Vec2(largura, altura), new Vec2(largura, dLinha), 'd', scale)
 		);
@@ -177,7 +188,7 @@ function obtemMedidas(secao: Secao, armaduras: Armaduras, scale: number): Drawin
 	}
 
 	if (armaduras.superior?.quantidade && armaduras.superior.bitola) {
-		const dLinha = calculaDLinha(secao, armaduras);
+		const dLinha = calculaDLinha(secao, armaduras).superior;
 		const d = altura - dLinha;
 
 		const descricao = descricaoArmadura(armaduras.superior);
