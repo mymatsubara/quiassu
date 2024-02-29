@@ -284,7 +284,7 @@ export class Measurement implements Drawing {
 			rotation,
 			scale,
 			position,
-			content: `${this.label} = ${size.toLocaleString('pt-BR')} cm`,
+			content: `${this.label}${size.toLocaleString('pt-BR')} cm`,
 			offsetDir
 		};
 	}

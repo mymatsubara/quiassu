@@ -60,7 +60,7 @@
 	function calculaResultado(dados: DadosSecao): ResultadoSecao | undefined {
 		const secao = dados.secao;
 		const armaduras = dados.armaduras;
-		const dLinha = calculaDLinha(secao, armaduras);
+		const dLinha = calculaDLinha(secao.cobrimento, armaduras);
 		const resultados = dimensionaSecao(secao, dLinha.inferior, dLinha.superior);
 		const variaveis = resultados.variaveis;
 		const asMin = calcularAreaAcoMin(secao);
@@ -85,17 +85,12 @@
 				x_d: resultados.x / variaveis.d,
 				as: resultados.as ?? 0,
 				asMin: asMin,
-				armaduraTracaoAdotada: armaduras.inferior?.quantidade
-					? descricaoArmadura(armaduras.inferior)
-					: '-',
-				asAdotado:
-					armaduras.inferior && armaduras.inferior?.quantidade
-						? areaAcoArmadura(armaduras.inferior)
-						: 0,
-				armaduraCompressaoAdotada: armaduras.superior?.quantidade
-					? descricaoArmadura(armaduras.superior)
-					: '-',
-				asLinhaAdotado: armaduras.superior?.quantidade ? areaAcoArmadura(armaduras.superior) : 0,
+				armaduraTracaoAdotada: armaduras.inferior ? descricaoArmadura(armaduras.inferior) : '-',
+				asAdotado: armaduras.inferior?.camadas?.length ? areaAcoArmadura(armaduras.inferior) : 0,
+				armaduraCompressaoAdotada: armaduras.superior ? descricaoArmadura(armaduras.superior) : '-',
+				asLinhaAdotado: armaduras.superior?.camadas?.length
+					? areaAcoArmadura(armaduras.superior)
+					: 0,
 				mdserv: elsw?.variaveis?.mdserv
 					? convertToque(elsw?.variaveis?.mdserv, 'KNcm', 'KNm')
 					: undefined,
@@ -409,13 +404,7 @@
 													? 'font-medium'
 													: ''}"
 											>
-												{#if cell.id === 'nome'}
-													<Button variant="ghost" href="/secao?id={row.state?.data}">
-														<Render of={cell.render()} />
-													</Button>
-												{:else}
-													<Render of={cell.render()} />
-												{/if}
+												<Render of={cell.render()} />
 											</div>
 										</Table.Cell>
 									</Subscribe>

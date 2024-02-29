@@ -59,12 +59,22 @@ export function criaNovaSecao(projeto: Projeto): DadosSecao {
 				bitola: secaoMaisRecente?.armaduras?.estribo?.bitola ?? 5
 			},
 			inferior: {
-				bitola: undefined as any,
-				quantidade: undefined as any
+				camadas: [
+					{
+						bitola: undefined as any,
+						quantidade: undefined as any
+					}
+				],
+				espacamento: 5
 			},
 			superior: {
-				bitola: undefined as any,
-				quantidade: undefined as any
+				camadas: [
+					{
+						bitola: undefined as any,
+						quantidade: undefined as any
+					}
+				],
+				espacamento: 5
 			}
 		},
 		ultimaModificao: Date.now()

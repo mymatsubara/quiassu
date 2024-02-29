@@ -1,5 +1,3 @@
-import type { Secao } from '$lib/calculations/nbr6118-elu';
-
 export interface Armaduras {
 	superior?: Armadura;
 	inferior?: Armadura;
@@ -7,15 +5,24 @@ export interface Armaduras {
 }
 
 export interface Armadura {
-	quantidade: number;
-	bitola: number; // em mm
+	camadas: CamadaArmadura[];
+	espacamento: number;
+}
+
+export interface CamadaArmadura {
+	quantidade?: number;
+	bitola?: number; // em mm
 }
 
 export interface Estribo {
 	bitola: number; // em mm
 }
 
-export function areaAcoArmadura({ quantidade, bitola }: Armadura) {
+export function areaAcoArmadura(armadura: Armadura) {
+	return armadura.camadas.reduce((total, camada) => total + areaAcoCamadaArmadura(camada), 0);
+}
+
+export function areaAcoCamadaArmadura({ quantidade, bitola }: CamadaArmadura) {
 	return bitola && quantidade ? quantidade * areaBitola(bitola) : 0;
 }
 
@@ -24,47 +31,77 @@ export function areaBitola(bitola: number) {
 	return Math.PI * raio ** 2;
 }
 
-export function calculaDLinha(secao: Secao, armaduras: Armaduras) {
-	const cobrimento = secao.cobrimento ?? 0;
-	const bitolaEstribo = (armaduras.estribo?.bitola ?? 0) / 10;
-	const bitolaInferior = (armaduras.inferior?.bitola ?? 0) / 10; // converte para cm
-	const bitolaSuperior = (armaduras.superior?.bitola ?? 0) / 10; // converte para cm
+export function calculaDLinha(cobrimento: number, armaduras: Armaduras) {
+	const bitolaEstribo = (armaduras.estribo?.bitola ?? 0) / 10; // converte para cm
 
 	return {
-		inferior: Number(calculaDLinhaDireto(cobrimento, bitolaEstribo, bitolaInferior)),
-		superior: Number(calculaDLinhaDireto(cobrimento, bitolaEstribo, bitolaSuperior))
+		inferior: Number(calculaDLinhaDireto(cobrimento, bitolaEstribo, armaduras.inferior)),
+		superior: Number(calculaDLinhaDireto(cobrimento, bitolaEstribo, armaduras.superior))
 	};
 }
 
-function calculaDLinhaDireto(cobrimento: number, bitolaEstribo: number, bitolaArmadura: number) {
-	return cobrimento + bitolaEstribo + bitolaArmadura / 2;
+function calculaDLinhaDireto(cobrimento: number, bitolaEstribo: number, armadura?: Armadura) {
+	const alturaMediaArmadura = armadura ? calculaAlturaMediaArmadura(armadura) : 0;
+
+	return cobrimento + bitolaEstribo + alturaMediaArmadura;
 }
 
-export function calculaEspacamento(largura: number, cobrimento: number, armaduras: Armaduras) {
-	const bitolaEstribo = armaduras.estribo?.bitola ?? 0;
+function calculaAlturaMediaArmadura(armadura: Armadura) {
+	if (!armadura.camadas?.length) {
+		return 0;
+	}
 
-	return {
-		inferior: armaduras.inferior
-			? calculaEspacamentoNum(largura, cobrimento, bitolaEstribo, armaduras.inferior)
-			: undefined,
-		superior: armaduras.superior
-			? calculaEspacamentoNum(largura, cobrimento, bitolaEstribo, armaduras.superior)
-			: undefined
-	};
+	let alturaPonderada = 0;
+	let areaTotal = 0;
+	let altura = (armadura.camadas[0].bitola ?? 0) / (2 * 10); // converte para cm
+	const espacamento = armadura.espacamento;
+
+	for (const camada of armadura.camadas) {
+		const area = areaAcoCamadaArmadura(camada);
+
+		alturaPonderada += altura * area;
+		areaTotal += area;
+		altura += espacamento;
+	}
+
+	return areaTotal > 0 ? alturaPonderada / areaTotal : 0;
 }
 
-function calculaEspacamentoNum(
+function calculaEspacamentoCamadaNum(
 	largura: number,
 	cobrimento: number,
 	bitolaEstribo: number,
-	armadura: Armadura
+	armadura: CamadaArmadura
 ) {
-	const dLinha = cobrimento + bitolaEstribo / 10 + armadura.bitola / (2 * 10);
+	const bitola = armadura?.bitola ?? 0;
+	const quantidade = armadura?.quantidade ?? 0;
+	const dLinha = cobrimento + bitolaEstribo / 10 + bitola / (2 * 10);
 	const larguraUtil = largura - 2 * dLinha;
 
-	return armadura.quantidade > 1 ? larguraUtil / (armadura.quantidade - 1) : larguraUtil;
+	return quantidade > 1 ? larguraUtil / (quantidade - 1) : larguraUtil;
 }
 
 export function descricaoArmadura(armadura: Armadura) {
-	return `${armadura.quantidade}Φ${armadura.bitola.toLocaleString('pt-BR')}`;
+	const descricoes = armadura.camadas
+		.filter((camada) => camada.bitola && camada.quantidade)
+		.map(descricaoCamadaArmadura);
+	if (descricoes.length === 0) {
+		return '-';
+	}
+
+	const primeiraCamada = descricoes[0];
+	if (descricoes.length === 1) {
+		return primeiraCamada;
+	}
+
+	const todasCamadaIguais = descricoes.every((desc) => desc === primeiraCamada);
+	if (todasCamadaIguais) {
+		return `${descricoes.length} camadas: ${primeiraCamada}`;
+	}
+
+	return descricoes.join(' | ');
+}
+
+export function descricaoCamadaArmadura(armadura: CamadaArmadura) {
+	return `${armadura.quantidade ?? 0}Φ${armadura.bitola?.toLocaleString('pt-BR') ?? 0}`;
 }

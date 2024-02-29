@@ -1,9 +1,4 @@
-import {
-	calculaDLinha,
-	descricaoArmadura,
-	type Armadura,
-	type Armaduras
-} from '$lib/calculations/armadura';
+import { calculaDLinha, descricaoCamadaArmadura, type Armaduras } from '$lib/calculations/armadura';
 import type { Secao } from '$lib/calculations/nbr6118-elu';
 import {
 	Circle,
@@ -105,52 +100,73 @@ function obtemDesenhoDasArmaduras(secao: Secao, armaduras: Armaduras): Circle[] 
 		return [];
 	}
 
+	const altura = secao.geometria.altura;
+	const largura = secao.geometria.largura;
 	let armadurasInferiores: Circle[] = [];
 	let armadurasSuperiores: Circle[] = [];
 	const offset = (armaduras.estribo?.bitola ?? 0) / (2 * 10);
+	const cobrimento = secao.cobrimento;
+	const bitolaEstribo = armaduras.estribo?.bitola ?? 0;
 
-	if (armaduras.inferior?.bitola && armaduras.inferior?.quantidade) {
-		const dLinhaHorizontal =
-			secao.cobrimento + ((armaduras.estribo?.bitola ?? 0) + armaduras.inferior.bitola / 2) / 10;
-		console.log({
-			dLinhaHorizontal,
-			estribo: armaduras.estribo?.bitola,
-			armadura: armaduras.inferior.bitola
-		});
-		const larguraUtil = secao.geometria.largura - 2 * dLinhaHorizontal - 2 * offset;
+	if (armaduras.inferior?.camadas?.length) {
+		const armadura = armaduras.inferior;
+		const primeiroDLinha =
+			cobrimento + (bitolaEstribo + (armadura.camadas[0].bitola ?? 0) / 2) / 10;
 
-		const raio = armaduras.inferior.bitola / (2 * 10); // Converte raio para cm
+		for (const [i, camada] of armaduras.inferior.camadas.entries()) {
+			if (!camada.bitola || !camada.quantidade) {
+				continue;
+			}
 
-		if (armaduras.inferior.quantidade === 1) {
-			const x = secao.geometria.largura / 2;
-			const y = dLinhaHorizontal + 0.1;
-			armadurasInferiores = [new Circle(raio, x, y)];
-		} else {
-			const x = dLinhaHorizontal + offset;
-			const y = dLinhaHorizontal + 0.1;
-			const quantidade = armaduras.inferior.quantidade;
-			const espacamento = larguraUtil / (quantidade - 1);
-			armadurasInferiores = desenhaCirculosEspacados(x, y, raio, quantidade, espacamento);
+			const dLinhaHorizontal = cobrimento + (bitolaEstribo + camada.bitola / 2) / 10;
+			const larguraUtil = largura - 2 * dLinhaHorizontal - 2 * offset;
+
+			const raio = camada.bitola / (2 * 10); // Converte raio para cm
+			const y = primeiroDLinha + i * armadura.espacamento;
+
+			if (camada.quantidade === 1) {
+				const x = secao.geometria.largura / 2;
+				armadurasInferiores = [...armadurasInferiores, new Circle(raio, x, y)];
+			} else {
+				const x = dLinhaHorizontal + offset;
+				const quantidade = camada.quantidade;
+				const espacamento = larguraUtil / (quantidade - 1);
+				armadurasInferiores = [
+					...armadurasInferiores,
+					...desenhaCirculosEspacados(x, y, raio, quantidade, espacamento)
+				];
+			}
 		}
 	}
 
-	if (armaduras.superior?.bitola && armaduras.superior?.quantidade) {
-		const dLinhaHorizontal =
-			secao.cobrimento + ((armaduras.estribo?.bitola ?? 0) + armaduras.superior.bitola / 2) / 10;
-		const larguraUtil = secao.geometria.largura - 2 * dLinhaHorizontal - 2 * offset;
+	if (armaduras.superior?.camadas?.length) {
+		const armadura = armaduras.superior;
+		const primeiroDLinha =
+			cobrimento + (bitolaEstribo + (armadura.camadas[0]?.bitola ?? 0) / 2) / 10;
 
-		const raio = armaduras.superior.bitola / (2 * 10); // Converte raio para cm
+		for (const [i, camada] of armaduras.superior.camadas.entries()) {
+			if (!camada.bitola || !camada.quantidade) {
+				continue;
+			}
 
-		if (armaduras.superior.quantidade === 1) {
-			const x = secao.geometria.largura / 2;
-			const y = secao.geometria.altura - dLinhaHorizontal - 0.1;
-			armadurasSuperiores = [new Circle(raio, x, y)];
-		} else {
-			const x = dLinhaHorizontal + offset;
-			const y = secao.geometria.altura - dLinhaHorizontal - 0.1;
-			const quantidade = armaduras.superior.quantidade;
-			const espacamento = larguraUtil / (quantidade - 1);
-			armadurasSuperiores = desenhaCirculosEspacados(x, y, raio, quantidade, espacamento);
+			const dLinhaHorizontal = cobrimento + (bitolaEstribo + camada.bitola / 2) / 10;
+			const larguraUtil = secao.geometria.largura - 2 * dLinhaHorizontal - 2 * offset;
+
+			const raio = camada.bitola / (2 * 10); // Converte raio para cm
+			const y = altura - primeiroDLinha - i * armadura.espacamento;
+
+			if (camada.quantidade === 1) {
+				const x = secao.geometria.largura / 2;
+				armadurasSuperiores = [...armadurasSuperiores, new Circle(raio, x, y)];
+			} else {
+				const x = dLinhaHorizontal + offset;
+				const quantidade = camada.quantidade;
+				const espacamento = larguraUtil / (quantidade - 1);
+				armadurasSuperiores = [
+					...armadurasSuperiores,
+					...desenhaCirculosEspacados(x, y, raio, quantidade, espacamento)
+				];
+			}
 		}
 	}
 
@@ -163,36 +179,96 @@ function obtemMedidas(secao: Secao, armaduras: Armaduras, scale: number): Drawin
 	}
 	const altura = secao.geometria.altura;
 	const largura = secao.geometria.largura;
+	const cobrimento = secao.cobrimento;
+	const bitolaEstribo = armaduras.estribo?.bitola ?? 0;
+	const scaleArmadura = 0.75 * scale;
+	const scaleCamadas = 0.35 * scale;
 
-	const possuiArmaduraInferior = armaduras.inferior?.quantidade && armaduras.inferior.bitola;
-	const b = new Measurement(new Vec2(0, altura), new Vec2(largura, altura), 'b', scale);
+	const primeiraCamadaInferior = armaduras.inferior?.camadas?.[0];
+	const possuiArmaduraInferior =
+		primeiraCamadaInferior?.quantidade && primeiraCamadaInferior?.bitola;
+	const b = new Measurement(new Vec2(0, altura), new Vec2(largura, altura), 'b = ', scale);
 	const h = new Measurement(
 		new Vec2(largura, altura),
 		new Vec2(largura, 0),
-		'h',
+		'h = ',
 		scale,
 		possuiArmaduraInferior ? 2 : 1
 	);
 
 	const resultados: Drawing[] = [b, h];
+
+	// Detalha armadura inferior
+	const dLinha = calculaDLinha(secao.cobrimento, armaduras).inferior;
 	if (possuiArmaduraInferior) {
-		const dLinha = calculaDLinha(secao, armaduras).inferior;
 		resultados.push(
-			new Measurement(new Vec2(largura, altura), new Vec2(largura, dLinha), 'd', scale)
+			new Measurement(new Vec2(largura, altura), new Vec2(largura, dLinha), 'd = ', scale)
 		);
 
-		const descricao = descricaoArmadura(armaduras.inferior as Armadura);
-		resultados.push(
-			new TextLabel(descricao, new Vec2(-15 * scale, dLinha), scale, new Vec2(dLinha, dLinha))
-		);
+		const camadas = armaduras.inferior?.camadas ?? [];
+		const primeiroDLinha = cobrimento + (bitolaEstribo + (camadas[0]?.bitola ?? 0) / 2) / 10;
+		const espacamento = armaduras.inferior?.espacamento ?? 0;
+
+		for (const [i, camada] of camadas.entries()) {
+			if (!camada.bitola || !camada.quantidade) {
+				continue;
+			}
+
+			const x = cobrimento + (bitolaEstribo + camada.bitola / 2) / 10;
+			const y = primeiroDLinha + i * espacamento;
+			const descricao = descricaoCamadaArmadura(camada);
+			resultados.push(
+				new TextLabel(descricao, new Vec2(-15 * scaleArmadura, y), scaleArmadura, new Vec2(x, y))
+			);
+
+			// Distancia entre as camadas
+			if (i > 0) {
+				const mx = cobrimento / 2;
+				resultados.push(
+					new Measurement(
+						new Vec2(mx, y - espacamento),
+						new Vec2(mx, y),
+						'',
+						4 * (espacamento / altura) * scale,
+						0
+					)
+				);
+			}
+		}
 	}
 
-	if (armaduras.superior?.quantidade && armaduras.superior.bitola) {
-		const dLinha = calculaDLinha(secao, armaduras).superior;
-		const d = altura - dLinha;
+	// Detalha armadura superior
+	if (armaduras.superior?.camadas?.length) {
+		const camadas = armaduras.superior.camadas;
+		const primeiroDLinha = cobrimento + (bitolaEstribo + (camadas[0]?.bitola ?? 0) / 2) / 10;
+		const espacamento = armaduras.superior?.espacamento ?? 0;
 
-		const descricao = descricaoArmadura(armaduras.superior);
-		resultados.push(new TextLabel(descricao, new Vec2(-15 * scale, d), scale, new Vec2(dLinha, d)));
+		for (const [i, camada] of camadas.entries()) {
+			if (!camada.bitola || !camada.quantidade) {
+				continue;
+			}
+
+			const x = cobrimento + (bitolaEstribo + camada.bitola / 2) / 10;
+			const y = altura - primeiroDLinha - i * espacamento;
+			const descricao = descricaoCamadaArmadura(camada);
+			resultados.push(
+				new TextLabel(descricao, new Vec2(-15 * scaleArmadura, y), scaleArmadura, new Vec2(x, y))
+			);
+
+			// Distancia entre as camadas
+			if (i > 0) {
+				const mx = cobrimento / 2;
+				resultados.push(
+					new Measurement(
+						new Vec2(mx, y),
+						new Vec2(mx, y + espacamento),
+						'',
+						4 * (espacamento / altura) * scale,
+						0
+					)
+				);
+			}
+		}
 	}
 
 	return resultados;
