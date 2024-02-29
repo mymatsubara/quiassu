@@ -1,4 +1,4 @@
-import type { Armaduras } from '$lib/calculations/armadura';
+import type { Armadura, Armaduras } from '$lib/calculations/armadura';
 import type { Secao } from '$lib/calculations/nbr6118-elu';
 import { max } from '$lib/utils/array';
 
@@ -20,7 +20,7 @@ export function projetoVazio() {
 	return {
 		nome: '',
 		secoes: [],
-		versao: 1
+		versao: 2
 	};
 }
 
@@ -93,6 +93,33 @@ function converteVersao(projeto: Projeto) {
 	switch (projeto.versao) {
 		case undefined:
 			projeto.versao = 1;
+		case 1:
+			type ArmadurasV1 = {
+				estribo: { bitola: number };
+				inferior: ArmaduraV1;
+				superior: ArmaduraV1;
+			};
+			type ArmaduraV1 = { quantidade: number; bitola: number };
+			const mapeiaArmaduraV1: (a: ArmaduraV1) => Armadura = (armadura) => {
+				return {
+					camadas: [{ bitola: armadura?.bitola, quantidade: armadura?.quantidade }],
+					espacamento: 5
+				};
+			};
+
+			projeto.secoes = projeto.secoes.map((secao) => {
+				const armadurasV1 = secao.armaduras as any as ArmadurasV1;
+
+				return {
+					...secao,
+					armaduras: {
+						estribo: armadurasV1?.estribo,
+						inferior: mapeiaArmaduraV1(armadurasV1?.inferior),
+						superior: mapeiaArmaduraV1(armadurasV1?.superior)
+					}
+				};
+			});
+			projeto.versao = 2;
 	}
 
 	return projeto;
