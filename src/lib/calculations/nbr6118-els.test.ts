@@ -25,8 +25,13 @@ describe('NBR6118 - ELS', () => {
 
 		const armaduras: Armaduras = {
 			inferior: {
-				bitola: 16,
-				quantidade: 5
+				camadas: [
+					{
+						bitola: 16,
+						quantidade: 5
+					}
+				],
+				espacamento: 5
 			}
 		};
 

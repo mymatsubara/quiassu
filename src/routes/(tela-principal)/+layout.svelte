@@ -31,7 +31,7 @@
 				</label>
 
 				<div class="flex justify-end gap-3">
-					<Tooltip.Root>
+					<Tooltip.Root openDelay={0}>
 						<Tooltip.Trigger asChild let:builder>
 							<Button
 								builders={[builder]}
@@ -49,7 +49,7 @@
 					</Tooltip.Root>
 
 					<div class="hidden sm:block">
-						<Tooltip.Root>
+						<Tooltip.Root openDelay={0}>
 							<Tooltip.Trigger asChild let:builder>
 								<Button
 									builders={[builder]}

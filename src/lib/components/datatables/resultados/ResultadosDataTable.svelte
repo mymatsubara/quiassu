@@ -1,10 +1,5 @@
 <script lang="ts">
-	import {
-		areaAcoArmadura,
-		calculaDLinha,
-		calculaEspacamento,
-		descricaoArmadura
-	} from '$lib/calculations/armadura';
+	import { areaAcoArmadura, calculaDLinha, descricaoArmadura } from '$lib/calculations/armadura';
 	import { calcularELSW } from '$lib/calculations/nbr6118-els';
 	import { calcularAreaAcoMin, dimensionaSecao } from '$lib/calculations/nbr6118-elu';
 	import { convertStress, convertToque } from '$lib/calculations/units';
@@ -40,9 +35,9 @@
 		x_d: number;
 		as: number;
 		asMin: number;
-		armaduraInferiorAdotada?: string;
+		armaduraTracaoAdotada?: string;
 		asAdotado?: number;
-		armaduraSuperiorAdotada?: string;
+		armaduraCompressaoAdotada?: string;
 		asLinhaAdotado?: number;
 		mdserv?: number;
 		es: number;
@@ -65,8 +60,8 @@
 	function calculaResultado(dados: DadosSecao): ResultadoSecao | undefined {
 		const secao = dados.secao;
 		const armaduras = dados.armaduras;
-		const dLinha = calculaDLinha(secao, armaduras);
-		const resultados = dimensionaSecao(secao, dLinha);
+		const dLinha = calculaDLinha(secao.cobrimento, armaduras);
+		const resultados = dimensionaSecao(secao, dLinha.inferior, dLinha.superior);
 		const variaveis = resultados.variaveis;
 		const asMin = calcularAreaAcoMin(secao);
 		const elsw = calcularELSW(secao, armaduras);
@@ -75,8 +70,6 @@
 			alert('Seção não retangular');
 			return undefined;
 		} else {
-			const espacamento = calculaEspacamento(variaveis.b, secao.cobrimento, armaduras);
-
 			return {
 				id: dados.id,
 				nome: dados.nome || 'Seção sem nome',
@@ -92,17 +85,12 @@
 				x_d: resultados.x / variaveis.d,
 				as: resultados.as ?? 0,
 				asMin: asMin,
-				armaduraInferiorAdotada: armaduras.inferior?.quantidade
-					? descricaoArmadura(armaduras.inferior)
-					: '-',
-				asAdotado:
-					armaduras.inferior && armaduras.inferior?.quantidade
-						? areaAcoArmadura(armaduras.inferior)
-						: 0,
-				armaduraSuperiorAdotada: armaduras.superior?.quantidade
-					? descricaoArmadura(armaduras.superior)
-					: '-',
-				asLinhaAdotado: armaduras.superior?.quantidade ? areaAcoArmadura(armaduras.superior) : 0,
+				armaduraTracaoAdotada: armaduras.inferior ? descricaoArmadura(armaduras.inferior) : '-',
+				asAdotado: armaduras.inferior?.camadas?.length ? areaAcoArmadura(armaduras.inferior) : 0,
+				armaduraCompressaoAdotada: armaduras.superior ? descricaoArmadura(armaduras.superior) : '-',
+				asLinhaAdotado: armaduras.superior?.camadas?.length
+					? areaAcoArmadura(armaduras.superior)
+					: 0,
 				mdserv: elsw?.variaveis?.mdserv
 					? convertToque(elsw?.variaveis?.mdserv, 'KNcm', 'KNm')
 					: undefined,
@@ -133,9 +121,9 @@
 		x_d: 'x/d (cm)',
 		as: 'As (cm²)',
 		asMin: 'As,mín (cm²)',
-		armaduraInferiorAdotada: 'Armadura inf. adot.',
+		armaduraTracaoAdotada: 'Armadura de tração adot.',
 		asAdotado: 'As,adot (cm²)',
-		armaduraSuperiorAdotada: 'Armadura sup. adot.',
+		armaduraCompressaoAdotada: 'Armadura de compressão adot.',
 		asLinhaAdotado: "A's,adot (cm²)",
 		mdserv: 'Md,serv (KNm)',
 		es: 'Es (MPa)',
@@ -246,8 +234,8 @@
 			cell: numberCell
 		}),
 		table.column({
-			accessor: 'armaduraInferiorAdotada',
-			header: headers['armaduraInferiorAdotada']
+			accessor: 'armaduraTracaoAdotada',
+			header: headers['armaduraTracaoAdotada']
 		}),
 		table.column({
 			accessor: 'asAdotado',
@@ -256,8 +244,8 @@
 				value ? value.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : '-'
 		}),
 		table.column({
-			accessor: 'armaduraSuperiorAdotada',
-			header: headers['armaduraSuperiorAdotada']
+			accessor: 'armaduraCompressaoAdotada',
+			header: headers['armaduraCompressaoAdotada']
 		}),
 		table.column({
 			accessor: 'asLinhaAdotado',
@@ -310,9 +298,9 @@
 
 	const boldCols: Col[] = [
 		'asAdotado',
-		'armaduraInferiorAdotada',
+		'armaduraTracaoAdotada',
 		'asLinhaAdotado',
-		'armaduraSuperiorAdotada',
+		'armaduraCompressaoAdotada',
 		'wk'
 	] as const;
 	const boldColsSet: Set<string> = new Set(boldCols);
@@ -416,13 +404,7 @@
 													? 'font-medium'
 													: ''}"
 											>
-												{#if cell.id === 'nome'}
-													<Button variant="ghost" href="/secao?id={row.state?.data}">
-														<Render of={cell.render()} />
-													</Button>
-												{:else}
-													<Render of={cell.render()} />
-												{/if}
+												<Render of={cell.render()} />
 											</div>
 										</Table.Cell>
 									</Subscribe>

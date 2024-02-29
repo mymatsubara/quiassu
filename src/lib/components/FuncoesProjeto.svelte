@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { projetoVazio } from '$lib/project/projeto';
+	import { parseProjeto, projetoVazio } from '$lib/project/projeto';
 	import { arquivoProjeto, projeto } from '$lib/stores/projeto';
 	import { saveToFile, saveToFileOld } from '$lib/utils/file';
 	import { toast } from 'svelte-sonner';
@@ -15,9 +15,10 @@
 				$arquivoProjeto = fileHandle;
 				const file = await fileHandle.getFile();
 				const textData = await file.text();
-				carregaProjeto(textData);
+				$projeto = parseProjeto(textData);
 			} catch (e) {
-				alert('Arquivo inválido');
+				toast.error('Falha ao abrir o projeto. Arquivo inválido.');
+				console.error(e);
 			}
 		} else {
 			const fileInput = document.createElement('input');
@@ -33,8 +34,13 @@
 				}
 
 				const [file] = files;
-				const textData = await file.text();
-				carregaProjeto(textData);
+				try {
+					const textData = await file.text();
+					$projeto = parseProjeto(textData);
+				} catch (e) {
+					toast.error('Falha ao abrir o projeto. Arquivo inválido.');
+					console.error(e);
+				}
 			});
 		}
 	}

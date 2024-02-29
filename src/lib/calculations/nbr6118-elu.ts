@@ -42,7 +42,7 @@ interface ResultadoDimensionamentoSecao {
 	valido: boolean;
 }
 
-export function dimensionaSecao(secao: Secao, dLinha: number) {
+export function dimensionaSecao(secao: Secao, dLinhaInf: number, dLinhaSup: number) {
 	const fcd = convertStress(secao.fck, 'MPa', 'KN/cm2') / secao.gamac;
 	const fyd = convertStress(secao.fy, 'MPa', 'KN/cm2') / secao.gamas;
 	const msdx = secao.gamaf * convertToque(secao.mskx, 'KNm', 'KNcm');
@@ -52,7 +52,7 @@ export function dimensionaSecao(secao: Secao, dLinha: number) {
 
 	switch (secao.geometria.tipo) {
 		case 'retangulo':
-			const d = secao.geometria.altura - dLinha;
+			const d = secao.geometria.altura - dLinhaInf;
 			const b = secao.geometria.largura;
 			const h = secao.geometria.altura;
 			const xLim = d * xLimRel;
@@ -63,8 +63,9 @@ export function dimensionaSecao(secao: Secao, dLinha: number) {
 			// Calcular A's and As em compressão e para FNC com pequena excentricidade
 			const fnc = FNC.PequenaExcentricidade.ArmaduraDupla.areaAco({
 				es,
-				dLinha,
 				alfac,
+				dLinhaInf,
+				dLinhaSup,
 				b,
 				h,
 				msd: msdx,
@@ -90,7 +91,7 @@ export function dimensionaSecao(secao: Secao, dLinha: number) {
 			if (fnc.as < 0 && fnc.asLinha > 0) {
 				const x = FNC.PequenaExcentricidade.ArmaduraSimples.linhaNeutraRec({
 					b,
-					dLinha,
+					dLinha: dLinhaInf,
 					fcd,
 					lambda,
 					alfac,
@@ -155,7 +156,8 @@ export function dimensionaSecao(secao: Secao, dLinha: number) {
 					msd: msdx,
 					nsd,
 					h,
-					dLinha
+					dLinhaSup,
+					dLinhaInf
 				});
 
 				return {
@@ -172,7 +174,7 @@ export function dimensionaSecao(secao: Secao, dLinha: number) {
 			if (precisaArmaduraDupla) {
 				x = xLim;
 				const dominio = calculaDominio({ x, d, ecu, es, fyd, h });
-				const msd = msdx + nsd * (h / 2 - dLinha);
+				const msd = msdx + nsd * (h / 2 - dLinhaInf);
 
 				const msdLinha = FNC.GrandeExcentricidade.ArmaduraDupla.msdLinha({
 					fcd,
@@ -186,7 +188,7 @@ export function dimensionaSecao(secao: Secao, dLinha: number) {
 				const sigmaSdLinha = FNC.GrandeExcentricidade.ArmaduraDupla.sigmaSd({
 					fyd,
 					x,
-					dLinha,
+					dLinha: dLinhaSup,
 					ecu,
 					es
 				});
@@ -194,12 +196,12 @@ export function dimensionaSecao(secao: Secao, dLinha: number) {
 					deltaMsd,
 					sigmasd: sigmaSdLinha,
 					d,
-					dLinha
+					dLinha: dLinhaSup
 				});
 				const as = FNC.GrandeExcentricidade.ArmaduraDupla.areaAco({
 					d,
 					deltaMsd,
-					dLinha,
+					dLinha: dLinhaSup,
 					fyd,
 					lambda,
 					msdLinha,
@@ -464,7 +466,8 @@ module FNC {
 			interface AreaAcoInput {
 				es: number;
 				msd: number;
-				dLinha: number;
+				dLinhaInf: number;
+				dLinhaSup: number;
 				nsd: number;
 				h: number;
 				b: number;
@@ -472,13 +475,25 @@ module FNC {
 				alfac: number;
 			}
 
-			export function areaAco({ es, msd, dLinha, nsd, h, b, alfac, fcd }: AreaAcoInput) {
+			export function areaAco({
+				es,
+				msd,
+				dLinhaInf,
+				dLinhaSup,
+				nsd,
+				h,
+				b,
+				alfac,
+				fcd
+			}: AreaAcoInput) {
 				const rcd = alfac * h * b * fcd;
 				const sigmaSd = es * 0.002;
+				const rLinhaSd = (msd + (nsd - rcd) * (h / 2 - dLinhaInf)) / (h - dLinhaInf - dLinhaSup);
+				const rsd = nsd - rcd - rLinhaSd;
 
 				return {
-					asLinha: (1 / sigmaSd) * (msd / (h - 2 * dLinha) + (nsd - rcd) / 2),
-					as: (1 / sigmaSd) * (-msd / (h - 2 * dLinha) + (nsd - rcd) / 2)
+					asLinha: rLinhaSd / sigmaSd,
+					as: rsd / sigmaSd
 				};
 			}
 		}
@@ -559,13 +574,17 @@ module FNC {
 				msd: number;
 				nsd: number;
 				h: number;
-				dLinha: number;
+				dLinhaInf: number;
+				dLinhaSup: number;
 			}
 
-			export function areaAco({ fyd, msd, nsd, h, dLinha }: AreaAcoInput) {
+			export function areaAco({ fyd, msd, nsd, h, dLinhaInf, dLinhaSup }: AreaAcoInput) {
+				const rLinhaSd = (-msd - nsd * (h / 2 - dLinhaInf)) / (h - dLinhaInf - dLinhaSup);
+				const rsd = -nsd - rLinhaSd;
+
 				return {
-					asLinha: (1 / fyd) * (-msd / (h - 2 * dLinha) - nsd / 2),
-					as: (1 / fyd) * (msd / (h - 2 * dLinha) - nsd / 2)
+					asLinha: rLinhaSd / fyd,
+					as: rsd / fyd
 				};
 			}
 		}

@@ -44,6 +44,7 @@ describe('NBR6118 - ELU', () => {
 				gamas: 1.15,
 				gamaf: 1.4
 			},
+			dLinha,
 			dLinha
 		);
 
@@ -72,6 +73,7 @@ describe('NBR6118 - ELU', () => {
 				gamas: 1.15,
 				gamaf: 1.4
 			},
+			dLinha,
 			dLinha
 		);
 
@@ -100,6 +102,7 @@ describe('NBR6118 - ELU', () => {
 				gamas: 1.15,
 				gamaf: 1.4
 			},
+			dLinha,
 			dLinha
 		);
 
@@ -128,6 +131,7 @@ describe('NBR6118 - ELU', () => {
 				gamas: 1.15,
 				gamaf: 1.4
 			},
+			dLinha,
 			dLinha
 		);
 
@@ -156,6 +160,7 @@ describe('NBR6118 - ELU', () => {
 				gamas: 1.15,
 				gamaf: 1.4
 			},
+			dLinha,
 			dLinha
 		);
 
@@ -184,6 +189,7 @@ describe('NBR6118 - ELU', () => {
 				gamas: 1.15,
 				gamaf: 1.4
 			},
+			dLinha,
 			dLinha
 		);
 
@@ -212,6 +218,7 @@ describe('NBR6118 - ELU', () => {
 				gamas: 1.15,
 				gamaf: 1.4
 			},
+			dLinha,
 			dLinha
 		);
 
@@ -240,6 +247,7 @@ describe('NBR6118 - ELU', () => {
 				gamas: 1.15,
 				gamaf: 1
 			},
+			dLinha,
 			dLinha
 		);
 
@@ -268,6 +276,7 @@ describe('NBR6118 - ELU', () => {
 				gamas: 1.15,
 				gamaf: 1.4
 			},
+			dLinha,
 			dLinha
 		);
 
@@ -296,6 +305,7 @@ describe('NBR6118 - ELU', () => {
 				gamas: 1.15,
 				gamaf: 1.4
 			},
+			dLinha,
 			dLinha
 		);
 
