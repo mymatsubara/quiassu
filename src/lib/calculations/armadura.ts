@@ -105,3 +105,15 @@ export function descricaoArmadura(armadura: Armadura) {
 export function descricaoCamadaArmadura(armadura: CamadaArmadura) {
 	return `${armadura.quantidade ?? 0}Φ${armadura.bitola?.toLocaleString('pt-BR') ?? 0}`;
 }
+
+export function calculaEspacamentoLivreCamada(
+	largura: number,
+	cobrimento: number,
+	bitolaEstriboMm: number,
+	camada: CamadaArmadura
+) {
+	return (
+		calculaEspacamentoCamadaNum(largura, cobrimento, bitolaEstriboMm, camada) -
+		(camada?.bitola ?? 0) / 10
+	);
+}

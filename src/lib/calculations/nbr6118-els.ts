@@ -43,7 +43,6 @@ export function calcularELSW(secao: Secao, armaduras: Armaduras) {
 	let acri = 0;
 
 	const camadas = armadura?.camadas ?? [];
-	debugger;
 	for (const [i, camada] of camadas.entries()) {
 		if (!camada.bitola || !camada.quantidade) {
 			continue;

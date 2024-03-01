@@ -27,7 +27,6 @@
 		value = e?.value;
 	}}
 	bind:selected
-	{...$$restProps}
 >
 	<Select.Trigger class="h-8">
 		<Select.Value placeholder="Bitola" />

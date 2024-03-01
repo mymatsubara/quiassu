@@ -132,6 +132,13 @@
 									>
 									por conta do agregado graúdo selecionado ({secao.agregadoGraudo}).
 								</li>
+							{:else if verificacao.tipo === 'espaçamento armadura'}
+								<li>
+									O espaçamento livre <b>{verificacao.direcao}</b> da armadura de
+									<b>{verificacao.armadura}</b>
+									deve ser maior do que <b>{verificacao.minimo.toFixed(2)} cm</b> (valor atual:
+									<b>{Math.max(verificacao.observado, 0).toFixed(2)} cm</b>).
+								</li>
 							{/if}
 						{/each}
 					</ul>

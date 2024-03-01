@@ -20,7 +20,8 @@ describe('NBR6118 - ELS', () => {
 			nsd: 0,
 			gamac: 1.4,
 			gamas: 1.15,
-			gamaf: 1.4
+			gamaf: 1.4,
+			agregadoGraudo: 'Brita 1'
 		};
 
 		const armaduras: Armaduras = {

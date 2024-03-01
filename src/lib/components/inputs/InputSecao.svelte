@@ -157,14 +157,10 @@
 			<Label for="gamac-{rand}">γ<sub>c</sub></Label>
 			<NumberInput bind:value={secao.gamac} type="number" id="gamac-{rand}" class="h-8" />
 		</div>
-		<div class="grid grid-cols-2 items-center gap-4">
-			<Label for="agregado-graudo-{rand}">Agregado graúdo</Label>
-			<SelectAgregadoGraudo
-				bind:value={secao.agregadoGraudo}
-				id="agregado-graudo-{rand}"
-				class="h-8"
-			/>
-		</div>
+		<Label class="grid grid-cols-2 items-center gap-4">
+			<span>Agregado graúdo</span>
+			<SelectAgregadoGraudo bind:value={secao.agregadoGraudo} />
+		</Label>
 	</div>
 
 	<Separator />
