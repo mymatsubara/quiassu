@@ -1,6 +1,6 @@
 <script lang="ts">
 	import NumberInput from '$lib/components/inputs/NumberInput.svelte';
-	import SelectBitola from '$lib/components/inputs/SelectBitola.svelte';
+	import SelectBitola from '$lib/components/selects/SelectBitola.svelte';
 
 	export let quantidade: number | undefined;
 	export let bitola: number | undefined;

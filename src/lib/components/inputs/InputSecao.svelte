@@ -3,7 +3,8 @@
 	import type { Secao } from '$lib/calculations/nbr6118-elu';
 	import InputArmadura from '$lib/components/inputs/InputArmadura.svelte';
 	import NumberInput from '$lib/components/inputs/NumberInput.svelte';
-	import SelectBitola from '$lib/components/inputs/SelectBitola.svelte';
+	import SelectAgregadoGraudo from '$lib/components/selects/SelectAgregadoGraudo.svelte';
+	import SelectBitola from '$lib/components/selects/SelectBitola.svelte';
 	import { Checkbox } from '$lib/components/ui/checkbox';
 	import { Label } from '$lib/components/ui/label';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
@@ -155,6 +156,14 @@
 		<div class="grid grid-cols-2 items-center gap-4">
 			<Label for="gamac-{rand}">γ<sub>c</sub></Label>
 			<NumberInput bind:value={secao.gamac} type="number" id="gamac-{rand}" class="h-8" />
+		</div>
+		<div class="grid grid-cols-2 items-center gap-4">
+			<Label for="agregado-graudo-{rand}">Agregado graúdo</Label>
+			<SelectAgregadoGraudo
+				bind:value={secao.agregadoGraudo}
+				id="agregado-graudo-{rand}"
+				class="h-8"
+			/>
 		</div>
 	</div>
 

@@ -1,3 +1,4 @@
+import type { TipoAgregadoGraudo } from '$lib/calculations/agregados';
 import { convertStress, convertToque } from '$lib/calculations/units';
 import type { GeometriaSecao } from '$lib/geometry/secao';
 
@@ -10,6 +11,7 @@ export interface Secao {
 	// Concreto
 	fck: number;
 	gamac: number;
+	agregadoGraudo: TipoAgregadoGraudo;
 
 	// Aço
 	fy: number;
