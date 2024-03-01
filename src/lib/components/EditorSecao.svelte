@@ -146,10 +146,14 @@
 	</div>
 
 	<div class="min-w-80 border-l max-md:hidden">
-		<div class="flex flex-col gap-2 border-t p-4">
-			<h2 class="mb-2 text-lg font-medium leading-none">Resultados</h2>
+		<div class="flex h-full flex-col gap-2 overflow-y-auto border-t">
+			<h2 class="sticky top-0 bg-background p-4 pb-2 text-lg font-medium leading-none">
+				Resultados
+			</h2>
 
-			<DisplayResultados secao={dados.secao} armaduras={dados.armaduras} />
+			<div class="p-4 pt-0">
+				<DisplayResultados secao={dados.secao} armaduras={dados.armaduras} />
+			</div>
 		</div>
 	</div>
 </div>

@@ -2,6 +2,7 @@
 	import { areaAcoArmadura, calculaDLinha, type Armaduras } from '$lib/calculations/armadura';
 	import { calcularELSW } from '$lib/calculations/nbr6118-els';
 	import { calcularAreaAcoMin, dimensionaSecao, type Secao } from '$lib/calculations/nbr6118-elu';
+	import { verificaSecao } from '$lib/calculations/verificacoes';
 	import { Separator } from '$lib/components/ui/select';
 
 	export let secao: Secao;
@@ -21,6 +22,7 @@
 		{@const asLinhaAdotado = armaduras.superior ? areaAcoArmadura(armaduras.superior) : 0}
 		{@const elsw = calcularELSW(secao, armaduras)}
 		{@const asMin = calcularAreaAcoMin(secao)}
+		{@const verificacoes = verificaSecao(secao, armaduras)}
 
 		<div class="flex flex-col gap-4">
 			<div class="font-medium">
@@ -112,6 +114,34 @@
 						</div>
 						<div>{elsw.wk.toFixed(2)} mm</div>
 					</div>
+				</div>
+			{/if}
+
+			{#if verificacoes.length > 0}
+				<Separator />
+
+				<div>
+					<h3 class="mb-2 font-medium">Verificações</h3>
+
+					<ul class="list-inside list-disc space-y-1 text-red-500">
+						{#each verificacoes as verificacao}
+							{#if verificacao.tipo === 'cobrimento'}
+								<li>
+									O cobrimento deve ser maior do que <b
+										>{verificacao.cobrimentoMinimo.toFixed(2)} cm</b
+									>
+									por conta do agregado graúdo selecionado ({secao.agregadoGraudo}).
+								</li>
+							{:else if verificacao.tipo === 'espaçamento armadura'}
+								<li>
+									O espaçamento livre <b>{verificacao.direcao}</b> da armadura de
+									<b>{verificacao.armadura}</b>
+									deve ser maior do que <b>{verificacao.minimo.toFixed(2)} cm</b> (valor atual:
+									<b>{Math.max(verificacao.observado, 0).toFixed(2)} cm</b>).
+								</li>
+							{/if}
+						{/each}
+					</ul>
 				</div>
 			{/if}
 		</div>

@@ -42,7 +42,8 @@ describe('NBR6118 - ELU', () => {
 				nsd: 0,
 				gamac: 1.4,
 				gamas: 1.15,
-				gamaf: 1.4
+				gamaf: 1.4,
+				agregadoGraudo: 'Brita 1'
 			},
 			dLinha,
 			dLinha
@@ -71,7 +72,8 @@ describe('NBR6118 - ELU', () => {
 				nsd: 0,
 				gamac: 1.4,
 				gamas: 1.15,
-				gamaf: 1.4
+				gamaf: 1.4,
+				agregadoGraudo: 'Brita 1'
 			},
 			dLinha,
 			dLinha
@@ -100,7 +102,8 @@ describe('NBR6118 - ELU', () => {
 				nsd: 0,
 				gamac: 1.4,
 				gamas: 1.15,
-				gamaf: 1.4
+				gamaf: 1.4,
+				agregadoGraudo: 'Brita 1'
 			},
 			dLinha,
 			dLinha
@@ -129,7 +132,8 @@ describe('NBR6118 - ELU', () => {
 				nsd: 0,
 				gamac: 1.4,
 				gamas: 1.15,
-				gamaf: 1.4
+				gamaf: 1.4,
+				agregadoGraudo: 'Brita 1'
 			},
 			dLinha,
 			dLinha
@@ -158,7 +162,8 @@ describe('NBR6118 - ELU', () => {
 				nsd: 3000,
 				gamac: 1.4,
 				gamas: 1.15,
-				gamaf: 1.4
+				gamaf: 1.4,
+				agregadoGraudo: 'Brita 1'
 			},
 			dLinha,
 			dLinha
@@ -187,7 +192,8 @@ describe('NBR6118 - ELU', () => {
 				nsd: 93,
 				gamac: 1.4,
 				gamas: 1.15,
-				gamaf: 1.4
+				gamaf: 1.4,
+				agregadoGraudo: 'Brita 1'
 			},
 			dLinha,
 			dLinha
@@ -216,7 +222,8 @@ describe('NBR6118 - ELU', () => {
 				nsd: -93,
 				gamac: 1.4,
 				gamas: 1.15,
-				gamaf: 1.4
+				gamaf: 1.4,
+				agregadoGraudo: 'Brita 1'
 			},
 			dLinha,
 			dLinha
@@ -245,7 +252,8 @@ describe('NBR6118 - ELU', () => {
 				nsd: 100,
 				gamac: 1.4,
 				gamas: 1.15,
-				gamaf: 1
+				gamaf: 1,
+				agregadoGraudo: 'Brita 1'
 			},
 			dLinha,
 			dLinha
@@ -274,7 +282,8 @@ describe('NBR6118 - ELU', () => {
 				nsd: 1500,
 				gamac: 1.4,
 				gamas: 1.15,
-				gamaf: 1.4
+				gamaf: 1.4,
+				agregadoGraudo: 'Brita 1'
 			},
 			dLinha,
 			dLinha
@@ -303,7 +312,8 @@ describe('NBR6118 - ELU', () => {
 				nsd: -1000,
 				gamac: 1.4,
 				gamas: 1.15,
-				gamaf: 1.4
+				gamaf: 1.4,
+				agregadoGraudo: 'Brita 1'
 			},
 			dLinha,
 			dLinha

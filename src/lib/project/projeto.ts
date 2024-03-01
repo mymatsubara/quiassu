@@ -39,6 +39,7 @@ export function criaNovaSecao(projeto: Projeto): DadosSecao {
 			// Concreto
 			fck: 20,
 			gamac: 1.4,
+			agregadoGraudo: 'Brita 1',
 
 			// Aço
 			fy: 500,
