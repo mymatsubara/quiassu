@@ -13,7 +13,7 @@ type Labels<T extends object> = {
 export function toCsv<T extends object>(data: T[], options?: CsvOptions<T>) {
 	const opts: Required<CsvOptions<T>> = {
 		hasHeaders: true,
-		cols: Object.keys(data[0]) as (keyof T)[],
+		cols: Object.keys(data[0] ?? {}) as (keyof T)[],
 		newLineSeparator: '\r\n',
 		separator: ',',
 		labels: {},
