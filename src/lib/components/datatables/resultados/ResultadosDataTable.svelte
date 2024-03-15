@@ -324,7 +324,7 @@
 
 	function selectedData() {
 		return Object.keys($selectedDataIds).length > 0
-			? data.filter((secao) => $selectedDataIds[secao.id])
+			? data.filter((_, i) => $selectedDataIds[i])
 			: data;
 	}
 </script>
