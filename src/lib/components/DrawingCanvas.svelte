@@ -15,17 +15,26 @@
 			const width = ctx.canvas.width;
 			const height = ctx.canvas.height;
 
+			ctx.save();
 			ctx.fillStyle = '#fff';
-			ctx.clearRect(0, 0, width, height);
+			ctx.fillRect(0, 0, width, height);
+			ctx.restore();
+
 			draw(ctx, drawing);
 		}
 	}
 
+	setTimeout(() => {
+		draw(ctx, drawing);
+	});
+
 	$: updateCanvasSize(ctx, containerElement);
 
 	function draw(ctx: CanvasRenderingContext2D, drawing: Drawing) {
+		ctx.save();
 		centerPath(ctx, drawing);
 		drawing.draw(ctx);
+		ctx.restore();
 	}
 
 	function centerPath(ctx: CanvasRenderingContext2D, drawing: Drawing) {
